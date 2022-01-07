@@ -1,0 +1,8 @@
+{
+  "type":"faction_craft:daylight_protection_boost",
+  "headpiece": {
+      "id": "minecraft:leather_helmet",
+      "tag": {"Unbreakable":1},
+      "Count": 1
+    }
+}

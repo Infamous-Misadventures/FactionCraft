@@ -1,0 +1,10 @@
+{
+  "commands.mobEnchantment.give.success.single": "Applied mob enchantment %s to %s",
+  "commands.mobEnchantment.give.success.multiple": "Applied mob enchantment %s to %s targets",
+  "commands.mobEnchantment.clear.everything.success.single": "Removed every mob enchantment from %s",
+  "commands.mobEnchantment.clear.everything.success.multiple": "Removed every mob enchantment from %s targets",
+  "commands.mobEnchantment.clear.specific.success.single": "Removed mob enchantment %s from %s",
+  "commands.mobEnchantment.clear.specific.success.multiple": "Removed mob enchantment %s from %s targets",
+  "commands.mobEnchantment.give.failed": "Unable to apply this mobEnchantment (target likely already has it)",
+  "commands.mobEnchantment.clear.everything.failed": "Target has no mobEnchantments to remove"
+}

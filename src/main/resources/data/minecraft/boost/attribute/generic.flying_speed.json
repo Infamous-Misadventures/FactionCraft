@@ -1,0 +1,6 @@
+{
+  "type": "faction_craft:attribute_boost",
+  "attribute": "generic.flying_speed",
+  "adjustment": 0.05,
+  "rarity": "common"
+}

@@ -1,0 +1,23 @@
+{
+  "type":"faction_craft:wear_armor_boost",
+  "item_stacks": [
+    {
+      "id": "minecraft:leather_helmet",
+      "Count": 1
+    },
+    {
+      "id": "minecraft:leather_chestplate",
+      "Count": 1
+    },
+    {
+      "id": "minecraft:leather_leggings",
+      "Count": 1
+    },
+    {
+      "id": "minecraft:leather_boots",
+      "Count": 1
+    }
+  ],
+  "strength_adjustment": 1,
+  "rarity": "common"
+}

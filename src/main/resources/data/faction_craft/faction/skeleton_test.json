@@ -1,0 +1,18 @@
+{
+  "name": "faction_craft:undead",
+  "replace": false,
+  "banner": {"id":"minecraft:white_banner","Count":1,"tag":{"HideFlags":32,"BlockEntityTag":{"Patterns":[{"Color":15,"Pattern":"sc"},{"Color":15,"Pattern":"cr"},{"Color":15,"Pattern":"tts"},{"Color":15,"Pattern":"gru"},{"Color":8,"Pattern":"sku"}]},"display":{"Name":{"color":"gold","translate":"block.faction_raid.undead_banner"}}}},
+  "entities": [
+    {
+      "entity_type": "minecraft:skeleton",
+      "weight": 100,
+      "strength": 1,
+      "rank": "soldier",
+      "maximum_rank": "leader",
+      "minimum_wave": 1,
+      "boosts": {
+        "mandatory": ["minecraft:special/leather_daylight_protection"]
+      }
+    }
+  ]
+}

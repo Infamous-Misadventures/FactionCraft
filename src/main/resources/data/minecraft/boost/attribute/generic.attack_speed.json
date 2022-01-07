@@ -1,0 +1,6 @@
+{
+  "type": "faction_craft:attribute_boost",
+  "attribute": "generic.attack_speed",
+  "adjustment": 1.0,
+  "rarity": "uncommon"
+}

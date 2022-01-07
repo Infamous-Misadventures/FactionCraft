@@ -1,0 +1,14 @@
+modLoader = "javafml"
+loaderVersion = "[36,)"
+license = "MIT License"
+
+[[mods]]
+modId = "test_faction_craft"
+version = "1"
+
+[[dependencies.test_faction_craft]]
+modId = "faction_craft" #mandatory
+mandatory = true #mandatory
+versionRange = "[0.0.2,)" #mandatory
+ordering = "AFTER"
+side = "BOTH"
