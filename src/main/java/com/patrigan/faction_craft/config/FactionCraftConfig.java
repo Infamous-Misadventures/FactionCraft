@@ -83,7 +83,7 @@ public class FactionCraftConfig {
                     .comment("Applied to the target strength of the village \n" +
                             "Multiplies the target strength and rounds down. \n" +
                             "Vanilla villages have a target strength between 10 and 20. Default 1.0F")
-                    .define("villageRaidTargetStrengthMultiplier", 3.0F);
+                    .define("villageRaidTargetStrengthMultiplier", 1.0F);
             VILLAGE_RAID_ADDITIONAL_WAVE_CHANCE = builder
                     .comment("Applied to the target strength of the village \n" +
                             "Additional waves is calulcated by applying this value to target strength. \n" +
