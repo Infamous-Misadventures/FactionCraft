@@ -14,7 +14,6 @@ import com.patrigan.faction_craft.faction.Factions;
 import com.patrigan.faction_craft.raid.target.RaidTarget;
 import com.patrigan.faction_craft.raid.target.RaidTargetHelper;
 import net.minecraft.advancements.CriteriaTriggers;
-import net.minecraft.block.Blocks;
 import net.minecraft.entity.*;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
@@ -39,7 +38,6 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.gen.Heightmap;
 import net.minecraft.world.server.ServerBossInfo;
 import net.minecraft.world.server.ServerWorld;
-import net.minecraft.world.spawner.WorldEntitySpawner;
 import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nullable;
@@ -107,7 +105,7 @@ public class Raid {
         this.raidCooldownTicks = compoundNBT.getInt("PreRaidTicks");
         this.postRaidTicks = compoundNBT.getInt("PostRaidTicks");
         this.totalHealth = compoundNBT.getFloat("TotalHealth");
-        this.raidTarget = RaidTargetHelper.load(compoundNBT.getCompound("RaidTarget"));
+        this.raidTarget = RaidTargetHelper.load(level, compoundNBT.getCompound("RaidTarget"));
         this.numGroups = compoundNBT.getInt("NumGroups");
         this.status = Status.getByName(compoundNBT.getString("Status"));
         this.heroesOfTheVillage.clear();
@@ -508,17 +506,17 @@ public class Raid {
         return Optional.empty();
     }
     @Nullable
-    private BlockPos findRandomSpawnPos(int p_221298_1_, int p_221298_2_) {
-        int i = p_221298_1_ == 0 ? 2 : 2 - p_221298_1_;
+    private BlockPos findRandomSpawnPos(int outerAttempt, int maxInnerAttempts) {
+        int i = 2 - outerAttempt;
         BlockPos.Mutable blockpos$mutable = new BlockPos.Mutable();
 
-        for(int i1 = 0; i1 < p_221298_2_; ++i1) {
+        for(int i1 = 0; i1 < maxInnerAttempts; ++i1) {
             float f = this.level.random.nextFloat() * ((float)Math.PI * 2F);
             int j = this.raidTarget.getTargetBlockPos().getX() + MathHelper.floor(MathHelper.cos(f) * 32.0F * (float)i) + this.level.random.nextInt(5);
             int l = this.raidTarget.getTargetBlockPos().getZ() + MathHelper.floor(MathHelper.sin(f) * 32.0F * (float)i) + this.level.random.nextInt(5);
             int k = this.level.getHeight(Heightmap.Type.WORLD_SURFACE, j, l);
             blockpos$mutable.set(j, k, l);
-            if ((!this.level.isVillage(blockpos$mutable) || p_221298_1_ >= 2) && this.level.hasChunksAt(blockpos$mutable.getX() - 10, blockpos$mutable.getY() - 10, blockpos$mutable.getZ() - 10, blockpos$mutable.getX() + 10, blockpos$mutable.getY() + 10, blockpos$mutable.getZ() + 10) && this.level.getChunkSource().isEntityTickingChunk(new ChunkPos(blockpos$mutable)) && (WorldEntitySpawner.isSpawnPositionOk(EntitySpawnPlacementRegistry.PlacementType.ON_GROUND, this.level, blockpos$mutable, EntityType.RAVAGER) || this.level.getBlockState(blockpos$mutable.below()).is(Blocks.SNOW) && this.level.getBlockState(blockpos$mutable).isAir())) {
+            if (raidTarget.isValidSpawnPos(outerAttempt, blockpos$mutable, this.level)) {
                 return blockpos$mutable;
             }
         }

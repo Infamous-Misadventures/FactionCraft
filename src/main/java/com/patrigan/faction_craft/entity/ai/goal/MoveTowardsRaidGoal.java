@@ -31,7 +31,11 @@ public class MoveTowardsRaidGoal<T extends MobEntity> extends Goal {
             return false;
         }
         IRaider raiderCapability = RaiderHelper.getRaiderCapability(this.mob);
-        return this.mob instanceof CreatureEntity && this.mob.getTarget() == null && !this.mob.isVehicle() && raiderCapability.hasActiveRaid() && !raiderCapability.getRaid().isOver() && !((ServerWorld)this.mob.level).isVillage(this.mob.blockPosition());
+        return this.mob instanceof CreatureEntity
+                && this.mob.getTarget() == null
+                && !this.mob.isVehicle() && raiderCapability.hasActiveRaid()
+                && !raiderCapability.getRaid().isOver()
+                && !((ServerWorld)this.mob.level).isVillage(this.mob.blockPosition());
     }
 
     /**

@@ -1,5 +1,6 @@
 package com.patrigan.faction_craft.raid.target;
 
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.eventbus.api.Event;
@@ -58,5 +59,19 @@ public class CalculateStrengthEvent extends Event {
 
     public void setStrength(int strength) {
         this.strength = strength;
+    }
+
+    public static class Player extends CalculateStrengthEvent
+    {
+        ServerPlayerEntity player;
+
+        public Player(RaidTarget.Type type, ServerPlayerEntity player, ServerWorld level, int originalStrength, int strength) {
+            super(type, player.blockPosition(), level, originalStrength, strength);
+            this.player = player;
+        }
+
+        public ServerPlayerEntity getPlayer() {
+            return player;
+        }
     }
 }

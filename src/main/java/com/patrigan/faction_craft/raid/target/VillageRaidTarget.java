@@ -1,13 +1,18 @@
 package com.patrigan.faction_craft.raid.target;
 
 import com.patrigan.faction_craft.FactionCraft;
+import net.minecraft.block.Blocks;
+import net.minecraft.entity.EntitySpawnPlacementRegistry;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.merchant.villager.AbstractVillagerEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.SectionPos;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.spawner.WorldEntitySpawner;
 
 import java.util.Comparator;
 import java.util.stream.Stream;
@@ -75,6 +80,15 @@ public class VillageRaidTarget implements RaidTarget {
     @Override
     public boolean checkLossCondition(ServerWorld level) {
         return !level.isVillage(blockPos);
+    }
+
+    @Override
+    public boolean isValidSpawnPos(int outerAttempt, BlockPos.Mutable blockpos$mutable, ServerWorld level) {
+        return (!level.isVillage(blockpos$mutable) || outerAttempt >= 2)
+                && level.hasChunksAt(blockpos$mutable.getX() - 10, blockpos$mutable.getY() - 10, blockpos$mutable.getZ() - 10, blockpos$mutable.getX() + 10, blockpos$mutable.getY() + 10, blockpos$mutable.getZ() + 10)
+                && level.getChunkSource().isEntityTickingChunk(new ChunkPos(blockpos$mutable))
+                && (WorldEntitySpawner.isSpawnPositionOk(EntitySpawnPlacementRegistry.PlacementType.ON_GROUND, level, blockpos$mutable, EntityType.RAVAGER)
+                    || level.getBlockState(blockpos$mutable.below()).is(Blocks.SNOW) && level.getBlockState(blockpos$mutable).isAir());
     }
 
     private void moveRaidCenterToNearbyVillageSection(ServerWorld level) {
