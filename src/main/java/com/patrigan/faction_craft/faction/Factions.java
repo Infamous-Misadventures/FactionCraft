@@ -62,6 +62,10 @@ public class Factions {
         return FACTION_DATA.data.entrySet().stream().filter(entry -> !DISABLED_FACTIONS.get().contains(entry.getKey().toString())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
+    public static Faction getDefaultFaction(){
+        return FACTION_DATA.data.get(new ResourceLocation("vanilla"));
+    }
+
     @SubscribeEvent
     public static void onAddReloadListeners(AddReloadListenerEvent event)
     {

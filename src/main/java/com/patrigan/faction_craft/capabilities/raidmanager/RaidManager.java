@@ -11,6 +11,8 @@ import net.minecraft.world.GameRules;
 import com.patrigan.faction_craft.raid.Raid;
 import net.minecraft.world.server.ServerWorld;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -76,14 +78,18 @@ public class RaidManager implements IRaidManager {
         return raid;
     }
 
-    @Override
     public Raid createRaid(Faction faction, RaidTarget raidTarget) {
+        return createRaid(Arrays.asList(faction), raidTarget);
+    }
+
+    @Override
+    public Raid createRaid(Collection<Faction> factions, RaidTarget raidTarget) {
         if (this.level.getGameRules().getBoolean(GameRules.RULE_DISABLE_RAIDS)) {
             return null;
         } else {
             Raid raid = this.getRaidAt(raidTarget.getTargetBlockPos());
             if(raid == null) {
-                raid = new Raid(this.getUniqueId(), faction, this.level, raidTarget);
+                raid = new Raid(this.getUniqueId(), factions, this.level, raidTarget);
             }
             boolean flag = false;
             if (!raid.isStarted()) {

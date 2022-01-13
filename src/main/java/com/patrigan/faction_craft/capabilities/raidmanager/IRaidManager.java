@@ -6,6 +6,7 @@ import com.patrigan.faction_craft.raid.target.RaidTarget;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.BlockPos;
 
+import java.util.Collection;
 import java.util.Map;
 
 public interface IRaidManager {
@@ -19,6 +20,8 @@ public interface IRaidManager {
     Raid getNearbyRaid(BlockPos blockPos, int distance);
 
     Raid createRaid(Faction faction, RaidTarget raidTarget);
+
+    Raid createRaid(Collection<Faction> faction, RaidTarget raidTarget);
 
     void load(CompoundNBT tag);
 

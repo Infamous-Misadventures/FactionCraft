@@ -16,7 +16,6 @@ import com.patrigan.faction_craft.raid.target.RaidTargetHelper;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.entity.*;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.nbt.NBTUtil;
@@ -58,7 +57,7 @@ public class Raid {
     private static final ITextComponent RAID_BAR_DEFEAT_COMPONENT = RAID_NAME_COMPONENT.copy().append(" - ").append(DEFEAT);
 
     private final int id;
-    private final Faction faction;
+    private final Collection<Faction> factions;
     private final ServerWorld level;
     private final RaidTarget raidTarget;
     private int badOmenLevel;
@@ -83,9 +82,12 @@ public class Raid {
     private int postRaidTicks;
     private int celebrationTicks;
 
-    public Raid(int uniqueId, Faction faction, ServerWorld level, RaidTarget raidTarget) {
+    public Raid(int uniqueId, Collection<Faction> factions, ServerWorld level, RaidTarget raidTarget) {
         this.id = uniqueId;
-        this.faction = faction;
+        this.factions = factions;
+        if(this.factions.isEmpty()){
+            this.factions.add(Factions.getDefaultFaction());
+        }
         this.level = level;
         this.raidTarget = raidTarget;
         this.numGroups = this.getNumGroups(level.getDifficulty(), raidTarget);
@@ -95,7 +97,19 @@ public class Raid {
     }
     public Raid(ServerWorld level, CompoundNBT compoundNBT) {
         this.level = level;
-        this.faction = Factions.getFaction(new ResourceLocation(compoundNBT.getString("Faction")));
+        ListNBT factionListnbt = compoundNBT.getList("Factions", 10);
+        factions = new ArrayList<>();
+        for(int i = 0; i < factionListnbt.size(); ++i) {
+            CompoundNBT compoundnbt = factionListnbt.getCompound(i);
+            ResourceLocation factionName = new ResourceLocation(compoundnbt.getString("Faction"));
+            if(Factions.factionExists(factionName)) {
+                Faction faction = Factions.getFaction(factionName);
+                this.factions.add(faction);
+            }
+        }
+        if(this.factions.isEmpty()){
+            this.factions.add(Factions.getDefaultFaction());
+        }
         this.id = compoundNBT.getInt("Id");
         this.started = compoundNBT.getBoolean("Started");
         this.active = compoundNBT.getBoolean("Active");
@@ -306,10 +320,26 @@ public class Raid {
         float spreadMultiplier = (level.random.nextFloat()*WAVE_TARGET_STRENGTH_SPREAD.get()*2)+1.0F-WAVE_TARGET_STRENGTH_SPREAD.get();
         float difficultyMultiplier = getDifficultyMultiplier(level.getDifficulty());
         int targetStrength = (int) Math.floor(raidTarget.getTargetStrength() * waveMultiplier * spreadMultiplier * difficultyMultiplier);
-        int mobsFraction = (int) Math.floor(targetStrength*faction.getRaidConfig().getMobsFraction());
+        Map<Faction, Integer> factionFractions = determineFactionFractions(targetStrength);
+        factionFractions.entrySet().forEach(entry -> spawnGroupForFaction(spawnBlockPos, waveNumber, entry.getValue(), entry.getKey()));
+
+        this.waveSpawnPos = Optional.empty();
+        ++this.groupsSpawned;
+        this.updateBossbar();
+    }
+
+    private Map<Faction, Integer> determineFactionFractions(int targetStrength) {
+        Map<Faction, Integer> factionFractions = new HashMap<>();
+        int perFactionStrength = (int) Math.floor(targetStrength / factions.size());
+        factions.forEach(faction -> factionFractions.merge(faction, perFactionStrength, Integer::sum));
+        return factionFractions;
+    }
+
+    private void spawnGroupForFaction(BlockPos spawnBlockPos, int waveNumber, int targetStrength, Faction faction) {
+        int mobsFraction = (int) Math.floor(targetStrength * faction.getRaidConfig().getMobsFraction());
 
         int waveStrength = 0;
-        Map<FactionEntityType, Integer> waveFactionEntities = determineMobs(mobsFraction, waveNumber);
+        Map<FactionEntityType, Integer> waveFactionEntities = determineMobs(mobsFraction, waveNumber, faction);
         Map<FactionEntityType, List<MobEntity>> entities = new HashMap<>();
         // Collect Entities
         //TODO: Determine Leader!
@@ -337,13 +367,9 @@ public class Raid {
         }
         //Add to Raid
         entities.entrySet().stream().flatMap(factionEntityListEntry -> factionEntityListEntry.getValue().stream()).forEach(raiderEntity -> this.joinRaid(waveNumber, raiderEntity, spawnBlockPos, false));
-
-        this.waveSpawnPos = Optional.empty();
-        ++this.groupsSpawned;
-        this.updateBossbar();
     }
 
-    private Map<FactionEntityType, Integer> determineMobs(int targetStrength, int waveNumber) {
+    private Map<FactionEntityType, Integer> determineMobs(int targetStrength, int waveNumber, Faction faction) {
         Map<FactionEntityType, Integer> waveFactionEntities = new HashMap<>();
         int selectedStrength = 0;
         List<Pair<FactionEntityType, Integer>> weightMap = faction.getWeightMapForWave(waveNumber);
@@ -657,7 +683,14 @@ public class Raid {
         pNbt.putFloat("TotalHealth", this.totalHealth);
         pNbt.putInt("NumGroups", this.numGroups);
         pNbt.putString("Status", this.status.getName());
-        pNbt.putString("Faction", this.faction.getName().toString());
+
+        ListNBT factionListnbt = new ListNBT();
+        for(Faction faction : this.factions) {
+            CompoundNBT compoundnbt = new CompoundNBT();
+            compoundnbt.putString("Faction", faction.getName().toString());
+            factionListnbt.add(compoundnbt);
+        }
+        pNbt.put("Factions", factionListnbt);
 
         CompoundNBT raidTargetNbt = new CompoundNBT();
         raidTarget.save(raidTargetNbt);
