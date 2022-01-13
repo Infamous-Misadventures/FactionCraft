@@ -6,7 +6,8 @@
   "refmap": "faction_craft.refmap.json",
   "mixins": [
     "BrainAccessor",
-    "GoalSelectorAccessor"
+    "GoalSelectorAccessor",
+    "ServerWorldAccessor"
   ],
   "client": [
   ],

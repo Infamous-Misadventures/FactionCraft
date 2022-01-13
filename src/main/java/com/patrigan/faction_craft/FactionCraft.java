@@ -5,6 +5,9 @@ import com.patrigan.faction_craft.boost.BoostProviders;
 import com.patrigan.faction_craft.capabilities.appliedboosts.AppliedBoosts;
 import com.patrigan.faction_craft.capabilities.appliedboosts.AppliedBoostsStorage;
 import com.patrigan.faction_craft.capabilities.appliedboosts.IAppliedBoosts;
+import com.patrigan.faction_craft.capabilities.patroller.IPatroller;
+import com.patrigan.faction_craft.capabilities.patroller.Patroller;
+import com.patrigan.faction_craft.capabilities.patroller.PatrollerStorage;
 import com.patrigan.faction_craft.capabilities.raider.IRaider;
 import com.patrigan.faction_craft.capabilities.raider.Raider;
 import com.patrigan.faction_craft.capabilities.raider.RaiderStorage;
@@ -61,6 +64,7 @@ public class FactionCraft
     private void setup(final FMLCommonSetupEvent event){
         CapabilityManager.INSTANCE.register(IRaidManager.class, new RaidManagerStorage(), RaidManager::new);
         CapabilityManager.INSTANCE.register(IRaider.class, new RaiderStorage(), Raider::new);
+        CapabilityManager.INSTANCE.register(IPatroller.class, new PatrollerStorage(), Patroller::new);
         CapabilityManager.INSTANCE.register(IAppliedBoosts.class, new AppliedBoostsStorage(), AppliedBoosts::new);
         event.enqueueWork(NetworkHandler::init);
     }

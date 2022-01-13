@@ -1,6 +1,7 @@
 package com.patrigan.faction_craft.capabilities;
 
 import com.patrigan.faction_craft.capabilities.appliedboosts.AppliedBoostsProvider;
+import com.patrigan.faction_craft.capabilities.patroller.PatrollerProvider;
 import com.patrigan.faction_craft.capabilities.raider.RaiderProvider;
 import com.patrigan.faction_craft.capabilities.raidmanager.RaidManagerProvider;
 import net.minecraft.entity.Entity;
@@ -33,6 +34,7 @@ public class CapabilityEvents {
         }
         if(event.getObject() instanceof MobEntity) {
             event.addCapability(new ResourceLocation(MODID, "raider"), new RaiderProvider((MobEntity) event.getObject()));
+            event.addCapability(new ResourceLocation(MODID, "patroller"), new PatrollerProvider((MobEntity) event.getObject()));
         }
     }
 }

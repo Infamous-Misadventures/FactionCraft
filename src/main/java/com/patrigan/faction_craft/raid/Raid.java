@@ -9,7 +9,7 @@ import com.patrigan.faction_craft.capabilities.raider.IRaider;
 import com.patrigan.faction_craft.capabilities.raider.RaiderHelper;
 import com.patrigan.faction_craft.capabilities.raidmanager.IRaidManager;
 import com.patrigan.faction_craft.faction.Faction;
-import com.patrigan.faction_craft.faction.FactionEntity;
+import com.patrigan.faction_craft.faction.FactionEntityType;
 import com.patrigan.faction_craft.faction.Factions;
 import com.patrigan.faction_craft.raid.target.RaidTarget;
 import com.patrigan.faction_craft.raid.target.RaidTargetHelper;
@@ -309,26 +309,27 @@ public class Raid {
         int mobsFraction = (int) Math.floor(targetStrength*faction.getRaidConfig().getMobsFraction());
 
         int waveStrength = 0;
-        Map<FactionEntity, Integer> waveFactionEntities = determineMobs(mobsFraction, waveNumber);
-        Map<FactionEntity, List<MobEntity>> entities = new HashMap<>();
+        Map<FactionEntityType, Integer> waveFactionEntities = determineMobs(mobsFraction, waveNumber);
+        Map<FactionEntityType, List<MobEntity>> entities = new HashMap<>();
         // Collect Entities
-        for (Map.Entry<FactionEntity, Integer> entry : waveFactionEntities.entrySet()) {
-            FactionEntity factionEntity = entry.getKey();
+        //TODO: Determine Leader!
+        for (Map.Entry<FactionEntityType, Integer> entry : waveFactionEntities.entrySet()) {
+            FactionEntityType factionEntityType = entry.getKey();
             Integer amount = entry.getValue();
             for (int i = 0; i <amount; i++) {
-                Entity entity = factionEntity.createEntity(level);
+                Entity entity = factionEntityType.createEntity(level, faction, false);
                 if(entity instanceof MobEntity) {
-                    entities.computeIfAbsent(factionEntity, key -> new ArrayList<>()).add((MobEntity) entity);
-                    waveStrength += factionEntity.getStrength();
+                    entities.computeIfAbsent(factionEntityType, key -> new ArrayList<>()).add((MobEntity) entity);
+                    waveStrength += factionEntityType.getStrength();
                 }
             }
         }
         // Apply Boosts
         while(waveStrength < targetStrength) {
             Random random = this.level.random;
-            FactionEntity randomFactionEntity = getRandomItem(new ArrayList<>(entities.keySet()), random);
-            MobEntity randomEntity = getRandomItem(entities.get(randomFactionEntity), random);
-            Boost boost = Boosts.getRandomBoostForEntity(random, randomEntity, randomFactionEntity.getBoostConfig().getWhitelistBoosts(), randomFactionEntity.getBoostConfig().getBlacklistBoosts());
+            FactionEntityType randomFactionEntityType = getRandomItem(new ArrayList<>(entities.keySet()), random);
+            MobEntity randomEntity = getRandomItem(entities.get(randomFactionEntityType), random);
+            Boost boost = Boosts.getRandomBoostForEntity(random, randomEntity, randomFactionEntityType.getBoostConfig().getWhitelistBoosts(), randomFactionEntityType.getBoostConfig().getBlacklistBoosts());
             if(boost == null){
                 break;
             }
@@ -342,12 +343,12 @@ public class Raid {
         this.updateBossbar();
     }
 
-    private Map<FactionEntity, Integer> determineMobs(int targetStrength, int waveNumber) {
-        Map<FactionEntity, Integer> waveFactionEntities = new HashMap<>();
+    private Map<FactionEntityType, Integer> determineMobs(int targetStrength, int waveNumber) {
+        Map<FactionEntityType, Integer> waveFactionEntities = new HashMap<>();
         int selectedStrength = 0;
-        List<Pair<FactionEntity, Integer>> weightMap = faction.getWeightMapForWave(waveNumber);
+        List<Pair<FactionEntityType, Integer>> weightMap = faction.getWeightMapForWave(waveNumber);
         while(selectedStrength < targetStrength) {
-            FactionEntity randomEntry = getRandomEntry(weightMap, level.random);
+            FactionEntityType randomEntry = getRandomEntry(weightMap, level.random);
             waveFactionEntities.merge(randomEntry, 1, Integer::sum);
             selectedStrength += randomEntry.getStrength();
         }
@@ -369,8 +370,6 @@ public class Raid {
 
     public void setLeader(int pRaidId, MobEntity mobEntity) {
         this.groupToLeaderMap.put(pRaidId, mobEntity);
-        mobEntity.setItemSlot(EquipmentSlotType.HEAD, faction.getBannerInstance());
-        mobEntity.setDropChance(EquipmentSlotType.HEAD, 2.0F);
     }
 
     public void removeLeader(int wave) {

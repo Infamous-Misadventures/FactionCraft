@@ -6,6 +6,8 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.MobEntity;
+import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.server.ServerWorld;
 
@@ -14,8 +16,8 @@ import java.util.List;
 
 import static net.minecraftforge.registries.ForgeRegistries.ENTITIES;
 
-public class FactionEntity {
-    public static final Codec<FactionEntity> CODEC = RecordCodecBuilder.create(builder ->
+public class FactionEntityType {
+    public static final Codec<FactionEntityType> CODEC = RecordCodecBuilder.create(builder ->
             builder.group(
                     ResourceLocation.CODEC.fieldOf("entity_type").forGetter(data -> data.entityType),
                     Codec.INT.fieldOf("weight").forGetter(data -> data.weight),
@@ -24,7 +26,7 @@ public class FactionEntity {
                     FactionRank.CODEC.fieldOf("maximum_rank").forGetter(data -> data.maximumRank),
                     BoostConfig.CODEC.optionalFieldOf("boosts", BoostConfig.DEFAULT).forGetter(data -> data.boostConfig),
                     Codec.INT.fieldOf("minimum_wave").forGetter(data -> data.minimumWave)
-                    ).apply(builder, FactionEntity::new));
+                    ).apply(builder, FactionEntityType::new));
 
     private final ResourceLocation entityType;
     private final int weight;
@@ -34,7 +36,7 @@ public class FactionEntity {
     private final BoostConfig boostConfig;
     private final int minimumWave;
 
-    public FactionEntity(ResourceLocation entityType, int weight, int strength, FactionRank rank, FactionRank maximumRank, BoostConfig boostConfig, int minimumWave) {
+    public FactionEntityType(ResourceLocation entityType, int weight, int strength, FactionRank rank, FactionRank maximumRank, BoostConfig boostConfig, int minimumWave) {
         this.entityType = entityType;
         this.weight = weight;
         this.strength = strength;
@@ -88,11 +90,16 @@ public class FactionEntity {
         return false;
     }
 
-    public Entity createEntity(ServerWorld level) {
+    public Entity createEntity(ServerWorld level, Faction faction, boolean bannerHolder) {
         EntityType<?> entityType = ENTITIES.getValue(this.getEntityType());
-        Entity entity = entityType.create(level);
-        if(entity instanceof LivingEntity){
-            boostConfig.getMandatoryBoosts().forEach(boost -> boost.apply((LivingEntity) entity));
+        Entity entity =  entityType.create(level);
+        if(entity instanceof MobEntity){
+            MobEntity mobEntity = (MobEntity) entity;
+            boostConfig.getMandatoryBoosts().forEach(boost -> boost.apply(mobEntity));
+            if(bannerHolder){
+                mobEntity.setItemSlot(EquipmentSlotType.HEAD, faction.getBannerInstance());
+                mobEntity.setDropChance(EquipmentSlotType.HEAD, 2.0F);
+            }
         }
         return entity;
     }

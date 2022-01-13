@@ -20,21 +20,21 @@ public class Faction {
                     Codec.BOOL.optionalFieldOf("replace", false).forGetter(data -> data.replace),
                     CompoundNBT.CODEC.fieldOf("banner").forGetter(Faction::getBanner),
                     FactionRaidConfig.CODEC.optionalFieldOf("raid_config", FactionRaidConfig.DEFAULT).forGetter(Faction::getRaidConfig),
-                    FactionEntity.CODEC.listOf().fieldOf("entities").forGetter(Faction::getEntities)
+                    FactionEntityType.CODEC.listOf().fieldOf("entities").forGetter(Faction::getEntityTypes)
             ).apply(builder, Faction::new));
 
     private final ResourceLocation name;
     private final boolean replace;
     private final CompoundNBT banner;
     private final FactionRaidConfig raidConfig;
-    private final List<FactionEntity> entities;
+    private final List<FactionEntityType> entityTypes;
 
-    public Faction(ResourceLocation name, boolean replace, CompoundNBT banner, FactionRaidConfig raidConfig, List<FactionEntity> entities) {
+    public Faction(ResourceLocation name, boolean replace, CompoundNBT banner, FactionRaidConfig raidConfig, List<FactionEntityType> entityTypes) {
         this.name = name;
         this.replace = replace;
         this.banner = banner;
         this.raidConfig = raidConfig;
-        this.entities = entities;
+        this.entityTypes = entityTypes;
     }
 
     public ResourceLocation getName() {
@@ -53,15 +53,15 @@ public class Faction {
         return raidConfig;
     }
 
-    public List<FactionEntity> getEntities() {
-        return entities;
+    public List<FactionEntityType> getEntityTypes() {
+        return entityTypes;
     }
 
-    public List<Pair<FactionEntity, Integer>> getWeightMap(){
-        return entities.stream().map(factionEntity -> new Pair<>(factionEntity, factionEntity.getWeight())).collect(Collectors.toList());
+    public List<Pair<FactionEntityType, Integer>> getWeightMap(){
+        return entityTypes.stream().map(factionEntityType -> new Pair<>(factionEntityType, factionEntityType.getWeight())).collect(Collectors.toList());
     }
-    public List<Pair<FactionEntity, Integer>> getWeightMapForWave(int wave){
-        return entities.stream().filter(factionEntity -> factionEntity.getMinimumWave() <= wave).map(factionEntity -> new Pair<>(factionEntity, factionEntity.getWeight())).collect(Collectors.toList());
+    public List<Pair<FactionEntityType, Integer>> getWeightMapForWave(int wave){
+        return entityTypes.stream().filter(factionEntityType -> factionEntityType.getMinimumWave() <= wave).map(factionEntityType -> new Pair<>(factionEntityType, factionEntityType.getWeight())).collect(Collectors.toList());
     }
 
     public ItemStack getBannerInstance() {

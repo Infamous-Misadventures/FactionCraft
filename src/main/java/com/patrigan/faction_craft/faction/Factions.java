@@ -2,6 +2,7 @@ package com.patrigan.faction_craft.faction;
 
 import com.patrigan.faction_craft.FactionCraft;
 import com.patrigan.faction_craft.data.util.MergeableCodecDataManager;
+import com.patrigan.faction_craft.util.GeneralUtils;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.AddReloadListenerEvent;
@@ -22,7 +23,7 @@ public class Factions {
         ResourceLocation name = null;
         CompoundNBT banner = null;
         FactionRaidConfig factionRaidConfig = null;
-        Set<FactionEntity> entities = new HashSet<>();
+        Set<FactionEntityType> entities = new HashSet<>();
         for (Faction raw : raws) {
             if (raw.isReplace()) {
                 banner = raw.getBanner();
@@ -39,7 +40,7 @@ public class Factions {
             if(factionRaidConfig == null){
                 factionRaidConfig = raw.getRaidConfig();
             }
-            entities.addAll(raw.getEntities());
+            entities.addAll(raw.getEntityTypes());
         }
         return new Faction(name,false, banner, factionRaidConfig, new ArrayList<>(entities));
     }
@@ -65,5 +66,9 @@ public class Factions {
     public static void onAddReloadListeners(AddReloadListenerEvent event)
     {
         event.addListener(FACTION_DATA);
+    }
+
+    public static Faction getRandomFaction(Random random) {
+        return GeneralUtils.getRandomItem(new ArrayList<>(FACTION_DATA.data.values()), random);
     }
 }
