@@ -24,12 +24,12 @@ import net.minecraft.potion.Effects;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.BossInfo;
@@ -167,6 +167,7 @@ public class Raid {
                 if (raidTarget.checkLossCondition(level)) {
                     if (this.groupsSpawned > 0) {
                         this.status = Status.LOSS;
+                        this.playSound(raidTarget.getTargetBlockPos(), factions.get(0).getRaidConfig().getDefeatSoundEvent());
                     } else {
                         this.stop();
                     }
@@ -177,6 +178,7 @@ public class Raid {
                     this.stop();
                     return;
                 }
+
 
                 int i = this.getTotalRaidersAlive();
                 if (i == 0 && this.hasMoreWaves()) {
@@ -209,7 +211,7 @@ public class Raid {
                         this.started = true;
                         this.spawnGroup(blockpos);
                         if (!flag3) {
-                            this.playSound(blockpos);
+                            this.playSound(blockpos, factions.get(0).getRaidConfig().getWaveSoundEvent());
                             flag3 = true;
                         }
                     } else {
@@ -227,6 +229,7 @@ public class Raid {
                         ++this.postRaidTicks;
                     } else {
                         this.status = Status.VICTORY;
+                        this.playSound(raidTarget.getTargetBlockPos(), factions.get(0).getRaidConfig().getVictorySoundEvent());
 
                         for(UUID uuid : this.heroesOfTheVillage) {
                             Entity entity = this.level.getEntity(uuid);
@@ -263,7 +266,7 @@ public class Raid {
         }
     }
 
-    private void playSound(BlockPos p_221293_1_) {
+    private void playSound(BlockPos p_221293_1_, SoundEvent soundEvent) {
         float f = 13.0F;
         int i = 64;
         Collection<ServerPlayerEntity> collection = this.raidEvent.getPlayers();
@@ -275,10 +278,9 @@ public class Raid {
             double d0 = vector3d.x + (double)(13.0F / f1) * (vector3d1.x - vector3d.x);
             double d1 = vector3d.z + (double)(13.0F / f1) * (vector3d1.z - vector3d.z);
             if (f1 <= 64.0F || collection.contains(serverplayerentity)) {
-                serverplayerentity.connection.send(new SPlaySoundEffectPacket(SoundEvents.RAID_HORN, SoundCategory.NEUTRAL, d0, serverplayerentity.getY(), d1, 64.0F, 1.0F));
+                serverplayerentity.connection.send(new SPlaySoundEffectPacket(soundEvent, SoundCategory.NEUTRAL, d0, serverplayerentity.getY(), d1, 64.0F, 1.0F));
             }
         }
-
     }
 
     private boolean raidCooldownTick() {
