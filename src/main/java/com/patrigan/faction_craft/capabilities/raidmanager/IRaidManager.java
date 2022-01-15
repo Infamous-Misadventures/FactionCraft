@@ -7,7 +7,7 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.BlockPos;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 public interface IRaidManager {
@@ -22,7 +22,7 @@ public interface IRaidManager {
 
     Raid createRaid(Faction faction, RaidTarget raidTarget);
 
-    Raid createRaid(Collection<Faction> faction, RaidTarget raidTarget);
+    Raid createRaid(List<Faction> faction, RaidTarget raidTarget);
 
     Raid createBadOmenRaid(RaidTarget raidTarget, ServerPlayerEntity player);
 

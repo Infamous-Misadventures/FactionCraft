@@ -91,7 +91,7 @@ public class RaidManager implements IRaidManager {
     }
 
     @Override
-    public Raid createRaid(Collection<Faction> factions, RaidTarget raidTarget) {
+    public Raid createRaid(List<Faction> factions, RaidTarget raidTarget) {
         if (FactionCraftConfig.DISABLE_FACTION_RAIDS.get()) {
             return null;
         } else {

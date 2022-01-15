@@ -136,6 +136,7 @@ dependencies {
     annotationProcessor 'org.spongepowered:mixin:0.8.4:processor'
 
 //    implementation fg.deobf('software.bernie.geckolib:geckolib-forge-1.16.5:3.0.45')
+//    implementation fg.deobf('software.bernie.geckolib:geckolib-forge-1.16.5:3.0.45')
 
 
 
