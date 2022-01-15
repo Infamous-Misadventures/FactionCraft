@@ -3,6 +3,7 @@ package com.patrigan.faction_craft.faction;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.patrigan.faction_craft.faction.entity.FactionEntityType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
@@ -12,7 +13,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class Faction {
-    public static final Faction DEFAULT = new Faction(new ResourceLocation("faction/default"), false, new CompoundNBT(), FactionRaidConfig.DEFAULT, Collections.emptyList());
+    public static final Faction DEFAULT = new Faction(new ResourceLocation("faction/default"), false, new CompoundNBT(), FactionRaidConfig.DEFAULT, FactionBoostConfig.DEFAULT, Collections.emptyList());
 
     public static final Codec<Faction> CODEC = RecordCodecBuilder.create(builder ->
             builder.group(
@@ -20,6 +21,7 @@ public class Faction {
                     Codec.BOOL.optionalFieldOf("replace", false).forGetter(data -> data.replace),
                     CompoundNBT.CODEC.fieldOf("banner").forGetter(Faction::getBanner),
                     FactionRaidConfig.CODEC.optionalFieldOf("raid_config", FactionRaidConfig.DEFAULT).forGetter(Faction::getRaidConfig),
+                    FactionBoostConfig.CODEC.optionalFieldOf("boosts", FactionBoostConfig.DEFAULT).forGetter(Faction::getBoostConfig),
                     FactionEntityType.CODEC.listOf().fieldOf("entities").forGetter(Faction::getEntityTypes)
             ).apply(builder, Faction::new));
 
@@ -27,13 +29,15 @@ public class Faction {
     private final boolean replace;
     private final CompoundNBT banner;
     private final FactionRaidConfig raidConfig;
+    private final FactionBoostConfig boostConfig;
     private final List<FactionEntityType> entityTypes;
 
-    public Faction(ResourceLocation name, boolean replace, CompoundNBT banner, FactionRaidConfig raidConfig, List<FactionEntityType> entityTypes) {
+    public Faction(ResourceLocation name, boolean replace, CompoundNBT banner, FactionRaidConfig raidConfig, FactionBoostConfig boostConfig, List<FactionEntityType> entityTypes) {
         this.name = name;
         this.replace = replace;
         this.banner = banner;
         this.raidConfig = raidConfig;
+        this.boostConfig = boostConfig;
         this.entityTypes = entityTypes;
     }
 
@@ -51,6 +55,10 @@ public class Faction {
 
     public FactionRaidConfig getRaidConfig() {
         return raidConfig;
+    }
+
+    public FactionBoostConfig getBoostConfig() {
+        return boostConfig;
     }
 
     public List<FactionEntityType> getEntityTypes() {

@@ -5,7 +5,7 @@ import com.patrigan.faction_craft.capabilities.patroller.IPatroller;
 import com.patrigan.faction_craft.capabilities.patroller.PatrollerHelper;
 import com.patrigan.faction_craft.config.FactionCraftConfig;
 import com.patrigan.faction_craft.faction.Faction;
-import com.patrigan.faction_craft.faction.FactionEntityType;
+import com.patrigan.faction_craft.faction.entity.FactionEntityType;
 import com.patrigan.faction_craft.faction.Factions;
 import com.patrigan.faction_craft.util.GeneralUtils;
 import net.minecraft.block.BlockState;

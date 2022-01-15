@@ -1,4 +1,4 @@
-package com.patrigan.faction_craft.faction;
+package com.patrigan.faction_craft.faction.entity;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -10,22 +10,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class BoostConfig {
+public class EntityBoostConfig {
 
-    public static final BoostConfig DEFAULT = new BoostConfig(new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+    public static final EntityBoostConfig DEFAULT = new EntityBoostConfig(new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
 
-    public static final Codec<BoostConfig> CODEC = RecordCodecBuilder.create(builder ->
+    public static final Codec<EntityBoostConfig> CODEC = RecordCodecBuilder.create(builder ->
             builder.group(
-                    ResourceLocation.CODEC.listOf().optionalFieldOf("mandatory", new ArrayList<>()).forGetter(BoostConfig::getMandatoryResourceLocations),
-                    ResourceLocation.CODEC.listOf().optionalFieldOf("whitelist", new ArrayList<>()).forGetter(BoostConfig::getWhitelistResourceLocations),
-                    ResourceLocation.CODEC.listOf().optionalFieldOf("blacklist", new ArrayList<>()).forGetter(BoostConfig::getBlacklistResourceLocations)
-            ).apply(builder, BoostConfig::new));
+                    ResourceLocation.CODEC.listOf().optionalFieldOf("mandatory", new ArrayList<>()).forGetter(EntityBoostConfig::getMandatoryResourceLocations),
+                    ResourceLocation.CODEC.listOf().optionalFieldOf("whitelist", new ArrayList<>()).forGetter(EntityBoostConfig::getWhitelistResourceLocations),
+                    ResourceLocation.CODEC.listOf().optionalFieldOf("blacklist", new ArrayList<>()).forGetter(EntityBoostConfig::getBlacklistResourceLocations)
+            ).apply(builder, EntityBoostConfig::new));
 
     private final List<ResourceLocation> mandatoryResourceLocations;
     private final List<ResourceLocation> whitelistResourceLocations;
     private final List<ResourceLocation> blacklistResourceLocations;
 
-    public BoostConfig(List<ResourceLocation> mandatoryResourceLocations, List<ResourceLocation> whitelistResourceLocations, List<ResourceLocation> blacklistResourceLocations) {
+    public EntityBoostConfig(List<ResourceLocation> mandatoryResourceLocations, List<ResourceLocation> whitelistResourceLocations, List<ResourceLocation> blacklistResourceLocations) {
         this.mandatoryResourceLocations = mandatoryResourceLocations;
         this.whitelistResourceLocations = whitelistResourceLocations;
         this.blacklistResourceLocations = blacklistResourceLocations;

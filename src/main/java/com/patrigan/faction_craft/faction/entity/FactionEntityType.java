@@ -1,14 +1,12 @@
-package com.patrigan.faction_craft.faction;
+package com.patrigan.faction_craft.faction.entity;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import com.patrigan.faction_craft.capabilities.factionentity.FactionEntity;
 import com.patrigan.faction_craft.capabilities.factionentity.FactionEntityHelper;
-import com.patrigan.faction_craft.capabilities.factionentity.IFactionEntity;
+import com.patrigan.faction_craft.faction.Faction;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.util.ResourceLocation;
@@ -27,7 +25,7 @@ public class FactionEntityType {
                     Codec.INT.fieldOf("strength").forGetter(data -> data.strength),
                     FactionRank.CODEC.fieldOf("rank").forGetter(data -> data.rank),
                     FactionRank.CODEC.fieldOf("maximum_rank").forGetter(data -> data.maximumRank),
-                    BoostConfig.CODEC.optionalFieldOf("boosts", BoostConfig.DEFAULT).forGetter(data -> data.boostConfig),
+                    EntityBoostConfig.CODEC.optionalFieldOf("boosts", EntityBoostConfig.DEFAULT).forGetter(data -> data.entityBoostConfig),
                     Codec.INT.fieldOf("minimum_wave").forGetter(data -> data.minimumWave)
                     ).apply(builder, FactionEntityType::new));
 
@@ -36,16 +34,16 @@ public class FactionEntityType {
     private final int strength;
     private final FactionRank rank;
     private final FactionRank maximumRank;
-    private final BoostConfig boostConfig;
+    private final EntityBoostConfig entityBoostConfig;
     private final int minimumWave;
 
-    public FactionEntityType(ResourceLocation entityType, int weight, int strength, FactionRank rank, FactionRank maximumRank, BoostConfig boostConfig, int minimumWave) {
+    public FactionEntityType(ResourceLocation entityType, int weight, int strength, FactionRank rank, FactionRank maximumRank, EntityBoostConfig entityBoostConfig, int minimumWave) {
         this.entityType = entityType;
         this.weight = weight;
         this.strength = strength;
         this.rank = rank;
         this.maximumRank = maximumRank;
-        this.boostConfig = boostConfig;
+        this.entityBoostConfig = entityBoostConfig;
         this.minimumWave = minimumWave;
     }
 
@@ -69,8 +67,8 @@ public class FactionEntityType {
         return maximumRank;
     }
 
-    public BoostConfig getBoostConfig() {
-        return boostConfig;
+    public EntityBoostConfig getBoostConfig() {
+        return entityBoostConfig;
     }
 
     public int getMinimumWave() {
@@ -98,7 +96,8 @@ public class FactionEntityType {
         Entity entity =  entityType.create(level);
         if(entity instanceof MobEntity){
             MobEntity mobEntity = (MobEntity) entity;
-            boostConfig.getMandatoryBoosts().forEach(boost -> boost.apply(mobEntity));
+            faction.getBoostConfig().getMandatoryBoosts().forEach(boost -> boost.apply(mobEntity));
+            entityBoostConfig.getMandatoryBoosts().forEach(boost -> boost.apply(mobEntity));
             if(bannerHolder){
                 mobEntity.setItemSlot(EquipmentSlotType.HEAD, faction.getBannerInstance());
                 mobEntity.setDropChance(EquipmentSlotType.HEAD, 2.0F);

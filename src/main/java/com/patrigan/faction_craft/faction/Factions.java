@@ -2,6 +2,7 @@ package com.patrigan.faction_craft.faction;
 
 import com.patrigan.faction_craft.FactionCraft;
 import com.patrigan.faction_craft.data.util.MergeableCodecDataManager;
+import com.patrigan.faction_craft.faction.entity.FactionEntityType;
 import com.patrigan.faction_craft.util.GeneralUtils;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;

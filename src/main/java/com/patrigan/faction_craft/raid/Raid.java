@@ -3,14 +3,12 @@ package com.patrigan.faction_craft.raid;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.mojang.datafixers.util.Pair;
-import com.patrigan.faction_craft.boost.Boost;
-import com.patrigan.faction_craft.boost.Boosts;
 import com.patrigan.faction_craft.capabilities.raider.IRaider;
 import com.patrigan.faction_craft.capabilities.raider.RaiderHelper;
 import com.patrigan.faction_craft.capabilities.raidmanager.IRaidManager;
-import com.patrigan.faction_craft.config.FactionCraftConfig;
 import com.patrigan.faction_craft.faction.Faction;
-import com.patrigan.faction_craft.faction.FactionEntityType;
+import com.patrigan.faction_craft.faction.FactionBoostHelper;
+import com.patrigan.faction_craft.faction.entity.FactionEntityType;
 import com.patrigan.faction_craft.faction.Factions;
 import com.patrigan.faction_craft.raid.target.RaidTarget;
 import com.patrigan.faction_craft.raid.target.RaidTargetHelper;
@@ -48,7 +46,6 @@ import static com.patrigan.faction_craft.capabilities.raider.RaiderProvider.RAID
 import static com.patrigan.faction_craft.capabilities.raidmanager.RaidManagerHelper.getRaidManagerCapability;
 import static com.patrigan.faction_craft.config.FactionCraftConfig.*;
 import static com.patrigan.faction_craft.util.GeneralUtils.getRandomEntry;
-import static com.patrigan.faction_craft.util.GeneralUtils.getRandomItem;
 
 public class Raid {
     private static final ITextComponent RAID_NAME_COMPONENT = new TranslationTextComponent("event.minecraft.raid");
@@ -372,16 +369,8 @@ public class Raid {
             }
         }
         // Apply Boosts
-        while(waveStrength < targetStrength) {
-            Random random = this.level.random;
-            FactionEntityType randomFactionEntityType = getRandomItem(new ArrayList<>(entities.keySet()), random);
-            MobEntity randomEntity = getRandomItem(entities.get(randomFactionEntityType), random);
-            Boost boost = Boosts.getRandomBoostForEntity(random, randomEntity, randomFactionEntityType.getBoostConfig().getWhitelistBoosts(), randomFactionEntityType.getBoostConfig().getBlacklistBoosts());
-            if(boost == null){
-                break;
-            }
-            waveStrength += boost.apply(randomEntity);
-        }
+        waveStrength += FactionBoostHelper.applyBoosts(targetStrength-waveStrength, entities, faction, this.level);
+
         //Add to Raid
         entities.entrySet().stream().flatMap(factionEntityListEntry -> factionEntityListEntry.getValue().stream()).forEach(raiderEntity -> this.joinRaid(waveNumber, raiderEntity, spawnBlockPos, false));
     }
