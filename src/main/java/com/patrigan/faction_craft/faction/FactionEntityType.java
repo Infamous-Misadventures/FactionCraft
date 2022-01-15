@@ -3,6 +3,9 @@ package com.patrigan.faction_craft.faction;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.patrigan.faction_craft.capabilities.factionentity.FactionEntity;
+import com.patrigan.faction_craft.capabilities.factionentity.FactionEntityHelper;
+import com.patrigan.faction_craft.capabilities.factionentity.IFactionEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -100,6 +103,7 @@ public class FactionEntityType {
                 mobEntity.setItemSlot(EquipmentSlotType.HEAD, faction.getBannerInstance());
                 mobEntity.setDropChance(EquipmentSlotType.HEAD, 2.0F);
             }
+            FactionEntityHelper.getFactionEntityCapabilityLazy(mobEntity).ifPresent(cap -> cap.setFaction(faction));
         }
         return entity;
     }

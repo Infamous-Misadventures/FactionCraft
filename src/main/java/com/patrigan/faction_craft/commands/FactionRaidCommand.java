@@ -18,7 +18,6 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.server.command.EnumArgument;
 
 public class FactionRaidCommand {

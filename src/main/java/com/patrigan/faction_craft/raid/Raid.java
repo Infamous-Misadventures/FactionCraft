@@ -8,6 +8,7 @@ import com.patrigan.faction_craft.boost.Boosts;
 import com.patrigan.faction_craft.capabilities.raider.IRaider;
 import com.patrigan.faction_craft.capabilities.raider.RaiderHelper;
 import com.patrigan.faction_craft.capabilities.raidmanager.IRaidManager;
+import com.patrigan.faction_craft.config.FactionCraftConfig;
 import com.patrigan.faction_craft.faction.Faction;
 import com.patrigan.faction_craft.faction.FactionEntityType;
 import com.patrigan.faction_craft.faction.Factions;
@@ -67,7 +68,7 @@ public class Raid {
 
     private int numGroups;
     private int groupsSpawned = 0;
-    private Optional<BlockPos> waveSpawnPos = Optional.empty();
+    private Queue<BlockPos> waveSpawnPos = new LinkedList<>();
 
     private final Map<Integer, MobEntity> groupToLeaderMap = Maps.newHashMap();
     private final Map<Integer, Set<MobEntity>> groupRaiderMap = Maps.newHashMap();
@@ -139,6 +140,17 @@ public class Raid {
         return this.raidTarget.getTargetBlockPos();
     }
 
+    public Collection<Faction> getFactions() {
+        return factions;
+    }
+
+    public void addFactions(Collection<Faction> factions){
+        this.factions.addAll(factions);
+    }
+    public void addFaction(Faction faction){
+        this.factions.add(faction);
+    }
+
     public void tick() {
         if (!this.isStopped()) {
             if (this.status == Status.ONGOING) {
@@ -195,8 +207,9 @@ public class Raid {
                 boolean flag3 = false;
                 int k = 0;
 
+                //Something with waveSpawnPos
                 while(this.shouldSpawnGroup()) {
-                    BlockPos blockpos = this.waveSpawnPos.isPresent() ? this.waveSpawnPos.get() : this.findRandomSpawnPos(k, 20);
+                    BlockPos blockpos = this.waveSpawnPos.isEmpty() ?  this.findRandomSpawnPos(k, 20) : this.waveSpawnPos.poll();
                     if (blockpos != null) {
                         this.started = true;
                         this.spawnGroup(blockpos);
@@ -281,9 +294,10 @@ public class Raid {
                 return true;
             }
         } else {
-            boolean flag1 = this.waveSpawnPos.isPresent();
+            boolean flag1 = this.waveSpawnPos.size() >= factions.size();
             boolean flag2 = !flag1 && this.raidCooldownTicks % 5 == 0;
-            if (flag1 && !this.level.getChunkSource().isEntityTickingChunk(new ChunkPos(this.waveSpawnPos.get()))) {
+            if (flag1 && !this.level.getChunkSource().isEntityTickingChunk(new ChunkPos(this.waveSpawnPos.peek()))) {
+                this.waveSpawnPos.poll();
                 flag2 = true;
             }
 
@@ -295,7 +309,10 @@ public class Raid {
                     j = 2;
                 }
 
-                this.waveSpawnPos = this.getValidSpawnPos(j);
+                Optional<BlockPos> validSpawnPos = this.getValidSpawnPos(j);
+                if(validSpawnPos.isPresent()) {
+                    this.waveSpawnPos.add(validSpawnPos.get());
+                }
             }
 
             if (this.raidCooldownTicks == 300 || this.raidCooldownTicks % 20 == 0) {
@@ -323,7 +340,7 @@ public class Raid {
         Map<Faction, Integer> factionFractions = determineFactionFractions(targetStrength);
         factionFractions.entrySet().forEach(entry -> spawnGroupForFaction(spawnBlockPos, waveNumber, entry.getValue(), entry.getKey()));
 
-        this.waveSpawnPos = Optional.empty();
+        this.waveSpawnPos.clear();
         ++this.groupsSpawned;
         this.updateBossbar();
     }

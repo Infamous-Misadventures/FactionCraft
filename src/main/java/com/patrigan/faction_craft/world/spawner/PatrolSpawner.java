@@ -13,7 +13,6 @@ import net.minecraft.entity.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Difficulty;
-import net.minecraft.world.GameRules;
 import net.minecraft.world.LightType;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.Heightmap;
@@ -67,25 +66,7 @@ public class PatrolSpawner implements ISpecialSpawner {
                               return 0;
                            } else {
                               Faction faction = Factions.getRandomFaction(random);
-                              int i1 = 0;
-                              int j1 = (int)Math.ceil(pLevel.getCurrentDifficultyAt(blockpos$mutable).getEffectiveDifficulty()) + 1;
-
-                              for(int k1 = 0; k1 < j1; ++k1) {
-                                 ++i1;
-                                 blockpos$mutable.setY(pLevel.getHeightmapPos(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, blockpos$mutable).getY());
-                                 if (k1 == 0) {
-                                    if (!this.spawnPatrolMember(pLevel, blockpos$mutable, random, true, faction)) {
-                                       break;
-                                    }
-                                 } else {
-                                    this.spawnPatrolMember(pLevel, blockpos$mutable, random, false, faction);
-                                 }
-
-                                 blockpos$mutable.setX(blockpos$mutable.getX() + random.nextInt(5) - random.nextInt(5));
-                                 blockpos$mutable.setZ(blockpos$mutable.getZ() + random.nextInt(5) - random.nextInt(5));
-                              }
-
-                              return i1;
+                              return spawnPatrol(pLevel, random, faction, blockpos$mutable);
                            }
                         }
                      }
@@ -98,7 +79,30 @@ public class PatrolSpawner implements ISpecialSpawner {
       }
    }
 
-   private boolean spawnPatrolMember(ServerWorld pLevel, BlockPos pPos, Random pRandom, boolean pLeader, Faction faction) {
+   public static int spawnPatrol(ServerWorld pLevel, Random random, Faction faction, BlockPos blockpos) {
+      BlockPos.Mutable mutableBlockPos = blockpos.mutable();
+      int i1 = 0;
+      int j1 = (int)Math.ceil(pLevel.getCurrentDifficultyAt(mutableBlockPos).getEffectiveDifficulty()) + 1;
+
+      for(int k1 = 0; k1 < j1; ++k1) {
+         ++i1;
+         mutableBlockPos.setY(pLevel.getHeightmapPos(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, mutableBlockPos).getY());
+         if (k1 == 0) {
+            if (!spawnPatrolMember(pLevel, mutableBlockPos, random, true, faction)) {
+               break;
+            }
+         } else {
+            spawnPatrolMember(pLevel, mutableBlockPos, random, false, faction);
+         }
+
+         mutableBlockPos.setX(mutableBlockPos.getX() + random.nextInt(5) - random.nextInt(5));
+         mutableBlockPos.setZ(mutableBlockPos.getZ() + random.nextInt(5) - random.nextInt(5));
+      }
+
+      return i1;
+   }
+
+   private static boolean spawnPatrolMember(ServerWorld pLevel, BlockPos pPos, Random pRandom, boolean pLeader, Faction faction) {
       BlockState blockstate = pLevel.getBlockState(pPos);
       List<Pair<FactionEntityType, Integer>> weightMap = faction.getWeightMap();
       FactionEntityType factionEntityType = GeneralUtils.getRandomEntry(weightMap, pRandom);

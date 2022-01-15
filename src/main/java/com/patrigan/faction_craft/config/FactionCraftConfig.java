@@ -10,6 +10,9 @@ import static com.patrigan.faction_craft.FactionCraft.MODID;
 
 public class FactionCraftConfig {
     public static ForgeConfigSpec.ConfigValue<List<String>> DISABLED_FACTIONS;
+
+    public static ForgeConfigSpec.ConfigValue<Boolean> DISABLE_FACTION_RAIDS;
+    public static ForgeConfigSpec.ConfigValue<Integer> RAID_MAX_FACTIONS;
     public static ForgeConfigSpec.ConfigValue<Integer> NUMBER_WAVES_EASY;
     public static ForgeConfigSpec.ConfigValue<Integer> NUMBER_WAVES_NORMAL;
     public static ForgeConfigSpec.ConfigValue<Integer> NUMBER_WAVES_HARD;
@@ -44,6 +47,14 @@ public class FactionCraftConfig {
             builder.pop();
 
             builder.comment("Standard Raid Calculations").push("standard_raid_calculations");
+            DISABLE_FACTION_RAIDS = builder
+                    .comment("Disables faction raids \n" +
+                            "Default false")
+                    .define("disableFactionRaids", false);
+            RAID_MAX_FACTIONS = builder
+                    .comment("The max number of factions that can participate. \n" +
+                            "Roughly corresponds to the max bad omen level in vanilla. Default 5")
+                    .define("numberWavesEasy", 5);
             NUMBER_WAVES_EASY = builder
                     .comment("The number of waves for Easy difficulty. \n" +
                             "Default 2")

@@ -39,9 +39,6 @@ public class FactionBadOmenEffect extends Effect {
                 IRaidManager raidManagerCapability = RaidManagerHelper.getRaidManagerCapability(serverworld);
                 IFactionInteraction factionInteractionCapability = FactionInteractionHelper.getFactionInteractionCapability(player);
                 List<Faction> factions = factionInteractionCapability.getBadOmenFactions();
-                //TODO: Move CreateRaid into RaidManager
-                // Make public CreateOrExtendRaid, requiring the player.
-                // See vanilla RaidManager.createOrExtendRaid
                 raidManagerCapability.createRaid(factions, new VillageRaidTarget(player.blockPosition(), serverworld));
             }
         }

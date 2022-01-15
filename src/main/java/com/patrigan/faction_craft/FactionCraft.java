@@ -5,6 +5,9 @@ import com.patrigan.faction_craft.boost.BoostProviders;
 import com.patrigan.faction_craft.capabilities.appliedboosts.AppliedBoosts;
 import com.patrigan.faction_craft.capabilities.appliedboosts.AppliedBoostsStorage;
 import com.patrigan.faction_craft.capabilities.appliedboosts.IAppliedBoosts;
+import com.patrigan.faction_craft.capabilities.factionentity.FactionEntity;
+import com.patrigan.faction_craft.capabilities.factionentity.FactionEntityStorage;
+import com.patrigan.faction_craft.capabilities.factionentity.IFactionEntity;
 import com.patrigan.faction_craft.capabilities.factioninteraction.FactionInteraction;
 import com.patrigan.faction_craft.capabilities.factioninteraction.FactionInteractionStorage;
 import com.patrigan.faction_craft.capabilities.factioninteraction.IFactionInteraction;
@@ -68,6 +71,7 @@ public class FactionCraft
         CapabilityManager.INSTANCE.register(IRaidManager.class, new RaidManagerStorage(), RaidManager::new);
         CapabilityManager.INSTANCE.register(IRaider.class, new RaiderStorage(), Raider::new);
         CapabilityManager.INSTANCE.register(IPatroller.class, new PatrollerStorage(), Patroller::new);
+        CapabilityManager.INSTANCE.register(IFactionEntity.class, new FactionEntityStorage(), FactionEntity::new);
         CapabilityManager.INSTANCE.register(IAppliedBoosts.class, new AppliedBoostsStorage(), AppliedBoosts::new);
         CapabilityManager.INSTANCE.register(IFactionInteraction.class, new FactionInteractionStorage(), FactionInteraction::new);
         event.enqueueWork(NetworkHandler::init);
