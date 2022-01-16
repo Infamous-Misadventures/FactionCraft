@@ -16,7 +16,7 @@ import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.server.ServerWorld;
 
 public class FactionPatrolCommand {
-    private static final SimpleCommandExceptionType ERROR_START_FAILED = new SimpleCommandExceptionType(new TranslationTextComponent("commands.raid.failed"));
+    private static final SimpleCommandExceptionType ERROR_START_FAILED = new SimpleCommandExceptionType(new TranslationTextComponent("commands.patrol.failed"));
 
     public static void register(CommandDispatcher<CommandSource> dispatcher) {
         LiteralArgumentBuilder<CommandSource> factionRaidCommand
@@ -34,7 +34,7 @@ public class FactionPatrolCommand {
         if (spawns > 0) {
             throw ERROR_START_FAILED.create();
         } else {
-            source.sendSuccess(new TranslationTextComponent("commands.patrol.success", new BlockPos(vector3d), spawns), true);
+            source.sendSuccess(new TranslationTextComponent("commands.patrol.success", spawns, new BlockPos(vector3d)), true);
         }
         return 1;
     }

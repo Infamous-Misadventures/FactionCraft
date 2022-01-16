@@ -173,6 +173,7 @@ public class Raid {
                         net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event);
                         this.status = Status.LOSS;
                         this.playSound(raidTarget.getTargetBlockPos(), factions.get(0).getRaidConfig().getDefeatSoundEvent());
+                        this.raidEvent.setName(this.factions.get(0).getRaidConfig().getRaidBarDefeatComponent());
                     } else {
                         this.stop();
                     }
@@ -239,6 +240,7 @@ public class Raid {
                         FactionRaidEvent.Victory event = new FactionRaidEvent.Victory(this);
                         net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event);
                         this.playSound(raidTarget.getTargetBlockPos(), factions.get(0).getRaidConfig().getVictorySoundEvent());
+                        this.raidEvent.setName(this.factions.get(0).getRaidConfig().getRaidBarVictoryComponent());
 
                         for(UUID uuid : this.heroesOfTheVillage) {
                             Entity entity = this.level.getEntity(uuid);

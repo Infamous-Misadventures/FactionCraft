@@ -39,8 +39,8 @@ public class FactionRaidConfig {
         this.name = name;
         this.victoryAlt = victoryAlt;
         this.defeatAlt = defeatAlt;
-        this.victoryComponent = new TranslationTextComponent(defeatAlt);
-        this.defeatComponent = new TranslationTextComponent(victoryAlt);
+        this.victoryComponent = new TranslationTextComponent(victoryAlt);
+        this.defeatComponent = new TranslationTextComponent(defeatAlt);
         this.raidBarNameComponent = new TranslationTextComponent(name);
         this.raidBarVictoryComponent = raidBarNameComponent.copy().append(" - ").append(victoryComponent);
         this.raidBarDefeatComponent = raidBarNameComponent.copy().append(" - ").append(defeatComponent);
