@@ -1,5 +1,6 @@
-package com.patrigan.faction_craft.raid.target;
+package com.patrigan.faction_craft.event;
 
+import com.patrigan.faction_craft.raid.target.RaidTarget;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.server.ServerWorld;

@@ -1,6 +1,7 @@
 package com.patrigan.faction_craft.raid.target;
 
 import com.patrigan.faction_craft.FactionCraft;
+import com.patrigan.faction_craft.event.CalculateStrengthEvent;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntitySpawnPlacementRegistry;
 import net.minecraft.entity.EntityType;

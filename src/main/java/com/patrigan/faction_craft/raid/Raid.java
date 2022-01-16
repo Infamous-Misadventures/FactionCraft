@@ -6,6 +6,8 @@ import com.mojang.datafixers.util.Pair;
 import com.patrigan.faction_craft.capabilities.raider.IRaider;
 import com.patrigan.faction_craft.capabilities.raider.RaiderHelper;
 import com.patrigan.faction_craft.capabilities.raidmanager.IRaidManager;
+import com.patrigan.faction_craft.event.CalculateStrengthEvent;
+import com.patrigan.faction_craft.event.FactionRaidEvent;
 import com.patrigan.faction_craft.faction.Faction;
 import com.patrigan.faction_craft.faction.FactionBoostHelper;
 import com.patrigan.faction_craft.faction.entity.FactionEntityType;
@@ -46,6 +48,7 @@ import java.util.function.Predicate;
 import static com.patrigan.faction_craft.capabilities.raider.RaiderProvider.RAIDER_CAPABILITY;
 import static com.patrigan.faction_craft.capabilities.raidmanager.RaidManagerHelper.getRaidManagerCapability;
 import static com.patrigan.faction_craft.config.FactionCraftConfig.*;
+import static com.patrigan.faction_craft.raid.target.RaidTarget.Type.VILLAGE;
 import static com.patrigan.faction_craft.util.GeneralUtils.getRandomEntry;
 
 public class Raid {
@@ -166,6 +169,8 @@ public class Raid {
 
                 if (raidTarget.checkLossCondition(level)) {
                     if (this.groupsSpawned > 0) {
+                        FactionRaidEvent.Defeat event = new FactionRaidEvent.Defeat(this);
+                        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event);
                         this.status = Status.LOSS;
                         this.playSound(raidTarget.getTargetBlockPos(), factions.get(0).getRaidConfig().getDefeatSoundEvent());
                     } else {
@@ -211,6 +216,8 @@ public class Raid {
                         this.started = true;
                         this.spawnGroup(blockpos);
                         if (!flag3) {
+                            FactionRaidEvent.Wave event = new FactionRaidEvent.Wave(this);
+                            net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event);
                             this.playSound(blockpos, factions.get(0).getRaidConfig().getWaveSoundEvent());
                             flag3 = true;
                         }
@@ -229,6 +236,8 @@ public class Raid {
                         ++this.postRaidTicks;
                     } else {
                         this.status = Status.VICTORY;
+                        FactionRaidEvent.Victory event = new FactionRaidEvent.Victory(this);
+                        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event);
                         this.playSound(raidTarget.getTargetBlockPos(), factions.get(0).getRaidConfig().getVictorySoundEvent());
 
                         for(UUID uuid : this.heroesOfTheVillage) {
