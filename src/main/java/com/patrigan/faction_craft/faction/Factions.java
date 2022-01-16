@@ -1,6 +1,7 @@
 package com.patrigan.faction_craft.faction;
 
 import com.patrigan.faction_craft.FactionCraft;
+import com.patrigan.faction_craft.boost.Boost;
 import com.patrigan.faction_craft.data.util.MergeableCodecDataManager;
 import com.patrigan.faction_craft.faction.entity.FactionEntityType;
 import com.patrigan.faction_craft.util.GeneralUtils;
@@ -12,6 +13,7 @@ import net.minecraftforge.fml.common.Mod;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.patrigan.faction_craft.config.FactionCraftConfig.DISABLED_FACTIONS;
 
@@ -24,12 +26,14 @@ public class Factions {
         ResourceLocation name = null;
         CompoundNBT banner = null;
         FactionRaidConfig factionRaidConfig = null;
+        FactionBoostConfig boostConfig = null;
         Set<FactionEntityType> entities = new HashSet<>();
         for (Faction raw : raws) {
             if (raw.isReplace()) {
                 banner = raw.getBanner();
                 name = raw.getName();
                 factionRaidConfig = raw.getRaidConfig();
+                boostConfig = null;
                 entities = new HashSet<>();
             }
             if(banner == null){
@@ -41,9 +45,17 @@ public class Factions {
             if(factionRaidConfig == null){
                 factionRaidConfig = raw.getRaidConfig();
             }
+            if(boostConfig == null){
+                boostConfig = raw.getBoostConfig();
+            }else{
+                List<ResourceLocation> mandatoryBoosts = Stream.concat(boostConfig.getMandatoryResourceLocations().stream(), raw.getBoostConfig().getMandatoryResourceLocations().stream()).collect(Collectors.toList());
+                List<ResourceLocation> whitelistBoosts = Stream.concat(boostConfig.getWhitelistResourceLocations().stream(), raw.getBoostConfig().getWhitelistResourceLocations().stream()).collect(Collectors.toList());
+                List<ResourceLocation> blacklistBoosts = Stream.concat(boostConfig.getBlacklistResourceLocations().stream(), raw.getBoostConfig().getBlacklistResourceLocations().stream()).collect(Collectors.toList());
+                boostConfig = new FactionBoostConfig(boostConfig.getBoostDistributionType(), mandatoryBoosts, whitelistBoosts, blacklistBoosts);
+            }
             entities.addAll(raw.getEntityTypes());
         }
-        return new Faction(name,false, banner, factionRaidConfig, new ArrayList<>(entities));
+        return new Faction(name,false, banner, factionRaidConfig, boostConfig, new ArrayList<>(entities));
     }
 
 
