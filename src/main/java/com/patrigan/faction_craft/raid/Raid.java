@@ -342,9 +342,11 @@ public class Raid {
         this.totalHealth = 0.0F;
 
         float waveMultiplier = STARTING_WAVE_MULTIPLIER.get() + (this.groupsSpawned * MULTIPLIER_INCREASE_PER_WAVE.get());
-        float spreadMultiplier = (level.random.nextFloat()*WAVE_TARGET_STRENGTH_SPREAD.get()*2)+1.0F-WAVE_TARGET_STRENGTH_SPREAD.get();
-        float difficultyMultiplier = getDifficultyMultiplier(level.getDifficulty());
-        int targetStrength = (int) Math.floor(raidTarget.getTargetStrength() * waveMultiplier * spreadMultiplier * difficultyMultiplier);
+        float spreadMultiplier = ((level.random.nextFloat()*2)-1)*WAVE_TARGET_STRENGTH_SPREAD.get();
+        float difficultyMultiplier = getDifficultyMultiplier(level.getDifficulty()) - 1.0F;
+        float badOmenMultiplier = MULTIPLIER_INCREASE_PER_BAD_OMEN.get() * (factions.size()-1);
+        float totalMultiplier = waveMultiplier + spreadMultiplier + difficultyMultiplier + badOmenMultiplier;
+        int targetStrength = (int) Math.floor(raidTarget.getTargetStrength() * totalMultiplier);
         Map<Faction, Integer> factionFractions = determineFactionFractions(targetStrength);
         factionFractions.entrySet().forEach(entry -> spawnGroupForFaction(spawnBlockPos, waveNumber, entry.getValue(), entry.getKey()));
 
