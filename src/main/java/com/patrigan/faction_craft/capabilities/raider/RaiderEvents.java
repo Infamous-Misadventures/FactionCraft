@@ -44,7 +44,6 @@ public class RaiderEvents {
                     }
                     raid.removeFromRaid(mobEntity, false);
                 }
-                //TODO: Add Bad Omen effect.
             });
         }
     }

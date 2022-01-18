@@ -8,7 +8,6 @@ import com.patrigan.faction_craft.faction.Faction;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.MobEntity;
-import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.server.ServerWorld;
 
@@ -99,8 +98,7 @@ public class FactionEntityType {
             faction.getBoostConfig().getMandatoryBoosts().forEach(boost -> boost.apply(mobEntity));
             entityBoostConfig.getMandatoryBoosts().forEach(boost -> boost.apply(mobEntity));
             if(bannerHolder){
-                mobEntity.setItemSlot(EquipmentSlotType.HEAD, faction.getBannerInstance());
-                mobEntity.setDropChance(EquipmentSlotType.HEAD, 2.0F);
+                faction.makeBannerHolder(mobEntity);
             }
             FactionEntityHelper.getFactionEntityCapabilityLazy(mobEntity).ifPresent(cap -> cap.setFaction(faction));
         }

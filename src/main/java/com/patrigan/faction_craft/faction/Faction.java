@@ -4,6 +4,8 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.patrigan.faction_craft.faction.entity.FactionEntityType;
+import net.minecraft.entity.MobEntity;
+import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
@@ -75,5 +77,10 @@ public class Faction {
     public ItemStack getBannerInstance() {
         ItemStack itemstack = ItemStack.of(banner);
         return itemstack;
+    }
+
+    public void makeBannerHolder(MobEntity mobEntity) {
+        mobEntity.setItemSlot(EquipmentSlotType.HEAD, getBannerInstance());
+        mobEntity.setDropChance(EquipmentSlotType.HEAD, 2.0F);
     }
 }

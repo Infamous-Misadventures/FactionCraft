@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.mojang.datafixers.util.Pair;
 import com.patrigan.faction_craft.capabilities.raider.IRaider;
+import com.patrigan.faction_craft.capabilities.raider.Raider;
 import com.patrigan.faction_craft.capabilities.raider.RaiderHelper;
 import com.patrigan.faction_craft.capabilities.raidmanager.IRaidManager;
 import com.patrigan.faction_craft.event.CalculateStrengthEvent;
@@ -14,6 +15,7 @@ import com.patrigan.faction_craft.faction.entity.FactionEntityType;
 import com.patrigan.faction_craft.faction.Factions;
 import com.patrigan.faction_craft.raid.target.RaidTarget;
 import com.patrigan.faction_craft.raid.target.RaidTargetHelper;
+import com.patrigan.faction_craft.util.GeneralUtils;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.entity.*;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -44,6 +46,7 @@ import net.minecraftforge.common.util.LazyOptional;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import static com.patrigan.faction_craft.capabilities.raider.RaiderProvider.RAIDER_CAPABILITY;
 import static com.patrigan.faction_craft.capabilities.raidmanager.RaidManagerHelper.getRaidManagerCapability;
@@ -369,7 +372,6 @@ public class Raid {
         Map<FactionEntityType, Integer> waveFactionEntities = determineMobs(mobsFraction, waveNumber, faction);
         Map<FactionEntityType, List<MobEntity>> entities = new HashMap<>();
         // Collect Entities
-        //TODO: Determine Leader!
         for (Map.Entry<FactionEntityType, Integer> entry : waveFactionEntities.entrySet()) {
             FactionEntityType factionEntityType = entry.getKey();
             Integer amount = entry.getValue();
@@ -383,6 +385,14 @@ public class Raid {
         }
         // Apply Boosts
         waveStrength += FactionBoostHelper.applyBoosts(targetStrength-waveStrength, entities, faction, this.level);
+
+        List<MobEntity> captainEntities = entities.entrySet().stream().filter(entry -> entry.getKey().canBeCaptain()).flatMap(entry -> entry.getValue().stream()).collect(Collectors.toList());
+        MobEntity randomItem = GeneralUtils.getRandomItem(captainEntities, level.getRandom());
+        if(randomItem != null) {
+            faction.makeBannerHolder(randomItem);
+            IRaider raiderCapability = RaiderHelper.getRaiderCapability(randomItem);
+            raiderCapability.setWaveLeader(true);
+        }
 
         //Add to Raid
         entities.entrySet().stream().flatMap(factionEntityListEntry -> factionEntityListEntry.getValue().stream()).forEach(raiderEntity -> this.joinRaid(waveNumber, raiderEntity, spawnBlockPos, false));
@@ -497,7 +507,7 @@ public class Raid {
 
             for(MobEntity mobEntity : set1) {
                 BlockPos blockpos = mobEntity.blockPosition();
-                if (!mobEntity.removed && mobEntity.level.dimension() == this.level.dimension() && !(this.getCenter().distSqr(blockpos) >= 12544.0D)) {
+                if (mobEntity.isAlive() && mobEntity.level.dimension() == this.level.dimension() && !(this.getCenter().distSqr(blockpos) >= 12544.0D)) {
                     if (mobEntity.tickCount > 600) {
                         IRaider raiderCapability = RaiderHelper.getRaiderCapability(mobEntity);
                         if (this.level.getEntity(mobEntity.getUUID()) == null) {
@@ -519,7 +529,7 @@ public class Raid {
         }
 
         for(MobEntity abstractraiderentity1 : set) {
-            this.removeFromRaid(abstractraiderentity1, true); //TODO: RaiderCapability: Remove From Raid
+            this.removeFromRaid(abstractraiderentity1, true);
         }
     }
 
