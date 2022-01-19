@@ -9,6 +9,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.server.ServerWorld;
 
 import java.util.Arrays;
@@ -90,9 +91,13 @@ public class FactionEntityType {
         return false;
     }
 
-    public Entity createEntity(ServerWorld level, Faction faction, boolean bannerHolder) {
+    public Entity createEntity(ServerWorld level, Faction faction, BlockPos spawnBlockPos, boolean bannerHolder) {
         EntityType<?> entityType = ENTITIES.getValue(this.getEntityType());
         Entity entity =  entityType.create(level);
+        if(entity == null){
+            return null;
+        }
+        entity.setPos(spawnBlockPos.getX() + 0.5D, spawnBlockPos.getY() + 1.0D, spawnBlockPos.getZ() + 0.5D);
         if(entity instanceof MobEntity){
             MobEntity mobEntity = (MobEntity) entity;
             faction.getBoostConfig().getMandatoryBoosts().forEach(boost -> boost.apply(mobEntity));

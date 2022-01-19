@@ -4,10 +4,8 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.mojang.datafixers.util.Pair;
 import com.patrigan.faction_craft.capabilities.raider.IRaider;
-import com.patrigan.faction_craft.capabilities.raider.Raider;
 import com.patrigan.faction_craft.capabilities.raider.RaiderHelper;
 import com.patrigan.faction_craft.capabilities.raidmanager.IRaidManager;
-import com.patrigan.faction_craft.event.CalculateStrengthEvent;
 import com.patrigan.faction_craft.event.FactionRaidEvent;
 import com.patrigan.faction_craft.faction.Faction;
 import com.patrigan.faction_craft.faction.FactionBoostHelper;
@@ -29,7 +27,6 @@ import net.minecraft.stats.Stats;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
-import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
@@ -51,7 +48,6 @@ import java.util.stream.Collectors;
 import static com.patrigan.faction_craft.capabilities.raider.RaiderProvider.RAIDER_CAPABILITY;
 import static com.patrigan.faction_craft.capabilities.raidmanager.RaidManagerHelper.getRaidManagerCapability;
 import static com.patrigan.faction_craft.config.FactionCraftConfig.*;
-import static com.patrigan.faction_craft.raid.target.RaidTarget.Type.VILLAGE;
 import static com.patrigan.faction_craft.util.GeneralUtils.getRandomEntry;
 
 public class Raid {
@@ -376,7 +372,7 @@ public class Raid {
             FactionEntityType factionEntityType = entry.getKey();
             Integer amount = entry.getValue();
             for (int i = 0; i <amount; i++) {
-                Entity entity = factionEntityType.createEntity(level, faction, false);
+                Entity entity = factionEntityType.createEntity(level, faction, spawnBlockPos, false);
                 if(entity instanceof MobEntity) {
                     entities.computeIfAbsent(factionEntityType, key -> new ArrayList<>()).add((MobEntity) entity);
                     waveStrength += factionEntityType.getStrength();
@@ -431,7 +427,7 @@ public class Raid {
         this.groupToLeaderMap.remove(wave);
     }
 
-    public void joinRaid(int pWave, MobEntity mobEntity, BlockPos spawnBlockPos, boolean p_221317_4_) {
+    public void joinRaid(int pWave, MobEntity mobEntity, BlockPos spawnBlockPos, boolean spawned) {
         boolean flag = this.addWaveMob(pWave, mobEntity, true);
         if (flag) {
             LazyOptional<IRaider> raiderCapabilityLazy = RaiderHelper.getRaiderCapabilityLazy(mobEntity);
@@ -441,11 +437,10 @@ public class Raid {
                 iRaider.setWave(pWave);
                 iRaider.setCanJoinRaid(true);
                 iRaider.setTicksOutsideRaid(0);
-                if (!p_221317_4_ && spawnBlockPos != null) {
-                    mobEntity.setPos((double) spawnBlockPos.getX() + 0.5D, (double) spawnBlockPos.getY() + 1.0D, (double) spawnBlockPos.getZ() + 0.5D);
+                if (!spawned) {
                     mobEntity.finalizeSpawn(this.level, this.level.getCurrentDifficultyAt(spawnBlockPos), SpawnReason.EVENT, (ILivingEntityData) null, (CompoundNBT) null);
                     mobEntity.setOnGround(true);
-                    this.level.addFreshEntityWithPassengers(mobEntity);
+                    this.level.addFreshEntityWithPassengers(mobEntity.getRootVehicle());
                 }
             }
         }
@@ -634,6 +629,10 @@ public class Raid {
         return this.groupRaiderMap.values().stream().mapToInt(Set::size).sum();
     }
 
+    public Set<MobEntity> getRaidersInWave(int wave) {
+        return this.groupRaiderMap.get(wave);
+    }
+
     public void stop() {
         this.active = false;
         this.raidEvent.removeAllPlayers();
@@ -676,7 +675,7 @@ public class Raid {
     public boolean isOver() {
         return this.isVictory() || this.isLoss();
     }
-    
+
     private enum Status {
         ONGOING,
         VICTORY,

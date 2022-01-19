@@ -1,0 +1,7 @@
+{
+  "type": "faction_craft:mount_boost",
+  "mount": "minecraft:skeleton_horse",
+  "taken_from_raid": false,
+  "strength_adjustment": 1.0,
+  "rarity": "none"
+}

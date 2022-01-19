@@ -112,7 +112,7 @@ public class PatrolSpawner implements ISpecialSpawner {
       } else if (!(pLevel.getBrightness(LightType.BLOCK, pPos) <= 8 && pLevel.getDifficulty() != Difficulty.PEACEFUL && MobEntity.checkMobSpawnRules(entityType, pLevel, SpawnReason.PATROL, pPos, pRandom))) {
          return false;
       } else {
-         MobEntity entity = (MobEntity) factionEntityType.createEntity(pLevel, faction, pLeader);
+         MobEntity entity = (MobEntity) factionEntityType.createEntity(pLevel, faction, pPos, pLeader);
          if (entity != null) {
             IPatroller patrollerCap = PatrollerHelper.getPatrollerCapability(entity);
             if (pLeader) {
@@ -120,10 +120,9 @@ public class PatrolSpawner implements ISpecialSpawner {
                patrollerCap.findPatrolTarget();
             }
             patrollerCap.setPatrolling(true);
-            entity.setPos(pPos.getX(), pPos.getY(), pPos.getZ());
             if(net.minecraftforge.common.ForgeHooks.canEntitySpawn(entity, pLevel, pPos.getX(), pPos.getY(), pPos.getZ(), null, SpawnReason.PATROL) == -1) return false;
             entity.finalizeSpawn(pLevel, pLevel.getCurrentDifficultyAt(pPos), SpawnReason.PATROL, null, null);
-            pLevel.addFreshEntityWithPassengers(entity);
+            pLevel.addFreshEntityWithPassengers(entity.getRootVehicle());
             return true;
          } else {
             return false;

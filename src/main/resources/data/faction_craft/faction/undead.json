@@ -22,7 +22,7 @@
       "maximum_rank": "leader",
       "minimum_wave": 1,
       "boosts": {
-        "mandatory": ["minecraft:special/leather_daylight_protection"]
+        "mandatory": ["minecraft:mount/skeleton_horse", "minecraft:special/leather_daylight_protection"]
       }
     },
     {
@@ -45,12 +45,15 @@
       }
     },
     {
-      "entity_type": "minecraft:wither_skeleton",
+      "entity_type": "minecraft:skeleton",
       "weight": 30,
       "strength": 3,
       "rank": "captain",
       "maximum_rank": "leader",
-      "minimum_wave": 4
+      "minimum_wave": 2,
+      "boosts": {
+        "mandatory": ["minecraft:mount/skeleton_horse", "minecraft:special/leather_daylight_protection"]
+      }
     }
   ]
 }
