@@ -1,6 +1,5 @@
 package com.patrigan.faction_craft.capabilities.patroller;
 
-import com.patrigan.faction_craft.capabilities.factionentity.FactionEntity;
 import com.patrigan.faction_craft.capabilities.factionentity.FactionEntityHelper;
 import com.patrigan.faction_craft.capabilities.factionentity.IFactionEntity;
 import com.patrigan.faction_craft.capabilities.factioninteraction.FactionInteractionHelper;
