@@ -1,0 +1,11 @@
+{
+  "type":"faction_craft:wear_hands_boost",
+  "item":
+    {
+      "id": "minecraft:diamond_axe",
+      "Count": 1
+    },
+  "strength_adjustment": 1,
+  "boost_type":"mainhand",
+  "rarity": "very_rare"
+}

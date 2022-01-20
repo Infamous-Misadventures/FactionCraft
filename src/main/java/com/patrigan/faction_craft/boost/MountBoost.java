@@ -84,8 +84,7 @@ public class MountBoost extends Boost {
                     return strengthAdjustment;
                 }
             }
-        }
-        if(livingEntity.level instanceof ServerWorld) {
+        }else if(livingEntity.level instanceof ServerWorld) {
             ServerWorld level = (ServerWorld) livingEntity.level;
             Entity mount = ENTITIES.getValue(entityTypeLocation).create(level);
             if (mount != null) {

@@ -22,6 +22,7 @@ import net.minecraft.world.spawner.WorldEntitySpawner;
 
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import static net.minecraftforge.registries.ForgeRegistries.ENTITIES;
 
@@ -105,7 +106,8 @@ public class PatrolSpawner implements ISpecialSpawner {
    private static boolean spawnPatrolMember(ServerWorld pLevel, BlockPos pPos, Random pRandom, boolean pLeader, Faction faction) {
       BlockState blockstate = pLevel.getBlockState(pPos);
       List<Pair<FactionEntityType, Integer>> weightMap = faction.getWeightMap();
-      FactionEntityType factionEntityType = GeneralUtils.getRandomEntry(weightMap, pRandom);
+      List<Pair<FactionEntityType, Integer>> filtered = weightMap.stream().filter(pair -> (pLeader && pair.getFirst().canBeCaptain()) || (!pLeader && pair.getFirst().getRank().equals(FactionEntityType.FactionRank.SOLDIER))).collect(Collectors.toList());
+      FactionEntityType factionEntityType = GeneralUtils.getRandomEntry(filtered, pRandom);
       EntityType<? extends MobEntity> entityType = (EntityType<? extends MobEntity>) ENTITIES.getValue(factionEntityType.getEntityType());
       if (!WorldEntitySpawner.isValidEmptySpawnBlock(pLevel, pPos, blockstate, blockstate.getFluidState(), entityType)) {
          return false;
