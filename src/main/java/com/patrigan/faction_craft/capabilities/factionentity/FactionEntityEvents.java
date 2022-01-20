@@ -17,7 +17,7 @@ public class FactionEntityEvents {
         if(!livingEntity.level.isClientSide() && event.getEntityLiving() instanceof MobEntity && event.getSource().getEntity() instanceof MobEntity) {
             IFactionEntity targetCap = FactionEntityHelper.getFactionEntityCapability((MobEntity) event.getEntityLiving());
             IFactionEntity sourceCap = FactionEntityHelper.getFactionEntityCapability((MobEntity) event.getSource().getEntity());
-            if(targetCap.getFaction() == sourceCap.getFaction()){
+            if(targetCap.getFaction() != null && targetCap.getFaction() == sourceCap.getFaction()){
                 event.setCanceled(true);
             }
         }
