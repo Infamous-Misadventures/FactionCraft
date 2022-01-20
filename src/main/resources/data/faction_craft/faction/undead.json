@@ -22,7 +22,7 @@
       "maximum_rank": "leader",
       "minimum_wave": 1,
       "boosts": {
-        "mandatory": ["minecraft:mount/skeleton_horse", "minecraft:special/leather_daylight_protection"]
+        "mandatory": ["minecraft:special/leather_daylight_protection"]
       }
     },
     {
@@ -50,7 +50,7 @@
       "strength": 3,
       "rank": "captain",
       "maximum_rank": "leader",
-      "minimum_wave": 2,
+      "minimum_wave": 3,
       "boosts": {
         "mandatory": ["minecraft:mount/skeleton_horse", "minecraft:special/leather_daylight_protection"]
       }

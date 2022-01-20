@@ -18,7 +18,9 @@ import net.minecraft.entity.ai.brain.schedule.Activity;
 import net.minecraft.entity.ai.brain.task.*;
 import net.minecraft.entity.merchant.villager.VillagerEntity;
 import net.minecraft.entity.merchant.villager.VillagerProfession;
+import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -27,6 +29,11 @@ import static com.patrigan.faction_craft.FactionCraft.MODID;
 
 @Mod.EventBusSubscriber(modid = MODID)
 public class EntityAIEvents {
+
+//    @SubscribeEvent
+//    public static void onLivingEntityUpdate(LivingEvent.LivingUpdateEvent event){
+//
+//    }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void onEntityJoinWorld(EntityJoinWorldEvent event){
