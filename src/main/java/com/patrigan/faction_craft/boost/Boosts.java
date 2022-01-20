@@ -55,7 +55,7 @@ public class Boosts {
         return GeneralUtils.getRandomItem(filtered, random);
     }
 
-    public static Boost getRandomBoostForEntity(Random random, LivingEntity livingEntity, List<Boost> whitelist, List<Boost> blacklist) {
+    public static Boost getRandomBoostForEntity(Random random, LivingEntity livingEntity, List<Boost> whitelist, List<Boost> blacklist, Map<Boost, Boost.Rarity> rarityOverrides) {
         if(BOOSTS.data.size() == 0){
             return null;
         }
@@ -65,11 +65,19 @@ public class Boosts {
         }
         IAppliedBoosts cap = lazyCap.resolve().get();
         List<Pair<Boost, Integer>> filtered = BOOSTS.data.values().stream()
-                .filter(boost -> (whitelist.isEmpty() && boost.getRarity().getWeight() > 0) || whitelist.contains(boost))
+                .filter(boost -> (whitelist.isEmpty() && getRarity(boost, rarityOverrides).equals(Boost.Rarity.NONE)) || whitelist.contains(boost))
                 .filter(boost -> !blacklist.contains(boost))
                 .filter(boost -> cap.getBoostsOfType(boost.getType()).size() < boost.getType().getMax())
-                .map(boost -> new Pair<>(boost, boost.getRarity().getWeight()))
+                .map(boost -> new Pair<>(boost, getRarity(boost, rarityOverrides).getWeight()))
                 .collect(Collectors.toList());
         return GeneralUtils.getRandomEntry(filtered, random);
+    }
+
+    private static Boost.Rarity getRarity(Boost boost, Map<Boost, Boost.Rarity> rarityOverrides){
+        if(rarityOverrides.containsKey(boost)){
+            return rarityOverrides.get(boost);
+        }else{
+            return boost.getRarity();
+        }
     }
 }

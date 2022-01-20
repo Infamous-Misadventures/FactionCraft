@@ -58,7 +58,7 @@ public class FactionBoostHelper {
                 break;
             }
             MobEntity randomEntity = entities.get(randomFactionEntityType).get(0);
-            Boost boost = Boosts.getRandomBoostForEntity(random, randomEntity, getWhitelistBoosts(faction, randomFactionEntityType), getBlacklistBoosts(faction, randomFactionEntityType));
+            Boost boost = Boosts.getRandomBoostForEntity(random, randomEntity, getWhitelistBoosts(faction, randomFactionEntityType), getBlacklistBoosts(faction, randomFactionEntityType), getRarityOverrides(faction, randomFactionEntityType));
             if(boost == null){
                 break;
             }
@@ -76,7 +76,7 @@ public class FactionBoostHelper {
         while(appliedStrength < targetStrength) {
             FactionEntityType randomFactionEntityType = getRandomItem(new ArrayList<>(entities.keySet()), random);
             MobEntity randomEntity = getRandomItem(entities.get(randomFactionEntityType), random);
-            Boost boost = Boosts.getRandomBoostForEntity(random, randomEntity, getWhitelistBoosts(faction, randomFactionEntityType), getBlacklistBoosts(faction, randomFactionEntityType));
+            Boost boost = Boosts.getRandomBoostForEntity(random, randomEntity, getWhitelistBoosts(faction, randomFactionEntityType), getBlacklistBoosts(faction, randomFactionEntityType), getRarityOverrides(faction, randomFactionEntityType));
             if(boost == null){
                 break;
             }
@@ -97,5 +97,12 @@ public class FactionBoostHelper {
         resultList.addAll(faction.getBoostConfig().getBlacklistBoosts());
         resultList.addAll(factionEntityType.getBoostConfig().getBlacklistBoosts());
         return resultList;
+    }
+
+    public static Map<Boost, Boost.Rarity> getRarityOverrides(Faction faction, FactionEntityType factionEntityType){
+        Map<Boost, Boost.Rarity> resultMap = new HashMap<>();
+        resultMap.putAll(faction.getBoostConfig().getRarityOverrides());
+        resultMap.putAll(factionEntityType.getBoostConfig().getRarityOverrides());
+        return resultMap;
     }
 }
