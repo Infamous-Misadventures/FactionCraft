@@ -1,5 +1,6 @@
 package com.patrigan.faction_craft.faction;
 
+import com.mojang.datafixers.util.Pair;
 import com.patrigan.faction_craft.FactionCraft;
 import com.patrigan.faction_craft.boost.Boost;
 import com.patrigan.faction_craft.data.util.MergeableCodecDataManager;
@@ -51,7 +52,8 @@ public class Factions {
                 List<ResourceLocation> mandatoryBoosts = Stream.concat(boostConfig.getMandatoryResourceLocations().stream(), raw.getBoostConfig().getMandatoryResourceLocations().stream()).collect(Collectors.toList());
                 List<ResourceLocation> whitelistBoosts = Stream.concat(boostConfig.getWhitelistResourceLocations().stream(), raw.getBoostConfig().getWhitelistResourceLocations().stream()).collect(Collectors.toList());
                 List<ResourceLocation> blacklistBoosts = Stream.concat(boostConfig.getBlacklistResourceLocations().stream(), raw.getBoostConfig().getBlacklistResourceLocations().stream()).collect(Collectors.toList());
-                boostConfig = new FactionBoostConfig(boostConfig.getBoostDistributionType(), mandatoryBoosts, whitelistBoosts, blacklistBoosts);
+                List<Pair<ResourceLocation, Boost.Rarity>> rarityOverridesLocations = Stream.concat(boostConfig.getRarityOverridesLocations().stream(), raw.getBoostConfig().getRarityOverridesLocations().stream()).collect(Collectors.toList());
+                boostConfig = new FactionBoostConfig(boostConfig.getBoostDistributionType(), mandatoryBoosts, whitelistBoosts, blacklistBoosts, rarityOverridesLocations);
             }
             entities.addAll(raw.getEntityTypes());
         }

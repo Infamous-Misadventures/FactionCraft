@@ -65,7 +65,7 @@ public class Boosts {
         }
         IAppliedBoosts cap = lazyCap.resolve().get();
         List<Pair<Boost, Integer>> filtered = BOOSTS.data.values().stream()
-                .filter(boost -> (whitelist.isEmpty() && getRarity(boost, rarityOverrides).equals(Boost.Rarity.NONE)) || whitelist.contains(boost))
+                .filter(boost -> (whitelist.isEmpty() && !getRarity(boost, rarityOverrides).equals(Boost.Rarity.NONE)) || whitelist.contains(boost))
                 .filter(boost -> !blacklist.contains(boost))
                 .filter(boost -> cap.getBoostsOfType(boost.getType()).size() < boost.getType().getMax())
                 .map(boost -> new Pair<>(boost, getRarity(boost, rarityOverrides).getWeight()))

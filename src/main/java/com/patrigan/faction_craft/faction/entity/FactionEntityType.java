@@ -5,15 +5,15 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.patrigan.faction_craft.capabilities.factionentity.FactionEntityHelper;
 import com.patrigan.faction_craft.faction.Faction;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.MobEntity;
+import net.minecraft.entity.*;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.server.ServerWorld;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static net.minecraftforge.registries.ForgeRegistries.ENTITIES;
 
@@ -21,6 +21,7 @@ public class FactionEntityType {
     public static final Codec<FactionEntityType> CODEC = RecordCodecBuilder.create(builder ->
             builder.group(
                     ResourceLocation.CODEC.fieldOf("entity_type").forGetter(data -> data.entityType),
+                    CompoundNBT.CODEC.optionalFieldOf("tag", new CompoundNBT()).forGetter(data -> data.tag),
                     Codec.INT.fieldOf("weight").forGetter(data -> data.weight),
                     Codec.INT.fieldOf("strength").forGetter(data -> data.strength),
                     FactionRank.CODEC.fieldOf("rank").forGetter(data -> data.rank),
@@ -30,6 +31,7 @@ public class FactionEntityType {
                     ).apply(builder, FactionEntityType::new));
 
     private final ResourceLocation entityType;
+    private final CompoundNBT tag;
     private final int weight;
     private final int strength;
     private final FactionRank rank;
@@ -37,8 +39,9 @@ public class FactionEntityType {
     private final EntityBoostConfig entityBoostConfig;
     private final int minimumWave;
 
-    public FactionEntityType(ResourceLocation entityType, int weight, int strength, FactionRank rank, FactionRank maximumRank, EntityBoostConfig entityBoostConfig, int minimumWave) {
+    public FactionEntityType(ResourceLocation entityType, CompoundNBT tag, int weight, int strength, FactionRank rank, FactionRank maximumRank, EntityBoostConfig entityBoostConfig, int minimumWave) {
         this.entityType = entityType;
+        this.tag = tag;
         this.weight = weight;
         this.strength = strength;
         this.rank = rank;
@@ -49,6 +52,10 @@ public class FactionEntityType {
 
     public ResourceLocation getEntityType() {
         return entityType;
+    }
+
+    public CompoundNBT getTag() {
+        return tag;
     }
 
     public int getWeight() {
@@ -91,22 +98,39 @@ public class FactionEntityType {
         return false;
     }
 
-    public Entity createEntity(ServerWorld level, Faction faction, BlockPos spawnBlockPos, boolean bannerHolder) {
+
+    //See and use SummonCommand approach for tag and add to the world
+    public Entity createEntity(ServerWorld level, Faction faction, BlockPos spawnBlockPos, boolean bannerHolder, SpawnReason spawnReason) {
         EntityType<?> entityType = ENTITIES.getValue(this.getEntityType());
-        Entity entity =  entityType.create(level);
+        Entity entity =  null;
+        if(!this.getTag().isEmpty()) {
+            CompoundNBT compoundnbt = this.getTag().copy();
+            compoundnbt.putString("id", this.getEntityType().toString());
+            entity = EntityType.loadEntityRecursive(compoundnbt, level, createdEntity -> {
+                createdEntity.moveTo(spawnBlockPos.getX() + 0.5D, spawnBlockPos.getY() + 1.0D, spawnBlockPos.getZ() + 0.5D, createdEntity.yRot, createdEntity.xRot);
+                return createdEntity;
+            });
+        }else{
+            entity = entityType.create(level);
+            entity.setPos(spawnBlockPos.getX() + 0.5D, spawnBlockPos.getY() + 1.0D, spawnBlockPos.getZ() + 0.5D);
+        }
         if(entity == null){
             return null;
         }
-        entity.setPos(spawnBlockPos.getX() + 0.5D, spawnBlockPos.getY() + 1.0D, spawnBlockPos.getZ() + 0.5D);
         if(entity instanceof MobEntity){
             MobEntity mobEntity = (MobEntity) entity;
-            faction.getBoostConfig().getMandatoryBoosts().forEach(boost -> boost.apply(mobEntity));
-            entityBoostConfig.getMandatoryBoosts().forEach(boost -> boost.apply(mobEntity));
             if(bannerHolder){
                 faction.makeBannerHolder(mobEntity);
             }
             FactionEntityHelper.getFactionEntityCapabilityLazy(mobEntity).ifPresent(cap -> cap.setFaction(faction));
+            if (net.minecraftforge.common.ForgeHooks.canEntitySpawn(mobEntity, level, spawnBlockPos.getX(), spawnBlockPos.getY(), spawnBlockPos.getZ(), null, spawnReason) == -1)
+                return null;
+            if(this.tag.isEmpty()) {
+                mobEntity.finalizeSpawn(level, level.getCurrentDifficultyAt(spawnBlockPos), SpawnReason.EVENT, null, null);
+            }
+            mobEntity.setOnGround(true);
         }
+        level.addFreshEntityWithPassengers(entity.getRootVehicle());
         return entity;
     }
 

@@ -103,6 +103,7 @@ public class PatrolSpawner implements ISpecialSpawner {
       return i1;
    }
 
+   //TODO: Completely add entity to the world, do not trigger mandatory boosts
    private static boolean spawnPatrolMember(ServerWorld pLevel, BlockPos pPos, Random pRandom, boolean pLeader, Faction faction) {
       BlockState blockstate = pLevel.getBlockState(pPos);
       List<Pair<FactionEntityType, Integer>> weightMap = faction.getWeightMap();
@@ -114,7 +115,7 @@ public class PatrolSpawner implements ISpecialSpawner {
       } else if (!(pLevel.getBrightness(LightType.BLOCK, pPos) <= 8 && pLevel.getDifficulty() != Difficulty.PEACEFUL && MobEntity.checkMobSpawnRules(entityType, pLevel, SpawnReason.PATROL, pPos, pRandom))) {
          return false;
       } else {
-         MobEntity entity = (MobEntity) factionEntityType.createEntity(pLevel, faction, pPos, pLeader);
+         MobEntity entity = (MobEntity) factionEntityType.createEntity(pLevel, faction, pPos, pLeader, SpawnReason.PATROL);
          if (entity != null) {
             IPatroller patrollerCap = PatrollerHelper.getPatrollerCapability(entity);
             if (pLeader) {
@@ -122,9 +123,6 @@ public class PatrolSpawner implements ISpecialSpawner {
                patrollerCap.findPatrolTarget();
             }
             patrollerCap.setPatrolling(true);
-            if(net.minecraftforge.common.ForgeHooks.canEntitySpawn(entity, pLevel, pPos.getX(), pPos.getY(), pPos.getZ(), null, SpawnReason.PATROL) == -1) return false;
-            entity.finalizeSpawn(pLevel, pLevel.getCurrentDifficultyAt(pPos), SpawnReason.PATROL, null, null);
-            pLevel.addFreshEntityWithPassengers(entity.getRootVehicle());
             return true;
          } else {
             return false;

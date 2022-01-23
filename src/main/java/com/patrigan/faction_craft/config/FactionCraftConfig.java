@@ -17,7 +17,7 @@ public class FactionCraftConfig {
     public static ForgeConfigSpec.ConfigValue<Integer> NUMBER_WAVES_EASY;
     public static ForgeConfigSpec.ConfigValue<Integer> NUMBER_WAVES_NORMAL;
     public static ForgeConfigSpec.ConfigValue<Integer> NUMBER_WAVES_HARD;
-    public static ForgeConfigSpec.ConfigValue<Float> STARTING_WAVE_MULTIPLIER;
+    public static ForgeConfigSpec.ConfigValue<Float> BASE_WAVE_MULTIPLIER;
     public static ForgeConfigSpec.ConfigValue<Float> MULTIPLIER_INCREASE_PER_WAVE;
     public static ForgeConfigSpec.ConfigValue<Float> MULTIPLIER_INCREASE_PER_BAD_OMEN;
     public static ForgeConfigSpec.ConfigValue<Float> WAVE_TARGET_STRENGTH_SPREAD;
@@ -69,10 +69,10 @@ public class FactionCraftConfig {
                     .comment("The number of waves for Hard difficulty. \n" +
                             "Default 6")
                     .define("numberWavesHard", 6);
-            STARTING_WAVE_MULTIPLIER = builder
+            BASE_WAVE_MULTIPLIER = builder
                     .comment("The multiplier for the target strength for the first wave. \n" +
                             "1.0 disables Starting wave multiplier. Default 0.5")
-                    .define("startingWaveMultiplier", 0.5F);
+                    .define("baseWaveMultiplier", 0.6F);
             MULTIPLIER_INCREASE_PER_WAVE = builder
                     .comment("The amount the multiplier for the target strength increases per wave. \n" +
                             "0.0 removes target growth per wave. Default 0.15")

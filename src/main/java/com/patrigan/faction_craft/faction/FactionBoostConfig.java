@@ -24,7 +24,7 @@ public class FactionBoostConfig {
                     ResourceLocation.CODEC.listOf().optionalFieldOf("mandatory", new ArrayList<>()).forGetter(FactionBoostConfig::getMandatoryResourceLocations),
                     ResourceLocation.CODEC.listOf().optionalFieldOf("whitelist", new ArrayList<>()).forGetter(FactionBoostConfig::getWhitelistResourceLocations),
                     ResourceLocation.CODEC.listOf().optionalFieldOf("blacklist", new ArrayList<>()).forGetter(FactionBoostConfig::getBlacklistResourceLocations),
-                    Codec.mapPair(ResourceLocation.CODEC.fieldOf("boost"), Boost.Rarity.CODEC.fieldOf("rarity")).codec().listOf().fieldOf("rarity_overrides").forGetter(FactionBoostConfig::getRarityOverridesLocations)
+                    Codec.mapPair(ResourceLocation.CODEC.fieldOf("boost"), Boost.Rarity.CODEC.fieldOf("rarity")).codec().listOf().optionalFieldOf("rarity_overrides", new ArrayList<>()).forGetter(FactionBoostConfig::getRarityOverridesLocations)
             ).apply(builder, FactionBoostConfig::new));
 
     private final BoostDistributionType boostDistributionType;
@@ -74,7 +74,8 @@ public class FactionBoostConfig {
     }
 
     public Map<Boost, Boost.Rarity> getRarityOverrides() {
-        return rarityOverridesLocations.stream().collect(Collectors.toMap(pair -> Boosts.getBoost(pair.getFirst()), Pair::getSecond));
+        return rarityOverridesLocations.stream()
+                .collect(Collectors.toMap(pair -> Boosts.getBoost(pair.getFirst()), Pair::getSecond, (rarity1, rarity2) -> rarity2));
     }
 
 

@@ -75,9 +75,9 @@ public class MountBoost extends Boost {
         if(livingEntity instanceof MobEntity){
             MobEntity mob = (MobEntity) livingEntity;
             IRaider raiderCap = RaiderHelper.getRaiderCapability(mob);
-            if(takenFromRaid && raiderCap.hasActiveRaid()){
+            if(takenFromRaid && raiderCap != null && raiderCap.hasActiveRaid()){
                 Set<MobEntity> raidersInWave = raiderCap.getRaid().getRaidersInWave(raiderCap.getWave());
-                Optional<MobEntity> mount = raidersInWave.stream().filter(mobEntity -> mobEntity.getType().getRegistryName().equals(entityTypeLocation) && mobEntity.getPassengers().isEmpty()).findFirst();
+                Optional<MobEntity> mount = raidersInWave.stream().filter(mobEntity -> !mobEntity.is(livingEntity)).filter(mobEntity -> entityTypeLocation.equals(mobEntity.getType().getRegistryName()) && mobEntity.getPassengers().isEmpty()).findFirst();
                 if(mount.isPresent()){
                     mob.startRiding(mount.get());
                     super.apply(livingEntity);

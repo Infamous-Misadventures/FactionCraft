@@ -9,7 +9,15 @@
       "strength": 1,
       "rank": "soldier",
       "maximum_rank": "general",
-      "minimum_wave": 1
+      "minimum_wave": 1,
+      "boosts": {
+        "rarity_overrides": [
+          {
+            "boost": "minecraft:mount/ravager",
+            "rarity": "uncommon"
+          }
+        ]
+      }
     },
     {
       "entity_type": "minecraft:vindicator",
@@ -22,10 +30,18 @@
     {
       "entity_type": "minecraft:evoker",
       "weight": 40,
-      "strength": 3,
+      "strength": 4,
       "rank": "captain",
       "maximum_rank": "leader",
-      "minimum_wave": 5
+      "minimum_wave": 5,
+      "boosts": {
+        "rarity_overrides": [
+          {
+            "boost": "minecraft:mount/ravager",
+            "rarity": "uncommon"
+          }
+        ]
+      }
     },
     {
       "entity_type": "minecraft:witch",
@@ -33,12 +49,20 @@
       "strength": 3,
       "rank": "captain",
       "maximum_rank": "leader",
-      "minimum_wave": 4
+      "minimum_wave": 4,
+      "boosts": {
+        "rarity_overrides": [
+          {
+            "boost": "minecraft:mount/ravager",
+            "rarity": "uncommon"
+          }
+        ]
+      }
     },
     {
       "entity_type": "minecraft:ravager",
       "weight": 10,
-      "strength": 4,
+      "strength": 5,
       "rank": "support",
       "maximum_rank": "support",
       "minimum_wave": 4

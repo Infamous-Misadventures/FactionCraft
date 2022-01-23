@@ -340,7 +340,7 @@ public class Raid {
         int waveNumber = this.groupsSpawned + 1;
         this.totalHealth = 0.0F;
 
-        float waveMultiplier = STARTING_WAVE_MULTIPLIER.get() + (this.groupsSpawned * MULTIPLIER_INCREASE_PER_WAVE.get());
+        float waveMultiplier = BASE_WAVE_MULTIPLIER.get() + (this.groupsSpawned * MULTIPLIER_INCREASE_PER_WAVE.get());
         float spreadMultiplier = ((level.random.nextFloat()*2)-1)*WAVE_TARGET_STRENGTH_SPREAD.get();
         float difficultyMultiplier = getDifficultyMultiplier(level.getDifficulty()) - 1.0F;
         float badOmenMultiplier = MULTIPLIER_INCREASE_PER_BAD_OMEN.get() * (factions.size()-1);
@@ -361,6 +361,7 @@ public class Raid {
         return factionFractions;
     }
 
+    //TODO: Completely add entity to the world first, and then trigger mandatory boosts
     private void spawnGroupForFaction(BlockPos spawnBlockPos, int waveNumber, int targetStrength, Faction faction) {
         int mobsFraction = (int) Math.floor(targetStrength * faction.getRaidConfig().getMobsFraction());
 
@@ -372,11 +373,17 @@ public class Raid {
             FactionEntityType factionEntityType = entry.getKey();
             Integer amount = entry.getValue();
             for (int i = 0; i <amount; i++) {
-                Entity entity = factionEntityType.createEntity(level, faction, spawnBlockPos, false);
+                Entity entity = factionEntityType.createEntity(level, faction, spawnBlockPos, false, SpawnReason.PATROL);
                 if(entity instanceof MobEntity) {
-                    entities.computeIfAbsent(factionEntityType, key -> new ArrayList<>()).add((MobEntity) entity);
+                    MobEntity mobEntity = (MobEntity) entity;
+                    //Add to Raid
+                    this.joinRaid(waveNumber, mobEntity, spawnBlockPos, false);
+                    entities.computeIfAbsent(factionEntityType, key -> new ArrayList<>()).add(mobEntity);
                     waveStrength += factionEntityType.getStrength();
+                    faction.getBoostConfig().getMandatoryBoosts().forEach(boost -> boost.apply(mobEntity));
+                    factionEntityType.getBoostConfig().getMandatoryBoosts().forEach(boost -> boost.apply(mobEntity));
                 }
+
             }
         }
         // Apply Boosts
@@ -389,9 +396,6 @@ public class Raid {
             IRaider raiderCapability = RaiderHelper.getRaiderCapability(randomItem);
             raiderCapability.setWaveLeader(true);
         }
-
-        //Add to Raid
-        entities.entrySet().stream().flatMap(factionEntityListEntry -> factionEntityListEntry.getValue().stream()).forEach(raiderEntity -> this.joinRaid(waveNumber, raiderEntity, spawnBlockPos, false));
     }
 
     private Map<FactionEntityType, Integer> determineMobs(int targetStrength, int waveNumber, Faction faction) {
@@ -437,11 +441,6 @@ public class Raid {
                 iRaider.setWave(pWave);
                 iRaider.setCanJoinRaid(true);
                 iRaider.setTicksOutsideRaid(0);
-                if (!spawned) {
-                    mobEntity.finalizeSpawn(this.level, this.level.getCurrentDifficultyAt(spawnBlockPos), SpawnReason.EVENT, (ILivingEntityData) null, (CompoundNBT) null);
-                    mobEntity.setOnGround(true);
-                    this.level.addFreshEntityWithPassengers(mobEntity.getRootVehicle());
-                }
             }
         }
     }
