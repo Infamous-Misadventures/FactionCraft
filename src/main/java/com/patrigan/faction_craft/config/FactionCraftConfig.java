@@ -30,6 +30,8 @@ public class FactionCraftConfig {
     public static ForgeConfigSpec.ConfigValue<Integer> VILLAGE_RAID_VILLAGER_WEIGHT;
     public static ForgeConfigSpec.ConfigValue<Integer> VILLAGE_RAID_IRON_GOLEM_WEIGHT;
 
+    public static ForgeConfigSpec.ConfigValue<Float> PLAYER_RAID_TARGET_STRENGTH_MULTIPLIER;
+
     public static ForgeConfigSpec.ConfigValue<Boolean> DISABLE_FACTION_PATROLS;
     public static ForgeConfigSpec.ConfigValue<Boolean> DISABLE_VANILLA_PATROLS;
     public static ForgeConfigSpec.ConfigValue<Long> DAYTIME_BEFORE_SPAWNING;
@@ -87,16 +89,16 @@ public class FactionCraftConfig {
                     .define("waveTargetStrengthSpread", 0.1F);
             TARGET_STRENGTH_DIFFICULTY_MULTIPLIER_EASY = builder
                     .comment("The multiplier applied to target strength for Easy difficulty. \n" +
-                            "1.0 disables difficulty based multipliers. Default 0.9")
-                    .define("targetStrengthDifficultyMultiplierEasy", 0.9F);
+                            "0.0 disables difficulty based multipliers. Default -0.1")
+                    .define("targetStrengthDifficultyMultiplierEasy", -0.1F);
             TARGET_STRENGTH_DIFFICULTY_MULTIPLIER_NORMAL = builder
                     .comment("The multiplier applied to target strength for Normal difficulty. \n" +
-                            "1.0 disables difficulty based multipliers. Default 1.0")
-                    .define("targetStrengthDifficultyMultiplierNormal", 1.0F);
+                            "0.0 disables difficulty based multipliers. Default 0.0")
+                    .define("targetStrengthDifficultyMultiplierNormal", 0.0F);
             TARGET_STRENGTH_DIFFICULTY_MULTIPLIER_HARD = builder
                     .comment("The multiplier applied to target strength for Hard difficulty. \n" +
-                            "1.0 disables difficulty based multipliers. Default 1.1")
-                    .define("targetStrengthDifficultyMultiplierHard", 1.1F);
+                            "0.0 disables difficulty based multipliers. Default 1.1")
+                    .define("targetStrengthDifficultyMultiplierHard", 0.1F);
 
             builder.pop();
 
@@ -119,6 +121,13 @@ public class FactionCraftConfig {
                     .comment("The amount that 1 Iron Golem adds to the strength of a village. \n" +
                             "Default 2")
                     .define("villageRaidIronGolemWeight", 2);
+            builder.pop();
+
+            builder.comment("Player Raid Target Calculations").push("player_raid_target_calculations");
+            PLAYER_RAID_TARGET_STRENGTH_MULTIPLIER = builder
+                    .comment("Applied to the target strength of the player \n" +
+                            "Multiplies the target strength and rounds down. Default 1.0F")
+                    .define("playerRaidTargetStrengthMultiplier", 1.0F);
             builder.pop();
 
             builder.comment("Patroller Config").push("patroller_config");

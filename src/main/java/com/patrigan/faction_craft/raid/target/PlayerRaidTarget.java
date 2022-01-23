@@ -12,8 +12,8 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.spawner.WorldEntitySpawner;
 
+import static com.patrigan.faction_craft.config.FactionCraftConfig.PLAYER_RAID_TARGET_STRENGTH_MULTIPLIER;
 import static com.patrigan.faction_craft.config.FactionCraftConfig.VILLAGE_RAID_ADDITIONAL_WAVE_CHANCE;
-import static com.patrigan.faction_craft.config.FactionCraftConfig.VILLAGE_RAID_TARGET_STRENGTH_MULTIPLIER;
 import static com.patrigan.faction_craft.raid.target.RaidTarget.Type.PLAYER;
 import static com.patrigan.faction_craft.raid.target.RaidTarget.Type.VILLAGE;
 
@@ -33,7 +33,7 @@ public class PlayerRaidTarget implements RaidTarget {
         CalculateStrengthEvent event = new CalculateStrengthEvent.Player(PLAYER, player, level, strength, strength);
         net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event);
         FactionCraft.LOGGER.info("Strength = " + strength);
-        return (int) Math.floor(event.getStrength()*VILLAGE_RAID_TARGET_STRENGTH_MULTIPLIER.get());
+        return (int) Math.floor(event.getStrength()*PLAYER_RAID_TARGET_STRENGTH_MULTIPLIER.get());
     }
 
     public PlayerRaidTarget(ServerPlayerEntity player, int targetStrength) {

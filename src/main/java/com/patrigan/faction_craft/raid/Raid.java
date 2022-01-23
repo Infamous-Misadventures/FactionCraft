@@ -342,7 +342,7 @@ public class Raid {
 
         float waveMultiplier = BASE_WAVE_MULTIPLIER.get() + (this.groupsSpawned * MULTIPLIER_INCREASE_PER_WAVE.get());
         float spreadMultiplier = ((level.random.nextFloat()*2)-1)*WAVE_TARGET_STRENGTH_SPREAD.get();
-        float difficultyMultiplier = getDifficultyMultiplier(level.getDifficulty()) - 1.0F;
+        float difficultyMultiplier = getDifficultyMultiplier(level.getDifficulty());
         float badOmenMultiplier = MULTIPLIER_INCREASE_PER_BAD_OMEN.get() * (factions.size()-1);
         float totalMultiplier = waveMultiplier + spreadMultiplier + difficultyMultiplier + badOmenMultiplier;
         int targetStrength = (int) Math.floor(raidTarget.getTargetStrength() * totalMultiplier);
