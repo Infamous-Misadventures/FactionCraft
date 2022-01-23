@@ -8,7 +8,7 @@ import net.minecraft.world.server.ServerWorld;
 public class RaidTargetHelper {
 
     public static RaidTarget load(ServerWorld level, CompoundNBT compoundNBT){
-        RaidTarget.Type type = RaidTarget.Type.getByName(compoundNBT.getString("Type"));
+        RaidTarget.Type type = RaidTarget.Type.byName(compoundNBT.getString("Type"), RaidTarget.Type.VILLAGE);
         if (type == RaidTarget.Type.VILLAGE) {
             return loadVillageRaidTarget(compoundNBT);
         }else if(type == RaidTarget.Type.PLAYER){

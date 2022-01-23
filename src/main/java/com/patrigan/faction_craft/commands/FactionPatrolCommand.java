@@ -9,7 +9,10 @@ import com.patrigan.faction_craft.faction.Faction;
 import com.patrigan.faction_craft.world.spawner.PatrolSpawner;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
+import net.minecraft.command.arguments.BlockPosArgument;
+import net.minecraft.command.arguments.EntityArgument;
 import net.minecraft.command.arguments.Vec3Argument;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -22,19 +25,25 @@ public class FactionPatrolCommand {
         LiteralArgumentBuilder<CommandSource> factionRaidCommand
                 = Commands.literal("factionpatrol")
                 .requires((commandSource) -> commandSource.hasPermission(2))
-                .then(Commands.argument("pos", Vec3Argument.vec3()).then(Commands.argument("faction", FactionArgument.factions())
-                        .executes((sourceCommandContext) -> spawnPatrol(sourceCommandContext.getSource(), Vec3Argument.getVec3(sourceCommandContext, "pos"), FactionArgument.getFaction(sourceCommandContext, "faction")))));
+                .then(Commands.argument("faction", FactionArgument.factions()).then(Commands.argument("pos", BlockPosArgument.blockPos())
+                    .executes((sourceCommandContext) -> spawnPatrol(sourceCommandContext.getSource(), FactionArgument.getFaction(sourceCommandContext, "faction"), BlockPosArgument.getLoadedBlockPos(sourceCommandContext, "pos"))))
+                .then(Commands.argument("player", EntityArgument.player())
+                    .executes((sourceCommandContext) -> spawnPatrol(sourceCommandContext.getSource(), FactionArgument.getFaction(sourceCommandContext, "faction"), EntityArgument.getPlayer(sourceCommandContext, "player")))));
 
         dispatcher.register(factionRaidCommand);
     }
 
-    private static int spawnPatrol(CommandSource source, Vector3d vector3d, Faction faction) throws CommandSyntaxException {
+    private static int spawnPatrol(CommandSource source, Faction faction, ServerPlayerEntity player) throws CommandSyntaxException {
+        return spawnPatrol(source, faction, player.blockPosition());
+    }
+
+    private static int spawnPatrol(CommandSource source, Faction faction, BlockPos blockPos) throws CommandSyntaxException {
         ServerWorld level = source.getLevel();
-        int spawns = PatrolSpawner.spawnPatrol(level, level.getRandom(), faction, new BlockPos(vector3d));
-        if (spawns > 0) {
+        int spawns = PatrolSpawner.spawnPatrol(level, level.getRandom(), faction, blockPos);
+        if (spawns < 0) {
             throw ERROR_START_FAILED.create();
         } else {
-            source.sendSuccess(new TranslationTextComponent("commands.patrol.success", spawns, new BlockPos(vector3d)), true);
+            source.sendSuccess(new TranslationTextComponent("commands.patrol.success", spawns, blockPos), true);
         }
         return 1;
     }
