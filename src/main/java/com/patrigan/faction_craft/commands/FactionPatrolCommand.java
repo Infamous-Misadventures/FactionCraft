@@ -24,13 +24,20 @@ public class FactionPatrolCommand {
     public static void register(CommandDispatcher<CommandSource> dispatcher) {
         LiteralArgumentBuilder<CommandSource> factionRaidCommand
                 = Commands.literal("factionpatrol")
-                .requires((commandSource) -> commandSource.hasPermission(2))
-                .then(Commands.argument("faction", FactionArgument.factions()).then(Commands.argument("pos", BlockPosArgument.blockPos())
-                    .executes((sourceCommandContext) -> spawnPatrol(sourceCommandContext.getSource(), FactionArgument.getFaction(sourceCommandContext, "faction"), BlockPosArgument.getLoadedBlockPos(sourceCommandContext, "pos"))))
-                .then(Commands.argument("player", EntityArgument.player())
-                    .executes((sourceCommandContext) -> spawnPatrol(sourceCommandContext.getSource(), FactionArgument.getFaction(sourceCommandContext, "faction"), EntityArgument.getPlayer(sourceCommandContext, "player")))));
+                .requires(commandSource -> commandSource.hasPermission(2))
+                .then(Commands.argument("faction", FactionArgument.factions()).executes(sourceCommandContext ->
+                    spawnPatrol(sourceCommandContext.getSource(), FactionArgument.getFaction(sourceCommandContext, "faction"))
+                ).then(Commands.argument("location", BlockPosArgument.blockPos()).executes(sourceCommandContext ->
+                    spawnPatrol(sourceCommandContext.getSource(), FactionArgument.getFaction(sourceCommandContext, "faction"), BlockPosArgument.getLoadedBlockPos(sourceCommandContext, "location"))))
+                .then(Commands.argument("player", EntityArgument.player()).executes(sourceCommandContext ->
+                        spawnPatrol(sourceCommandContext.getSource(), FactionArgument.getFaction(sourceCommandContext, "faction"), EntityArgument.getPlayer(sourceCommandContext, "player")))));
 
         dispatcher.register(factionRaidCommand);
+    }
+
+    private static int spawnPatrol(CommandSource source, Faction faction) throws CommandSyntaxException {
+        ServerPlayerEntity player = source.getPlayerOrException();
+        return spawnPatrol(source, faction, player.blockPosition());
     }
 
     private static int spawnPatrol(CommandSource source, Faction faction, ServerPlayerEntity player) throws CommandSyntaxException {

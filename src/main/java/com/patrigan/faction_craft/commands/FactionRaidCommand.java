@@ -31,14 +31,14 @@ public class FactionRaidCommand {
                 .requires(commandSource -> commandSource.hasPermission(2))
                 .then(Commands.literal("start").then(Commands.argument("faction", FactionArgument.factions()).then(Commands.literal("village").executes(sourceCommandContext ->
                     startVillageRaid(sourceCommandContext.getSource(), FactionArgument.getFaction(sourceCommandContext, "faction"))
-                ).then(Commands.argument("targetLocation", BlockPosArgument.blockPos()).executes(sourceCommandContext ->
-                    startVillageRaid(sourceCommandContext.getSource(), FactionArgument.getFaction(sourceCommandContext, "faction"), BlockPosArgument.getLoadedBlockPos(sourceCommandContext, "targetLocation"))
-                )).then(Commands.argument("targetPlayer", EntityArgument.player()).executes(sourceCommandContext ->
-                    startVillageRaid(sourceCommandContext.getSource(), FactionArgument.getFaction(sourceCommandContext, "faction"), EntityArgument.getPlayer(sourceCommandContext, "targetPlayer"))
+                ).then(Commands.argument("location", BlockPosArgument.blockPos()).executes(sourceCommandContext ->
+                    startVillageRaid(sourceCommandContext.getSource(), FactionArgument.getFaction(sourceCommandContext, "faction"), BlockPosArgument.getLoadedBlockPos(sourceCommandContext, "location"))
+                )).then(Commands.argument("player", EntityArgument.player()).executes(sourceCommandContext ->
+                    startVillageRaid(sourceCommandContext.getSource(), FactionArgument.getFaction(sourceCommandContext, "faction"), EntityArgument.getPlayer(sourceCommandContext, "player"))
                 ))).then(Commands.literal("player").executes(sourceCommandContext ->
                     startPlayerRaid(sourceCommandContext.getSource(), FactionArgument.getFaction(sourceCommandContext, "faction"))
-                ).then(Commands.argument("targetPlayer", EntityArgument.player()).executes(sourceCommandContext ->
-                    startPlayerRaid(sourceCommandContext.getSource(), FactionArgument.getFaction(sourceCommandContext, "faction"), EntityArgument.getPlayer(sourceCommandContext, "targetPlayer"))
+                ).then(Commands.argument("player", EntityArgument.player()).executes(sourceCommandContext ->
+                    startPlayerRaid(sourceCommandContext.getSource(), FactionArgument.getFaction(sourceCommandContext, "faction"), EntityArgument.getPlayer(sourceCommandContext, "player"))
                 )))));
         dispatcher.register(factionRaidCommand);
     }
