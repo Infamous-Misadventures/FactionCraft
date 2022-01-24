@@ -26,32 +26,16 @@ public class CalculateStrengthEvent extends Event {
         return type;
     }
 
-    public void setType(RaidTarget.Type type) {
-        this.type = type;
-    }
-
     public BlockPos getBlockPos() {
         return blockPos;
-    }
-
-    public void setBlockPos(BlockPos blockPos) {
-        this.blockPos = blockPos;
     }
 
     public ServerWorld getLevel() {
         return level;
     }
 
-    public void setLevel(ServerWorld level) {
-        this.level = level;
-    }
-
     public int getOriginalStrength() {
         return originalStrength;
-    }
-
-    public void setOriginalStrength(int originalStrength) {
-        this.originalStrength = originalStrength;
     }
 
     public int getStrength() {
