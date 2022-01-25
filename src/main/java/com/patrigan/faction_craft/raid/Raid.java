@@ -508,11 +508,11 @@ public class Raid {
                             set.add(mobEntity);
                         }
 
-                        if (!this.level.isVillage(blockpos) && mobEntity.getNoActionTime() > 2400) {
+                        if (mobEntity.getNoActionTime() > 2400) {
                             raiderCapability.setTicksOutsideRaid(raiderCapability.getTicksOutsideRaid() + 1); //TODO: RaiderCapability: TickOutsideRaid
                         }
 
-                        if (raiderCapability.getTicksOutsideRaid() >= 30) {
+                        if(raiderCapability.getTicksOutsideRaid() >= 30) {
                             set.add(mobEntity);
                         }
                     }

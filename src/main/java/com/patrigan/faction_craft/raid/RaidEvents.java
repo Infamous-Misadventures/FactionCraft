@@ -1,4 +1,4 @@
-package com.patrigan.faction_craft.faction;
+package com.patrigan.faction_craft.raid;
 
 import com.patrigan.faction_craft.capabilities.raidmanager.IRaidManager;
 import net.minecraftforge.event.TickEvent;

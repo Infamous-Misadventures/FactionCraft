@@ -28,6 +28,7 @@ public class Factions {
         CompoundNBT banner = null;
         FactionRaidConfig factionRaidConfig = null;
         FactionBoostConfig boostConfig = null;
+        FactionRelations factionRelations = null;
         Set<FactionEntityType> entities = new HashSet<>();
         for (Faction raw : raws) {
             if (raw.isReplace()) {
@@ -35,6 +36,7 @@ public class Factions {
                 name = raw.getName();
                 factionRaidConfig = raw.getRaidConfig();
                 boostConfig = null;
+                factionRelations = null;
                 entities = new HashSet<>();
             }
             if(banner == null){
@@ -55,9 +57,16 @@ public class Factions {
                 List<Pair<ResourceLocation, Boost.Rarity>> rarityOverridesLocations = Stream.concat(boostConfig.getRarityOverridesLocations().stream(), raw.getBoostConfig().getRarityOverridesLocations().stream()).collect(Collectors.toList());
                 boostConfig = new FactionBoostConfig(boostConfig.getBoostDistributionType(), mandatoryBoosts, whitelistBoosts, blacklistBoosts, rarityOverridesLocations);
             }
+            if(factionRelations == null){
+                factionRelations = raw.getRelations();
+            }else{
+                List<ResourceLocation> allies = Stream.concat(factionRelations.getAllies().stream(), raw.getRelations().getAllies().stream()).collect(Collectors.toList());
+                List<ResourceLocation> enemies = Stream.concat(factionRelations.getEnemies().stream(), raw.getRelations().getEnemies().stream()).collect(Collectors.toList());
+                factionRelations = new FactionRelations(allies, enemies);
+            }
             entities.addAll(raw.getEntityTypes());
         }
-        return new Faction(name,false, banner, factionRaidConfig, boostConfig, new ArrayList<>(entities));
+        return new Faction(name,false, banner, factionRaidConfig, boostConfig, factionRelations, new ArrayList<>(entities));
     }
 
 

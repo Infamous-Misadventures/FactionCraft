@@ -48,16 +48,16 @@ public class RaiderEvents {
         }
     }
 
-    @SubscribeEvent
-    public static void onAllowDespawn(LivingSpawnEvent.AllowDespawn event){
-        LivingEntity livingEntity = event.getEntityLiving();
-        if(!livingEntity.level.isClientSide() && livingEntity instanceof MobEntity) {
-            MobEntity mobEntity = (MobEntity) livingEntity;
-            RaiderHelper.getRaiderCapabilityLazy(mobEntity).ifPresent(cap -> {
-                if (cap.hasActiveRaid()) {
-                    event.setResult(Event.Result.DENY);
-                }
-            });
-        }
-    }
+//    @SubscribeEvent
+//    public static void onAllowDespawn(LivingSpawnEvent.AllowDespawn event){
+//        LivingEntity livingEntity = event.getEntityLiving();
+//        if(!livingEntity.level.isClientSide() && livingEntity instanceof MobEntity) {
+//            MobEntity mobEntity = (MobEntity) livingEntity;
+//            RaiderHelper.getRaiderCapabilityLazy(mobEntity).ifPresent(cap -> {
+//                if (cap.hasActiveRaid()) {
+//                    event.setResult(Event.Result.DENY);
+//                }
+//            });
+//        }
+//    }
 }

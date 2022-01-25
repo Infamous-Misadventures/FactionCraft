@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class Faction {
-    public static final Faction DEFAULT = new Faction(new ResourceLocation("faction/default"), false, new CompoundNBT(), FactionRaidConfig.DEFAULT, FactionBoostConfig.DEFAULT, Collections.emptyList());
+    public static final Faction DEFAULT = new Faction(new ResourceLocation("faction/default"), false, new CompoundNBT(), FactionRaidConfig.DEFAULT, FactionBoostConfig.DEFAULT, FactionRelations.DEFAULT, Collections.emptyList());
 
     public static final Codec<Faction> CODEC = RecordCodecBuilder.create(builder ->
             builder.group(
@@ -24,6 +24,7 @@ public class Faction {
                     CompoundNBT.CODEC.fieldOf("banner").forGetter(Faction::getBanner),
                     FactionRaidConfig.CODEC.optionalFieldOf("raid_config", FactionRaidConfig.DEFAULT).forGetter(Faction::getRaidConfig),
                     FactionBoostConfig.CODEC.optionalFieldOf("boosts", FactionBoostConfig.DEFAULT).forGetter(Faction::getBoostConfig),
+                    FactionRelations.CODEC.optionalFieldOf("relations", FactionRelations.DEFAULT).forGetter(Faction::getRelations),
                     FactionEntityType.CODEC.listOf().fieldOf("entities").forGetter(Faction::getEntityTypes)
             ).apply(builder, Faction::new));
 
@@ -32,14 +33,16 @@ public class Faction {
     private final CompoundNBT banner;
     private final FactionRaidConfig raidConfig;
     private final FactionBoostConfig boostConfig;
+    private final FactionRelations relations;
     private final List<FactionEntityType> entityTypes;
 
-    public Faction(ResourceLocation name, boolean replace, CompoundNBT banner, FactionRaidConfig raidConfig, FactionBoostConfig boostConfig, List<FactionEntityType> entityTypes) {
+    public Faction(ResourceLocation name, boolean replace, CompoundNBT banner, FactionRaidConfig raidConfig, FactionBoostConfig boostConfig, FactionRelations relations, List<FactionEntityType> entityTypes) {
         this.name = name;
         this.replace = replace;
         this.banner = banner;
         this.raidConfig = raidConfig;
         this.boostConfig = boostConfig;
+        this.relations = relations;
         this.entityTypes = entityTypes;
     }
 
@@ -61,6 +64,10 @@ public class Faction {
 
     public FactionBoostConfig getBoostConfig() {
         return boostConfig;
+    }
+
+    public FactionRelations getRelations() {
+        return relations;
     }
 
     public List<FactionEntityType> getEntityTypes() {
