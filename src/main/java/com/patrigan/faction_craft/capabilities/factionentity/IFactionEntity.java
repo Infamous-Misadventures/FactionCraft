@@ -4,6 +4,7 @@ import com.patrigan.faction_craft.faction.Faction;
 import com.patrigan.faction_craft.raid.Raid;
 import net.minecraft.nbt.CompoundNBT;
 
+//TODO: add the FactionEntityType to this.
 public interface IFactionEntity {
 
     Faction getFaction();

@@ -217,14 +217,18 @@ public class Raid {
 
                 //Something with waveSpawnPos
                 while(this.shouldSpawnGroup()) {
-                    BlockPos blockpos = this.waveSpawnPos.isEmpty() ?  this.findRandomSpawnPos(k, 20) : this.waveSpawnPos.poll();
-                    if (blockpos != null) {
+                    for (int j = this.waveSpawnPos.size(); j < factions.size(); j++) {
+                        BlockPos randomSpawnPos = this.findRandomSpawnPos(k, 20);
+                        if(randomSpawnPos != null){
+                            this.waveSpawnPos.add(randomSpawnPos);
+                        }
+                    }
+                    if (this.waveSpawnPos.size() >= factions.size()) {
                         this.started = true;
-                        this.spawnGroup(blockpos);
+                        this.spawnGroup();
                         if (!flag3) {
                             FactionRaidEvent.Wave event = new FactionRaidEvent.Wave(this);
                             net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event);
-                            this.playSound(blockpos, factions.get(0).getRaidConfig().getWaveSoundEvent());
                             flag3 = true;
                         }
                     } else {
@@ -342,7 +346,7 @@ public class Raid {
         return this.raidCooldownTicks == 0 && (this.groupsSpawned < this.numGroups) && this.getTotalRaidersAlive() == 0;
     }
 
-    private void spawnGroup(BlockPos spawnBlockPos) {
+    private void spawnGroup() {
         int waveNumber = this.groupsSpawned + 1;
         this.totalHealth = 0.0F;
 
@@ -353,7 +357,7 @@ public class Raid {
         float totalMultiplier = waveMultiplier + spreadMultiplier + difficultyMultiplier + badOmenMultiplier;
         int targetStrength = (int) Math.floor(raidTarget.getTargetStrength() * totalMultiplier);
         Map<Faction, Integer> factionFractions = determineFactionFractions(targetStrength);
-        factionFractions.entrySet().forEach(entry -> spawnGroupForFaction(spawnBlockPos, waveNumber, entry.getValue(), entry.getKey()));
+        factionFractions.entrySet().forEach(entry -> spawnGroupForFaction(this.waveSpawnPos.poll(), waveNumber, entry.getValue(), entry.getKey()));
 
         this.waveSpawnPos.clear();
         ++this.groupsSpawned;
@@ -401,6 +405,7 @@ public class Raid {
             IRaider raiderCapability = RaiderHelper.getRaiderCapability(randomItem);
             raiderCapability.setWaveLeader(true);
         }
+        this.playSound(spawnBlockPos, factions.get(0).getRaidConfig().getWaveSoundEvent());
     }
 
     private Map<FactionEntityType, Integer> determineMobs(int targetStrength, int waveNumber, Faction faction) {
@@ -564,12 +569,16 @@ public class Raid {
             int l = this.raidTarget.getTargetBlockPos().getZ() + MathHelper.floor(MathHelper.sin(f) * 32.0F * (float)i) + this.level.random.nextInt(5);
             int k = this.level.getHeight(Heightmap.Type.WORLD_SURFACE, j, l);
             blockpos$mutable.set(j, k, l);
-            if (raidTarget.isValidSpawnPos(outerAttempt, blockpos$mutable, this.level)) {
+            if (isValidSpawnPos(blockpos$mutable) && raidTarget.isValidSpawnPos(outerAttempt, blockpos$mutable, this.level)) {
                 return blockpos$mutable;
             }
         }
 
         return null;
+    }
+
+    private boolean isValidSpawnPos(BlockPos.Mutable blockpos$mutable){
+        return this.waveSpawnPos.stream().map(existingWaveSpawnPos -> blockpos$mutable.distSqr(existingWaveSpawnPos) > 40).reduce((aBoolean, aBoolean2) -> aBoolean && aBoolean2).orElse(true);
     }
 
     public int getNumGroups(Difficulty difficulty, RaidTarget raidTarget) {

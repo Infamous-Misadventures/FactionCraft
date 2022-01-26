@@ -122,7 +122,6 @@ public class FactionEntityType {
             if(bannerHolder){
                 faction.makeBannerHolder(mobEntity);
             }
-            FactionEntityHelper.getFactionEntityCapabilityLazy(mobEntity).ifPresent(cap -> cap.setFaction(faction));
             if (net.minecraftforge.common.ForgeHooks.canEntitySpawn(mobEntity, level, spawnBlockPos.getX(), spawnBlockPos.getY(), spawnBlockPos.getZ(), null, spawnReason) == -1)
                 return null;
             if(this.tag.isEmpty()) {
@@ -130,6 +129,8 @@ public class FactionEntityType {
             }
             mobEntity.setOnGround(true);
         }
+        entity.getRootVehicle().getSelfAndPassengers().forEach(stackedEntity -> {if(stackedEntity instanceof MobEntity) FactionEntityHelper.getFactionEntityCapabilityLazy((MobEntity) stackedEntity).ifPresent(cap -> cap.setFaction(faction));});
+
         level.addFreshEntityWithPassengers(entity.getRootVehicle());
         return entity;
     }

@@ -5,5 +5,8 @@
   "commands.raid.success": "Spawned a raid at %s",
   "commands.batle.failed": "Could not spawn a batle",
   "commands.battle.success": "Spawned a battle between %s and %s at %s",
-  "effect.faction_craft.faction_bad_omen": "Bad Omen"
+  "effect.faction_craft.faction_bad_omen": "Bad Omen",
+  "event.faction_craft.battle": "Faction Battle",
+  "event.faction_craft.battle.over": "Faction Battle ended"
+
 }
