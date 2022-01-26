@@ -478,33 +478,29 @@ public class Raid {
         return true;
     }
 
-    public void removeFromRaid(MobEntity mobEntity, boolean p_221322_2_) {
-        LazyOptional<IRaider> raiderCapabilityLazy = RaiderHelper.getRaiderCapabilityLazy(mobEntity);
-        if(raiderCapabilityLazy.isPresent()) {
-            IRaider iRaider = raiderCapabilityLazy.orElseGet(RAIDER_CAPABILITY::getDefaultInstance);
-            Set<MobEntity> set = this.groupRaiderMap.get(iRaider.getWave());
-            if (set != null) {
-                boolean flag = set.remove(mobEntity);
-                if (flag) {
-                    if (p_221322_2_) {
-                        this.totalHealth -= mobEntity.getHealth();
-                    }
-
-                    iRaider.setRaid(null);
-                    this.updateBossbar();
+    public void removeFromRaid(MobEntity mobEntity, int wave, boolean p_221322_2_) {
+        Set<MobEntity> set = this.groupRaiderMap.get(wave);
+        if (set != null) {
+            boolean flag = set.remove(mobEntity);
+            if (flag) {
+                if (p_221322_2_) {
+                    this.totalHealth -= mobEntity.getHealth();
                 }
+
+                RaiderHelper.getRaiderCapabilityLazy(mobEntity).ifPresent(iRaider ->iRaider.setRaid(null));
+                this.updateBossbar();
             }
         }
     }
 
     private void updateRaiders() {
-        Iterator<Set<MobEntity>> iterator = this.groupRaiderMap.values().iterator();
-        Set<MobEntity> set = Sets.newHashSet();
+        Iterator<Map.Entry<Integer, Set<MobEntity>>> iterator = this.groupRaiderMap.entrySet().iterator();
 
         while(iterator.hasNext()) {
-            Set<MobEntity> set1 = iterator.next();
+            Set<MobEntity> set = Sets.newHashSet();
+            Map.Entry<Integer, Set<MobEntity>> waveEntry = iterator.next();
 
-            for(MobEntity mobEntity : set1) {
+            for(MobEntity mobEntity : waveEntry.getValue()) {
                 BlockPos blockpos = mobEntity.blockPosition();
                 if (mobEntity.isAlive() && mobEntity.level.dimension() == this.level.dimension() && !(this.getCenter().distSqr(blockpos) >= 12544.0D)) {
                     if (mobEntity.tickCount > 600) {
@@ -525,10 +521,9 @@ public class Raid {
                     set.add(mobEntity);
                 }
             }
-        }
-
-        for(MobEntity abstractraiderentity1 : set) {
-            this.removeFromRaid(abstractraiderentity1, true);
+            for(MobEntity abstractraiderentity1 : set) {
+                this.removeFromRaid(abstractraiderentity1, waveEntry.getKey(), true);
+            }
         }
     }
 

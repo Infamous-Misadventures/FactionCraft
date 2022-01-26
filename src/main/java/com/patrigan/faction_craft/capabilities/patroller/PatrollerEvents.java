@@ -4,6 +4,7 @@ import com.patrigan.faction_craft.capabilities.factionentity.FactionEntityHelper
 import com.patrigan.faction_craft.capabilities.factionentity.IFactionEntity;
 import com.patrigan.faction_craft.capabilities.factioninteraction.FactionInteractionHelper;
 import com.patrigan.faction_craft.capabilities.factioninteraction.IFactionInteraction;
+import com.patrigan.faction_craft.capabilities.raider.RaiderHelper;
 import com.patrigan.faction_craft.config.FactionCraftConfig;
 import com.patrigan.faction_craft.effect.Effects;
 import net.minecraft.entity.Entity;
@@ -14,6 +15,8 @@ import net.minecraft.potion.EffectInstance;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.event.entity.living.LivingSpawnEvent;
+import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -59,6 +62,19 @@ public class PatrollerEvents {
                         }
                         playerEntity.addEffect(effectinstance);
                     }
+                }
+            });
+        }
+    }
+
+    @SubscribeEvent
+    public static void onAllowDespawn(LivingSpawnEvent.AllowDespawn event){
+        LivingEntity livingEntity = event.getEntityLiving();
+        if(!livingEntity.level.isClientSide() && livingEntity instanceof MobEntity) {
+            MobEntity mobEntity = (MobEntity) livingEntity;
+            PatrollerHelper.getPatrollerCapabilityLazy(mobEntity).ifPresent(cap -> {
+                if (cap.isPatrolling()) {
+                    event.setResult(Event.Result.DENY);
                 }
             });
         }

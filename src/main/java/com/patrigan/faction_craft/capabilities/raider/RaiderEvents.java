@@ -42,7 +42,7 @@ public class RaiderEvents {
                     if (event.getSource().getEntity() != null && event.getSource().getEntity().getType() == EntityType.PLAYER) {
                         raid.addHeroOfTheVillage(event.getSource().getEntity());
                     }
-                    raid.removeFromRaid(mobEntity, false);
+                    raid.removeFromRaid(mobEntity, cap.getWave(), false);
                 }
             });
         }
@@ -55,9 +55,22 @@ public class RaiderEvents {
 //            MobEntity mobEntity = (MobEntity) livingEntity;
 //            RaiderHelper.getRaiderCapabilityLazy(mobEntity).ifPresent(cap -> {
 //                if (cap.hasActiveRaid()) {
-//                    event.setResult(Event.Result.DENY);
+//                    cap.getRaid().removeFromRaid(mobEntity, cap.getWave(), true);
 //                }
 //            });
 //        }
 //    }
+
+    @SubscribeEvent
+    public static void onAllowDespawn(LivingSpawnEvent.AllowDespawn event){
+        LivingEntity livingEntity = event.getEntityLiving();
+        if(!livingEntity.level.isClientSide() && livingEntity instanceof MobEntity) {
+            MobEntity mobEntity = (MobEntity) livingEntity;
+            RaiderHelper.getRaiderCapabilityLazy(mobEntity).ifPresent(cap -> {
+                if (cap.hasActiveRaid()) {
+                    event.setResult(Event.Result.DENY);
+                }
+            });
+        }
+    }
 }

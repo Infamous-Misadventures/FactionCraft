@@ -103,7 +103,6 @@ public class PatrolSpawner implements ISpecialSpawner {
       return i1;
    }
 
-   //TODO: Completely add entity to the world, do not trigger mandatory boosts
    private static boolean spawnPatrolMember(ServerWorld pLevel, BlockPos pPos, Random pRandom, boolean pLeader, Faction faction) {
       BlockState blockstate = pLevel.getBlockState(pPos);
       List<Pair<FactionEntityType, Integer>> weightMap = faction.getWeightMap();
