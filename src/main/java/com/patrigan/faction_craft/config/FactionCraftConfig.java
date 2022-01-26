@@ -75,8 +75,8 @@ public class FactionCraftConfig {
                     .define("numberWavesHard", 6);
             BASE_WAVE_MULTIPLIER = builder
                     .comment("The multiplier for the target strength for the first wave. \n" +
-                            "1.0 disables Starting wave multiplier. Default 0.5")
-                    .define("baseWaveMultiplier", 0.6F);
+                            "1.0 disables Starting wave multiplier. Default 0.65")
+                    .define("baseWaveMultiplier", 0.65f);
             MULTIPLIER_INCREASE_PER_WAVE = builder
                     .comment("The amount the multiplier for the target strength increases per wave. \n" +
                             "0.0 removes target growth per wave. Default 0.15")
