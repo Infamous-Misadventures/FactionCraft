@@ -155,11 +155,11 @@ public class FactionCraftConfig {
             TICK_DELAY_BETWEEN_SPAWN_ATTEMPTS = builder
                     .comment("This value plus the variable version together make up the time between two spawn attempts. \n" +
                             "Vanilla default 12000, Default 6000")
-                    .define("tickDelayBetweenSpawnAttempts", 2);
+                    .define("tickDelayBetweenSpawnAttempts", 6000);
             VARIABLE_TICK_DELAY_BETWEEN_SPAWN_ATTEMPTS = builder
                     .comment("A random value between 0 and this value is added to the static delay to determine total delay. \n" +
                             "Vanilla default is 1200. Default 1200")
-                    .define("variableTickDelayBetweenSpawnAttempts", 2);
+                    .define("variableTickDelayBetweenSpawnAttempts", 1200);
             SPAWN_CHANCE_ON_SPAWN_ATTEMPT = builder
                     .comment("The chance a patrol spawns on a spawn attempt. \n" +
                             "Vanilla default is 0.2 Default 0.4")
