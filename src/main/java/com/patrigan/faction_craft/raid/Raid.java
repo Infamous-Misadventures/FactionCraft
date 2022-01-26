@@ -367,7 +367,6 @@ public class Raid {
         return factionFractions;
     }
 
-    //TODO: Completely add entity to the world first, and then trigger mandatory boosts
     private void spawnGroupForFaction(BlockPos spawnBlockPos, int waveNumber, int targetStrength, Faction faction) {
         int mobsFraction = (int) Math.floor(targetStrength * faction.getRaidConfig().getMobsFraction());
 
