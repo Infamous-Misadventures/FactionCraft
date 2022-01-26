@@ -32,6 +32,8 @@ public class FactionCraftConfig {
 
     public static ForgeConfigSpec.ConfigValue<Float> PLAYER_RAID_TARGET_STRENGTH_MULTIPLIER;
 
+    public static ForgeConfigSpec.ConfigValue<Float> FACTION_BATTLE_RAID_TARGET_STRENGTH_MULTIPLIER;
+
     public static ForgeConfigSpec.ConfigValue<Boolean> DISABLE_FACTION_PATROLS;
     public static ForgeConfigSpec.ConfigValue<Boolean> DISABLE_VANILLA_PATROLS;
     public static ForgeConfigSpec.ConfigValue<Long> DAYTIME_BEFORE_SPAWNING;
@@ -128,6 +130,13 @@ public class FactionCraftConfig {
                     .comment("Applied to the target strength of the player \n" +
                             "Multiplies the target strength and rounds down. Default 1.0F")
                     .define("playerRaidTargetStrengthMultiplier", 1.0F);
+            builder.pop();
+
+            builder.comment("Faction Battle Raid Target Calculations").push("faction_battle_raid_target_calculations");
+            FACTION_BATTLE_RAID_TARGET_STRENGTH_MULTIPLIER = builder
+                    .comment("Applied to the target strength of a faction battle. \n" +
+                            "Multiplies the target strength and rounds down. Default 1.0F")
+                    .define("factionBattleRaidTargetStrengthMultiplier", 1.0F);
             builder.pop();
 
             builder.comment("Patroller Config").push("patroller_config");

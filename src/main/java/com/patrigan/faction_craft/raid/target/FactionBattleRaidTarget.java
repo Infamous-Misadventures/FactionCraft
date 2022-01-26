@@ -1,50 +1,59 @@
 package com.patrigan.faction_craft.raid.target;
 
 import com.patrigan.faction_craft.FactionCraft;
+import com.patrigan.faction_craft.capabilities.factionentity.FactionEntity;
+import com.patrigan.faction_craft.capabilities.factionentity.FactionEntityHelper;
 import com.patrigan.faction_craft.event.CalculateStrengthEvent;
+import com.patrigan.faction_craft.faction.Faction;
 import com.patrigan.faction_craft.raid.Raid;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntitySpawnPlacementRegistry;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.spawner.WorldEntitySpawner;
 
-import static com.patrigan.faction_craft.config.FactionCraftConfig.PLAYER_RAID_TARGET_STRENGTH_MULTIPLIER;
+import java.util.stream.Collectors;
+
+import static com.patrigan.faction_craft.config.FactionCraftConfig.FACTION_BATTLE_RAID_TARGET_STRENGTH_MULTIPLIER;
 import static com.patrigan.faction_craft.config.FactionCraftConfig.VILLAGE_RAID_ADDITIONAL_WAVE_CHANCE;
-import static com.patrigan.faction_craft.raid.target.RaidTarget.Type.PLAYER;
-import static com.patrigan.faction_craft.raid.target.RaidTarget.Type.VILLAGE;
+import static com.patrigan.faction_craft.raid.target.RaidTarget.Type.*;
 
-public class PlayerRaidTarget implements RaidTarget {
+public class FactionBattleRaidTarget implements RaidTarget {
 
-    private final Type raidType = VILLAGE;
-    private ServerPlayerEntity player;
+    private final Type raidType = BATTLE;
     private int targetStrength;
+    private BlockPos targetBlockPos;
+    private final Faction faction1;
+    private final Faction faction2;
 
-    public PlayerRaidTarget(ServerPlayerEntity player, ServerWorld level) {
-        this.player = player;
-        this.targetStrength = calculateTargetStrength(player, level);
+    public FactionBattleRaidTarget(BlockPos targetBlockPos, Faction faction1, Faction faction2, ServerWorld level) {
+        this.targetBlockPos = targetBlockPos;
+        this.faction1 = faction1;
+        this.faction2 = faction2;
+        this.targetStrength = calculateTargetStrength(level);
     }
 
-    private int calculateTargetStrength(ServerPlayerEntity player, ServerWorld level) {
-        int strength = 20;
-        CalculateStrengthEvent event = new CalculateStrengthEvent.Player(PLAYER, player, level, strength, strength);
+    private int calculateTargetStrength(ServerWorld level) {
+        int strength = 50;
+        CalculateStrengthEvent event = new CalculateStrengthEvent.FactionBattle(BATTLE, targetBlockPos, level, strength, strength, faction1, faction2);
         net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event);
         FactionCraft.LOGGER.info("Strength = " + strength);
-        return (int) Math.floor(event.getStrength()*PLAYER_RAID_TARGET_STRENGTH_MULTIPLIER.get());
+        return (int) Math.floor(event.getStrength()*FACTION_BATTLE_RAID_TARGET_STRENGTH_MULTIPLIER.get());
     }
 
-    public PlayerRaidTarget(ServerPlayerEntity player, int targetStrength) {
-        this.player = player;
+    public FactionBattleRaidTarget(int targetStrength, BlockPos targetBlockPos, Faction faction1, Faction faction2) {
         this.targetStrength = targetStrength;
+        this.targetBlockPos = targetBlockPos;
+        this.faction1 = faction1;
+        this.faction2 = faction2;
     }
 
     @Override
     public BlockPos getTargetBlockPos() {
-        return player.blockPosition();
+        return this.targetBlockPos;
     }
 
     @Override
@@ -64,12 +73,15 @@ public class PlayerRaidTarget implements RaidTarget {
 
     @Override
     public boolean checkLossCondition(Raid raid, ServerWorld level) {
-        return !player.isAlive();
+        if(raid.getGroupsSpawned() == 0){
+            return false;
+        }
+        return raid.getRaidersInWave(raid.getGroupsSpawned()).stream().map(FactionEntityHelper::getFactionEntityCapability).collect(Collectors.toSet()).size()<=1;
     }
 
     @Override
     public boolean isValidSpawnPos(int outerAttempt, BlockPos.Mutable blockpos$mutable, ServerWorld level) {
-        return (blockpos$mutable.distSqr(player.blockPosition()) > 30 || outerAttempt >= 2)
+        return (blockpos$mutable.distSqr(targetBlockPos) > 30 || outerAttempt >= 2)
                 && level.hasChunksAt(blockpos$mutable.getX() - 10, blockpos$mutable.getY() - 10, blockpos$mutable.getZ() - 10, blockpos$mutable.getX() + 10, blockpos$mutable.getY() + 10, blockpos$mutable.getZ() + 10)
                 && level.getChunkSource().isEntityTickingChunk(new ChunkPos(blockpos$mutable))
                 && (WorldEntitySpawner.isSpawnPositionOk(EntitySpawnPlacementRegistry.PlacementType.ON_GROUND, level, blockpos$mutable, EntityType.RAVAGER)
@@ -84,8 +96,12 @@ public class PlayerRaidTarget implements RaidTarget {
     @Override
     public CompoundNBT save(CompoundNBT compoundNbt){
         compoundNbt.putString("Type", this.raidType.getName());
-        compoundNbt.putString("Player", player.getStringUUID());
+        compoundNbt.putInt("X", targetBlockPos.getX());
+        compoundNbt.putInt("Y", targetBlockPos.getY());
+        compoundNbt.putInt("Z", targetBlockPos.getZ());
         compoundNbt.putInt("TargetStrength", targetStrength);
+        compoundNbt.putString("Faction1", faction1.getName().toString());
+        compoundNbt.putString("Faction2", faction2.getName().toString());
         return compoundNbt;
     }
 }

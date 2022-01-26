@@ -1,7 +1,9 @@
 package com.patrigan.faction_craft.raid.target;
 
+import com.patrigan.faction_craft.faction.Factions;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.server.ServerWorld;
 
@@ -13,6 +15,8 @@ public class RaidTargetHelper {
             return loadVillageRaidTarget(compoundNBT);
         }else if(type == RaidTarget.Type.PLAYER){
             return loadPlayerRaidTarget(level, compoundNBT);
+        }else if(type == RaidTarget.Type.BATTLE){
+            return loadFactionBattleRaidTarget(compoundNBT);
         }
         return null;
     }
@@ -28,6 +32,15 @@ public class RaidTargetHelper {
         return new VillageRaidTarget(
                 new BlockPos(compoundNBT.getInt("X"), compoundNBT.getInt("Y"), compoundNBT.getInt("Z")),
                 compoundNBT.getInt("TargetStrength")
+        );
+    }
+
+    private static RaidTarget loadFactionBattleRaidTarget(CompoundNBT compoundNBT){
+        return new FactionBattleRaidTarget(
+                compoundNBT.getInt("TargetStrength"),
+                new BlockPos(compoundNBT.getInt("X"), compoundNBT.getInt("Y"), compoundNBT.getInt("Z")),
+                Factions.getFaction(new ResourceLocation(compoundNBT.getString("Faction1"))),
+                Factions.getFaction(new ResourceLocation(compoundNBT.getString("Faction2")))
         );
     }
 }

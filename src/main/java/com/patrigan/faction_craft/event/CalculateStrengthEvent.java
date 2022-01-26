@@ -1,5 +1,6 @@
 package com.patrigan.faction_craft.event;
 
+import com.patrigan.faction_craft.faction.Faction;
 import com.patrigan.faction_craft.raid.target.RaidTarget;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
@@ -57,6 +58,26 @@ public class CalculateStrengthEvent extends Event {
 
         public ServerPlayerEntity getPlayer() {
             return player;
+        }
+    }
+
+    public static class FactionBattle extends CalculateStrengthEvent
+    {
+        private final Faction faction1;
+        private final Faction faction2;
+
+        public FactionBattle(RaidTarget.Type type, BlockPos blockPos, ServerWorld level, int originalStrength, int strength, Faction faction1, Faction faction2) {
+            super(type, blockPos, level, originalStrength, strength);
+            this.faction1 = faction1;
+            this.faction2 = faction2;
+        }
+
+        public Faction getFaction1() {
+            return faction1;
+        }
+
+        public Faction getFaction2() {
+            return faction2;
         }
     }
 }

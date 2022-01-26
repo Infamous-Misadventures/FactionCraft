@@ -15,5 +15,6 @@ public class CommandEvents {
         CommandDispatcher<CommandSource> commandDispatcher = event.getDispatcher();
         FactionRaidCommand.register(commandDispatcher);
         FactionPatrolCommand.register(commandDispatcher);
+        FactionBattleCommand.register(commandDispatcher);
     }
 }

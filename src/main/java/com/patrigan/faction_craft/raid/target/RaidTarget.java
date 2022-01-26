@@ -2,19 +2,11 @@ package com.patrigan.faction_craft.raid.target;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
-import com.patrigan.faction_craft.boost.Boost;
 import com.patrigan.faction_craft.raid.Raid;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.EntitySpawnPlacementRegistry;
-import net.minecraft.entity.EntityType;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.server.ServerWorld;
-import net.minecraft.world.spawner.WorldEntitySpawner;
 import net.minecraftforge.common.IExtensibleEnum;
-
-import java.util.Locale;
 
 public interface RaidTarget {
 
@@ -26,15 +18,18 @@ public interface RaidTarget {
 
     int getAdditionalWaves();
 
-    boolean checkLossCondition(ServerWorld level);
+    boolean checkLossCondition(Raid raid, ServerWorld level);
 
     CompoundNBT save(CompoundNBT compoundNbt);
 
     boolean isValidSpawnPos(int outerAttempt, BlockPos.Mutable blockpos$mutable, ServerWorld level);
 
+    Type getRaidType();
+
     enum Type implements IExtensibleEnum {
         VILLAGE("village"),
-        PLAYER("player");
+        PLAYER("player"),
+        BATTLE("battle");
         public static final Codec<RaidTarget.Type> CODEC = Codec.STRING.flatComapMap(s -> RaidTarget.Type.byName(s, null), d -> DataResult.success(d.getName()));
 
         private final String name;
@@ -57,7 +52,7 @@ public interface RaidTarget {
             return fallBack;
         }
 
-        public static RaidTarget.Type create(String id, String name, int max)
+        public static RaidTarget.Type create(String id, String name)
         {
             throw new IllegalStateException("Enum not extended");
         }

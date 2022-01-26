@@ -3,5 +3,7 @@
   "commands.patrol.success": "Spawned a patrol of %s big, at %s",
   "commands.raid.failed": "Could not spawn a raid",
   "commands.raid.success": "Spawned a raid at %s",
+  "commands.batle.failed": "Could not spawn a batle",
+  "commands.battle.success": "Spawned a battle between %s and %s at %s",
   "effect.faction_craft.faction_bad_omen": "Bad Omen"
 }

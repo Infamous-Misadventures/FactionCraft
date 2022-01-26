@@ -9,13 +9,16 @@ import com.patrigan.faction_craft.capabilities.raidmanager.IRaidManager;
 import com.patrigan.faction_craft.event.FactionRaidEvent;
 import com.patrigan.faction_craft.faction.Faction;
 import com.patrigan.faction_craft.faction.FactionBoostHelper;
-import com.patrigan.faction_craft.faction.entity.FactionEntityType;
 import com.patrigan.faction_craft.faction.Factions;
+import com.patrigan.faction_craft.faction.entity.FactionEntityType;
 import com.patrigan.faction_craft.raid.target.RaidTarget;
 import com.patrigan.faction_craft.raid.target.RaidTargetHelper;
 import com.patrigan.faction_craft.util.GeneralUtils;
 import net.minecraft.advancements.CriteriaTriggers;
-import net.minecraft.entity.*;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.MobEntity;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
@@ -31,6 +34,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.BossInfo;
@@ -87,10 +91,12 @@ public class Raid {
         this.raidTarget = raidTarget;
         this.numGroups = this.getNumGroups(level.getDifficulty(), raidTarget);
         this.active = true;
-        this.raidEvent.setName(this.factions.get(0).getRaidConfig().getRaidBarNameComponent());
+        this.raidEvent.setName(getRaidEventName(raidTarget));
         this.raidEvent.setPercent(0.0F);
         this.status = Status.ONGOING;
     }
+
+
 
     public Raid(ServerWorld level, CompoundNBT compoundNBT) {
         this.level = level;
@@ -107,7 +113,8 @@ public class Raid {
         if(this.factions.isEmpty()){
             this.factions.add(Factions.getDefaultFaction());
         }
-        this.raidEvent.setName(this.factions.get(0).getRaidConfig().getRaidBarNameComponent());
+        this.raidTarget = RaidTargetHelper.load(level, compoundNBT.getCompound("RaidTarget"));
+        this.raidEvent.setName(getRaidEventName(this.raidTarget));
         this.id = compoundNBT.getInt("Id");
         this.started = compoundNBT.getBoolean("Started");
         this.active = compoundNBT.getBoolean("Active");
@@ -117,7 +124,6 @@ public class Raid {
         this.raidCooldownTicks = compoundNBT.getInt("PreRaidTicks");
         this.postRaidTicks = compoundNBT.getInt("PostRaidTicks");
         this.totalHealth = compoundNBT.getFloat("TotalHealth");
-        this.raidTarget = RaidTargetHelper.load(level, compoundNBT.getCompound("RaidTarget"));
         this.numGroups = compoundNBT.getInt("NumGroups");
         this.status = Status.getByName(compoundNBT.getString("Status"));
         this.heroesOfTheVillage.clear();
@@ -166,13 +172,13 @@ public class Raid {
 
                 raidTarget.updateTargetBlockPos(level);
 
-                if (raidTarget.checkLossCondition(level)) {
+                if (raidTarget.checkLossCondition(this, level)) {
                     if (this.groupsSpawned > 0) {
                         FactionRaidEvent.Defeat event = new FactionRaidEvent.Defeat(this);
                         net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event);
                         this.status = Status.LOSS;
                         this.playSound(raidTarget.getTargetBlockPos(), factions.get(0).getRaidConfig().getDefeatSoundEvent());
-                        this.raidEvent.setName(this.factions.get(0).getRaidConfig().getRaidBarDefeatComponent());
+                        this.raidEvent.setName(getRaidEventNameDefeat(raidTarget));
                     } else {
                         this.stop();
                     }
@@ -197,12 +203,12 @@ public class Raid {
                     this.updateRaiders();
                     if (i > 0) {
                         if (i <= 2) {
-                            this.raidEvent.setName(this.factions.get(0).getRaidConfig().getRaidBarNameComponent().copy().append(" - ").append(new TranslationTextComponent("event.minecraft.raid.raiders_remaining", i)));
+                            this.raidEvent.setName(getRaidEventName(raidTarget).copy().append(" - ").append(new TranslationTextComponent("event.minecraft.raid.raiders_remaining", i)));
                         } else {
-                            this.raidEvent.setName(this.factions.get(0).getRaidConfig().getRaidBarNameComponent());
+                            this.raidEvent.setName(getRaidEventName(raidTarget));
                         }
                     } else {
-                        this.raidEvent.setName(this.factions.get(0).getRaidConfig().getRaidBarNameComponent());
+                        this.raidEvent.setName(getRaidEventName(raidTarget));
                     }
                 }
 
@@ -239,7 +245,7 @@ public class Raid {
                         FactionRaidEvent.Victory event = new FactionRaidEvent.Victory(this);
                         net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event);
                         this.playSound(raidTarget.getTargetBlockPos(), factions.get(0).getRaidConfig().getVictorySoundEvent());
-                        this.raidEvent.setName(this.factions.get(0).getRaidConfig().getRaidBarVictoryComponent());
+                        this.raidEvent.setName(getRaidEventNameVictory(raidTarget));
 
                         for(UUID uuid : this.heroesOfTheVillage) {
                             Entity entity = this.level.getEntity(uuid);
@@ -267,9 +273,9 @@ public class Raid {
                     this.raidEvent.setVisible(true);
                     if (this.isVictory()) {
                         this.raidEvent.setPercent(0.0F);
-                        this.raidEvent.setName(this.factions.get(0).getRaidConfig().getRaidBarVictoryComponent());
+                        this.raidEvent.setName(getRaidEventNameVictory(raidTarget));
                     } else {
-                        this.raidEvent.setName(this.factions.get(0).getRaidConfig().getRaidBarDefeatComponent());
+                        this.raidEvent.setName(getRaidEventNameDefeat(raidTarget));
                     }
                 }
             }
@@ -297,7 +303,7 @@ public class Raid {
         if (this.raidCooldownTicks <= 0) {
             if (this.raidCooldownTicks == 0 && this.groupsSpawned > 0) {
                 this.raidCooldownTicks = 300;
-                this.raidEvent.setName(this.factions.get(0).getRaidConfig().getRaidBarNameComponent());
+                this.raidEvent.setName(getRaidEventName(raidTarget));
                 return true;
             }
         } else {
@@ -621,7 +627,6 @@ public class Raid {
                 this.raidEvent.removePlayer(serverplayerentity1);
             }
         }
-
     }
 
     public int getTotalRaidersAlive() {
@@ -673,6 +678,18 @@ public class Raid {
 
     public boolean isOver() {
         return this.isVictory() || this.isLoss();
+    }
+
+    private ITextComponent getRaidEventName(RaidTarget raidTarget) {
+        return raidTarget.getRaidType() == RaidTarget.Type.BATTLE ? new TranslationTextComponent("event.faction_craft.battle") : this.factions.get(0).getRaidConfig().getRaidBarNameComponent();
+    }
+
+    private ITextComponent getRaidEventNameDefeat(RaidTarget raidTarget) {
+        return raidTarget.getRaidType() == RaidTarget.Type.BATTLE ? new TranslationTextComponent("event.faction_craft.battle.over") : this.factions.get(0).getRaidConfig().getRaidBarDefeatComponent();
+    }
+
+    private ITextComponent getRaidEventNameVictory(RaidTarget raidTarget) {
+        return raidTarget.getRaidType() == RaidTarget.Type.BATTLE ? new TranslationTextComponent("event.faction_craft.battle.over") : this.factions.get(0).getRaidConfig().getRaidBarVictoryComponent();
     }
 
     private enum Status {

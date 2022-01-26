@@ -2,6 +2,7 @@ package com.patrigan.faction_craft.raid.target;
 
 import com.patrigan.faction_craft.FactionCraft;
 import com.patrigan.faction_craft.event.CalculateStrengthEvent;
+import com.patrigan.faction_craft.raid.Raid;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntitySpawnPlacementRegistry;
 import net.minecraft.entity.EntityType;
@@ -23,7 +24,7 @@ import static com.patrigan.faction_craft.raid.target.RaidTarget.Type.VILLAGE;
 
 public class VillageRaidTarget implements RaidTarget {
 
-    private final RaidTarget.Type boostType = VILLAGE;
+    private final RaidTarget.Type raidType = VILLAGE;
     private BlockPos blockPos;
     private int targetStrength;
 
@@ -79,7 +80,7 @@ public class VillageRaidTarget implements RaidTarget {
     }
 
     @Override
-    public boolean checkLossCondition(ServerWorld level) {
+    public boolean checkLossCondition(Raid raid, ServerWorld level) {
         return !level.isVillage(blockPos);
     }
 
@@ -92,6 +93,11 @@ public class VillageRaidTarget implements RaidTarget {
                     || level.getBlockState(blockpos$mutable.below()).is(Blocks.SNOW) && level.getBlockState(blockpos$mutable).isAir());
     }
 
+    @Override
+    public Type getRaidType() {
+        return raidType;
+    }
+
     private void moveRaidCenterToNearbyVillageSection(ServerWorld level) {
         Stream<SectionPos> stream = SectionPos.cube(SectionPos.of(blockPos), 2);
         stream.filter(level::isVillage).map(SectionPos::center).min(Comparator.comparingDouble((p_223025_1_) -> {
@@ -101,7 +107,7 @@ public class VillageRaidTarget implements RaidTarget {
 
     @Override
     public CompoundNBT save(CompoundNBT compoundNbt){
-        compoundNbt.putString("Type", this.boostType.getName());
+        compoundNbt.putString("Type", this.raidType.getName());
         compoundNbt.putInt("X", blockPos.getX());
         compoundNbt.putInt("Y", blockPos.getY());
         compoundNbt.putInt("Z", blockPos.getZ());
