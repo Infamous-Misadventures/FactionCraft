@@ -106,7 +106,7 @@ public class PatrolSpawner implements ISpecialSpawner {
    private static boolean spawnPatrolMember(ServerWorld pLevel, BlockPos pPos, Random pRandom, boolean pLeader, Faction faction) {
       BlockState blockstate = pLevel.getBlockState(pPos);
       List<Pair<FactionEntityType, Integer>> weightMap = faction.getWeightMap();
-      List<Pair<FactionEntityType, Integer>> filtered = weightMap.stream().filter(pair -> (pLeader && pair.getFirst().canBeCaptain()) || (!pLeader && pair.getFirst().getRank().equals(FactionEntityType.FactionRank.SOLDIER))).collect(Collectors.toList());
+      List<Pair<FactionEntityType, Integer>> filtered = weightMap.stream().filter(pair -> (pLeader && pair.getFirst().canBeBannerHolder()) || (!pLeader && pair.getFirst().getRank().equals(FactionEntityType.FactionRank.SOLDIER))).collect(Collectors.toList());
       FactionEntityType factionEntityType = GeneralUtils.getRandomEntry(filtered, pRandom);
       EntityType<? extends MobEntity> entityType = (EntityType<? extends MobEntity>) ENTITIES.getValue(factionEntityType.getEntityType());
       if (!WorldEntitySpawner.isValidEmptySpawnBlock(pLevel, pPos, blockstate, blockstate.getFluidState(), entityType)) {

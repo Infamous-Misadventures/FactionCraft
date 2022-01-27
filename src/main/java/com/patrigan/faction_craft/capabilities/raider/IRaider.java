@@ -28,4 +28,6 @@ public interface IRaider {
     CompoundNBT save(CompoundNBT tag);
 
     void load(CompoundNBT tag);
+
+    void addToRaid(int pWave, Raid raid);
 }

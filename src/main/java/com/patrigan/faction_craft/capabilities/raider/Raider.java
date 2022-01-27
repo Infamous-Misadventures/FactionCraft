@@ -87,6 +87,14 @@ public class Raider implements IRaider {
         this.ticksOutsideRaid = ticksOutsideRaid;
     }
 
+    @Override
+    public void addToRaid(int pWave, Raid raid) {
+        setRaid(raid);
+        setWave(pWave);
+        setCanJoinRaid(true);
+        setTicksOutsideRaid(0);
+    }
+
     public boolean isWaveLeader() {
         return waveLeader;
     }

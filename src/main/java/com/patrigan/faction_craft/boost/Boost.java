@@ -96,6 +96,7 @@ public abstract class Boost extends RegistryDispatcher.Dispatchable<Boost.Serial
     }
 
     public enum Rarity {
+        SUPER_COMMON("super_common", 40),
         COMMON("common", 10),
         UNCOMMON("uncommon", 5),
         RARE("rare", 2),

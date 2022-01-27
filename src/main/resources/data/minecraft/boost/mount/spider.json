@@ -1,7 +1,6 @@
 {
   "type": "faction_craft:mount_boost",
   "mount": "minecraft:spider",
-  "taken_from_raid": true,
   "strength_adjustment": 1.0,
   "rarity": "none"
 }

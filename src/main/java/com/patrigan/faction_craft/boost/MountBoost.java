@@ -2,10 +2,6 @@ package com.patrigan.faction_craft.boost;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import com.patrigan.faction_craft.capabilities.factionentity.FactionEntityHelper;
-import com.patrigan.faction_craft.capabilities.factionentity.IFactionEntity;
-import com.patrigan.faction_craft.capabilities.raider.IRaider;
-import com.patrigan.faction_craft.capabilities.raider.RaiderHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
@@ -14,47 +10,29 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.server.ServerWorld;
 
-import java.util.Optional;
-import java.util.Set;
-
 import static com.patrigan.faction_craft.boost.BoostProviders.MOUNT;
 import static net.minecraftforge.registries.ForgeRegistries.ENTITIES;
 
-//TODO: Rewrite Mount boost. Add MOUNT type to faction, replace taken from raid to taken from faction (returns strength of taken mob instead of given mob), check if passenger (no mount can be given to one that is already a passenger)
 public class MountBoost extends Boost {
     public static final Codec<MountBoost> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             ResourceLocation.CODEC.fieldOf("mount").forGetter(MountBoost::getEntityTypeLocation),
-            Codec.BOOL.optionalFieldOf("taken_from_raid", false).forGetter(MountBoost::isTakenFromRaid),
-            Codec.BOOL.optionalFieldOf("share_faction", false).forGetter(MountBoost::isShareFaction),
             Codec.INT.optionalFieldOf("strength_adjustment", 1).forGetter(MountBoost::getStrengthAdjustment),
             Rarity.CODEC.fieldOf("rarity").forGetter(MountBoost::getRarity)
     ).apply(instance, MountBoost::new));
 
     private final ResourceLocation entityTypeLocation;
-    private final boolean takenFromRaid;
-    private final boolean shareFaction;
     private final int strengthAdjustment;
     private final Rarity rarity;
 
-    public MountBoost(ResourceLocation entityTypeLocation, boolean takenFromRaid, boolean shareFaction, int strengthAdjustment, Rarity rarity) {
+    public MountBoost(ResourceLocation entityTypeLocation, int strengthAdjustment, Rarity rarity) {
         super(MOUNT);
         this.entityTypeLocation = entityTypeLocation;
-        this.takenFromRaid = takenFromRaid;
-        this.shareFaction = shareFaction;
         this.strengthAdjustment = strengthAdjustment;
         this.rarity = rarity;
     }
 
     public ResourceLocation getEntityTypeLocation() {
         return entityTypeLocation;
-    }
-
-    public boolean isTakenFromRaid() {
-        return takenFromRaid;
-    }
-
-    public boolean isShareFaction() {
-        return shareFaction;
     }
 
     public int getStrengthAdjustment() {
@@ -73,19 +51,10 @@ public class MountBoost extends Boost {
 
     @Override
     public int apply(LivingEntity livingEntity) {
-        if(livingEntity instanceof MobEntity){
-            MobEntity mob = (MobEntity) livingEntity;
-            IRaider raiderCap = RaiderHelper.getRaiderCapability(mob);
-            if(takenFromRaid && raiderCap != null && raiderCap.hasActiveRaid()){
-                Set<MobEntity> raidersInWave = raiderCap.getRaid().getRaidersInWave(raiderCap.getWave());
-                Optional<MobEntity> mount = raidersInWave.stream().filter(mobEntity -> !mobEntity.is(livingEntity)).filter(mobEntity -> entityTypeLocation.equals(mobEntity.getType().getRegistryName()) && mobEntity.getPassengers().isEmpty()).findFirst();
-                if(mount.isPresent()){
-                    mob.startRiding(mount.get());
-                    super.apply(livingEntity);
-                    return strengthAdjustment;
-                }
-            }
-        }else if(livingEntity.level instanceof ServerWorld) {
+        if(livingEntity.isPassenger()){
+            return 0;
+        }
+        if(livingEntity.level instanceof ServerWorld) {
             ServerWorld level = (ServerWorld) livingEntity.level;
             Entity mount = ENTITIES.getValue(entityTypeLocation).create(level);
             if (mount != null) {
@@ -97,9 +66,6 @@ public class MountBoost extends Boost {
                         return 0;
                     mobMount.finalizeSpawn(level, level.getCurrentDifficultyAt(mount.blockPosition()), SpawnReason.EVENT, null, null);
                 }
-                if(shareFaction){
-                    copyFaction(livingEntity, mount);
-                }
                 super.apply(livingEntity);
                 level.addFreshEntity(mount);
                 livingEntity.startRiding(mount);
@@ -109,29 +75,9 @@ public class MountBoost extends Boost {
         return 0;
     }
 
-    private void copyFaction(LivingEntity livingEntity, Entity mount) {
-        if(livingEntity instanceof MobEntity && mount instanceof MobEntity) {
-            IFactionEntity entityCapability = FactionEntityHelper.getFactionEntityCapability((MobEntity) livingEntity);
-            IFactionEntity mountCapability = FactionEntityHelper.getFactionEntityCapability((MobEntity) mount);
-            mountCapability.setFaction(entityCapability.getFaction());
-        }
-    }
-
     @Override
     public boolean canApply(LivingEntity livingEntity) {
-        return !livingEntity.isPassenger() && (!takenFromRaid || canTakeFromRaid(livingEntity));
+        return !livingEntity.isPassenger();
     }
 
-    private boolean canTakeFromRaid(LivingEntity livingEntity) {
-        if(livingEntity instanceof MobEntity) {
-            MobEntity mob = (MobEntity) livingEntity;
-            IRaider raiderCap = RaiderHelper.getRaiderCapability(mob);
-            if(!raiderCap.hasActiveRaid()){
-                return true;
-            }
-            Set<MobEntity> raidersInWave = raiderCap.getRaid().getRaidersInWave(raiderCap.getWave());
-            return raidersInWave.stream().anyMatch(mobEntity -> mobEntity.getType().getRegistryName().equals(entityTypeLocation) && mobEntity.getPassengers().isEmpty());//TODO: change to canAddPassenger()
-        }
-        return true;
-    }
 }

@@ -17,10 +17,10 @@
         "rarity_overrides": [
           {
             "boost": "minecraft:mount/skeleton_horse",
-            "rarity": "uncommon"
+            "rarity": "common"
           },
           {
-            "boost": "minecraft:mount/spider",
+            "boost": "faction_craft:mount/faction_spider",
             "rarity": "rare"
           }
         ]
@@ -38,7 +38,7 @@
         "rarity_overrides": [
           {
             "boost": "minecraft:mount/zombie_horse",
-            "rarity": "uncommon"
+            "rarity": "common"
           }
         ]
       }
@@ -55,29 +55,32 @@
         "rarity_overrides": [
           {
             "boost": "minecraft:mount/zombie_horse",
-            "rarity": "uncommon"
+            "rarity": "common"
           }
         ]
       }
     },
     {
       "entity_type": "minecraft:spider",
-      "weight": 100,
+      "weight": 30,
       "strength": 1,
-      "rank": "support",
-      "maximum_rank": "support",
+      "rank": "mount",
+      "maximum_rank": "mount",
       "minimum_wave": 3
     },
     {
-      "entity_type": "minecraft:chicken",
-      "weight": 1000,
-      "tag": {"Passengers":[{"id":"minecraft:zombie","IsBaby":1, "Passengers":[{"id":"minecraft:zombie","IsBaby":1, "Passengers":[{"id":"minecraft:zombie","IsBaby":1, "Passengers":[{"id":"minecraft:zombie","IsBaby":1, "Passengers":[{"id":"minecraft:zombie","IsBaby":1, "Passengers":[{"id":"minecraft:zombie","IsBaby":1}]}]}]}]}]}]},
+      "entity_type": "minecraft:zombie",
+      "weight": 1,
+      "tag": {
+        "IsBaby": 1
+      },
+      "tag": {"Passengers":[{"id":"minecraft:zombie","IsBaby":1, "Passengers":[{"id":"minecraft:zombie","IsBaby":1, "Passengers":[{"id":"minecraft:zombie","IsBaby":1, "Passengers":[{"id":"minecraft:zombie","IsBaby":1, "Passengers":[{"id":"minecraft:zombie","IsBaby":1}]}]}]}]}]},
       "strength": 3,
       "rank": "soldier",
       "maximum_rank": "leader",
       "minimum_wave": 1,
       "boosts": {
-        "mandatory": ["minecraft:special/leather_daylight_protection"]
+        "mandatory": ["minecraft:special/leather_daylight_protection", "minecraft:mount/chicken"]
       }
     },
     {
@@ -143,7 +146,7 @@
         "rarity_overrides": [
           {
             "boost": "minecraft:mount/skeleton_horse",
-            "rarity": "uncommon"
+            "rarity": "common"
           }
         ]
       }
@@ -160,7 +163,7 @@
         "rarity_overrides": [
           {
             "boost": "minecraft:mount/zombie_horse",
-            "rarity": "uncommon"
+            "rarity": "common"
           }
         ]
       }

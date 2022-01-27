@@ -13,8 +13,8 @@
       "boosts": {
         "rarity_overrides": [
           {
-            "boost": "minecraft:mount/ravager",
-            "rarity": "uncommon"
+            "boost": "faction_craft:mount/faction_ravager",
+            "rarity": "common"
           }
         ]
       }
@@ -37,8 +37,8 @@
       "boosts": {
         "rarity_overrides": [
           {
-            "boost": "minecraft:mount/ravager",
-            "rarity": "uncommon"
+            "boost": "faction_craft:mount/faction_ravager",
+            "rarity": "common"
           }
         ]
       }
@@ -53,8 +53,8 @@
       "boosts": {
         "rarity_overrides": [
           {
-            "boost": "minecraft:mount/ravager",
-            "rarity": "uncommon"
+            "boost": "faction_craft:mount/faction_ravager",
+            "rarity": "common"
           }
         ]
       }
@@ -63,9 +63,17 @@
       "entity_type": "minecraft:ravager",
       "weight": 10,
       "strength": 5,
+      "rank": "mount",
+      "maximum_rank": "mount",
+      "minimum_wave": 4
+    },
+    {
+      "entity_type": "minecraft:ravager",
+      "weight": 10,
+      "strength": 5,
       "rank": "support",
       "maximum_rank": "support",
-      "minimum_wave": 4
+      "minimum_wave": 3
     }
   ]
 }

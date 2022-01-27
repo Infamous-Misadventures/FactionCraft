@@ -3,6 +3,8 @@ package com.patrigan.faction_craft.raid;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.mojang.datafixers.util.Pair;
+import com.patrigan.faction_craft.capabilities.factionentity.FactionEntity;
+import com.patrigan.faction_craft.capabilities.factionentity.FactionEntityHelper;
 import com.patrigan.faction_craft.capabilities.raider.IRaider;
 import com.patrigan.faction_craft.capabilities.raider.RaiderHelper;
 import com.patrigan.faction_craft.capabilities.raidmanager.IRaidManager;
@@ -376,7 +378,7 @@ public class Raid {
 
         int waveStrength = 0;
         Map<FactionEntityType, Integer> waveFactionEntities = determineMobs(mobsFraction, waveNumber, faction);
-        Map<FactionEntityType, List<MobEntity>> entities = new HashMap<>();
+        List<MobEntity> entities = new ArrayList<>();
         // Collect Entities
         for (Map.Entry<FactionEntityType, Integer> entry : waveFactionEntities.entrySet()) {
             FactionEntityType factionEntityType = entry.getKey();
@@ -386,19 +388,16 @@ public class Raid {
                 if(entity instanceof MobEntity) {
                     MobEntity mobEntity = (MobEntity) entity;
                     //Add to Raid
-                    this.joinRaid(waveNumber, mobEntity, spawnBlockPos, false);
-                    entities.computeIfAbsent(factionEntityType, key -> new ArrayList<>()).add(mobEntity);
+                    addToRaid(spawnBlockPos, waveNumber, faction, entities, factionEntityType, mobEntity);
                     waveStrength += factionEntityType.getStrength();
-                    faction.getBoostConfig().getMandatoryBoosts().forEach(boost -> boost.apply(mobEntity));
-                    factionEntityType.getBoostConfig().getMandatoryBoosts().forEach(boost -> boost.apply(mobEntity));
                 }
 
             }
         }
         // Apply Boosts
-        waveStrength += FactionBoostHelper.applyBoosts(targetStrength-waveStrength, entities, faction, this.level);
+        FactionBoostHelper.applyBoosts(targetStrength-waveStrength, entities, faction, this.level);
 
-        List<MobEntity> captainEntities = entities.entrySet().stream().filter(entry -> entry.getKey().canBeCaptain()).flatMap(entry -> entry.getValue().stream()).collect(Collectors.toList());
+        List<MobEntity> captainEntities = entities.stream().filter(mobEntity -> FactionEntityHelper.getFactionEntityCapability(mobEntity).getFactionEntityType().canBeBannerHolder()).collect(Collectors.toList());
         MobEntity randomItem = GeneralUtils.getRandomItem(captainEntities, level.getRandom());
         if(randomItem != null) {
             faction.makeBannerHolder(randomItem);
@@ -406,6 +405,20 @@ public class Raid {
             raiderCapability.setWaveLeader(true);
         }
         this.playSound(spawnBlockPos, factions.get(0).getRaidConfig().getWaveSoundEvent());
+    }
+
+    private void addToRaid(BlockPos spawnBlockPos, int waveNumber, Faction faction, List<MobEntity> entities, FactionEntityType factionEntityType, MobEntity baseEntity) {
+        baseEntity.getRootVehicle().getSelfAndPassengers().forEach(entity -> {
+                if(entity instanceof MobEntity) {
+                    MobEntity mobEntity = (MobEntity) entity;
+                    if(faction.equals(FactionEntityHelper.getFactionEntityCapability(mobEntity).getFaction())) {
+                        this.joinRaid(waveNumber, mobEntity, spawnBlockPos, false);
+                        entities.add(mobEntity);
+                        faction.getBoostConfig().getMandatoryBoosts().forEach(boost -> boost.apply(mobEntity));
+                        factionEntityType.getBoostConfig().getMandatoryBoosts().forEach(boost -> boost.apply(mobEntity));
+                    }
+                }
+        });
     }
 
     private Map<FactionEntityType, Integer> determineMobs(int targetStrength, int waveNumber, Faction faction) {
@@ -442,23 +455,12 @@ public class Raid {
     }
 
     public void joinRaid(int pWave, MobEntity mobEntity, BlockPos spawnBlockPos, boolean spawned) {
-        boolean flag = this.addWaveMob(pWave, mobEntity, true);
-        if (flag) {
-            LazyOptional<IRaider> raiderCapabilityLazy = RaiderHelper.getRaiderCapabilityLazy(mobEntity);
-            if(raiderCapabilityLazy.isPresent()) {
-                IRaider iRaider = raiderCapabilityLazy.orElseGet(RAIDER_CAPABILITY::getDefaultInstance);
-                iRaider.setRaid(this);
-                iRaider.setWave(pWave);
-                iRaider.setCanJoinRaid(true);
-                iRaider.setTicksOutsideRaid(0);
-            }
-        }
+        this.addWaveMob(pWave, mobEntity, true);
+        RaiderHelper.getRaiderCapabilityLazy(mobEntity).ifPresent(iRaider -> iRaider.addToRaid(pWave, this));
     }
 
-    public boolean addWaveMob(int wave, MobEntity mobEntity, boolean fresh) {
-        this.groupRaiderMap.computeIfAbsent(wave, (p_221323_0_) -> {
-            return Sets.newHashSet();
-        });
+    public void addWaveMob(int wave, MobEntity mobEntity, boolean fresh) {
+        this.groupRaiderMap.computeIfAbsent(wave, p_221323_0_ -> Sets.newHashSet());
         Set<MobEntity> set = this.groupRaiderMap.get(wave);
         MobEntity abstractraiderentity = null;
 
@@ -480,7 +482,6 @@ public class Raid {
         }
 
         this.updateBossbar();
-        return true;
     }
 
     public void removeFromRaid(MobEntity mobEntity, int wave, boolean p_221322_2_) {

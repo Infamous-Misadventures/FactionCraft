@@ -15,4 +15,5 @@ public class BoostProviders {
     public static final RegistryObject<Boost.Serializer<WearHandsBoost>> WEAR_HANDS = BOOST_PROVIDERS.register("wear_hands_boost", () -> new Boost.Serializer<>(WearHandsBoost.CODEC));
     public static final RegistryObject<Boost.Serializer<DaylightProtectionBoost>> DAYLIGHT_PROTECTION = BOOST_PROVIDERS.register("daylight_protection_boost", () -> new Boost.Serializer<>(DaylightProtectionBoost.CODEC));
     public static final RegistryObject<Boost.Serializer<MountBoost>> MOUNT = BOOST_PROVIDERS.register("mount_boost", () -> new Boost.Serializer<>(MountBoost.CODEC));
+    public static final RegistryObject<Boost.Serializer<FactionMountBoost>> FACTION_MOUNT = BOOST_PROVIDERS.register("faction_mount_boost", () -> new Boost.Serializer<>(FactionMountBoost.CODEC));
 }

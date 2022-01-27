@@ -80,6 +80,9 @@ public class Faction {
     public List<Pair<FactionEntityType, Integer>> getWeightMapForWave(int wave){
         return entityTypes.stream().filter(factionEntityType -> factionEntityType.getMinimumWave() <= wave).map(factionEntityType -> new Pair<>(factionEntityType, factionEntityType.getWeight())).collect(Collectors.toList());
     }
+    public List<Pair<FactionEntityType, Integer>> getWeightMapForRank(FactionEntityType.FactionRank rank){
+        return entityTypes.stream().filter(factionEntityType -> factionEntityType.hasRank(rank)).map(factionEntityType -> new Pair<>(factionEntityType, factionEntityType.getWeight())).collect(Collectors.toList());
+    }
 
     public ItemStack getBannerInstance() {
         ItemStack itemstack = ItemStack.of(banner);

@@ -1,7 +1,6 @@
 {
   "type": "faction_craft:mount_boost",
   "mount": "minecraft:zombie_horse",
-  "taken_from_raid": false,
   "strength_adjustment": 1.0,
   "rarity": "none"
 }

@@ -13,7 +13,6 @@ import net.minecraft.world.server.ServerWorld;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import static net.minecraftforge.registries.ForgeRegistries.ENTITIES;
 
@@ -28,7 +27,7 @@ public class FactionEntityType {
                     FactionRank.CODEC.fieldOf("maximum_rank").forGetter(data -> data.maximumRank),
                     EntityBoostConfig.CODEC.optionalFieldOf("boosts", EntityBoostConfig.DEFAULT).forGetter(data -> data.entityBoostConfig),
                     Codec.INT.fieldOf("minimum_wave").forGetter(data -> data.minimumWave)
-                    ).apply(builder, FactionEntityType::new));
+            ).apply(builder, FactionEntityType::new));
 
     private final ResourceLocation entityType;
     private final CompoundNBT tag;
@@ -48,6 +47,18 @@ public class FactionEntityType {
         this.maximumRank = maximumRank;
         this.entityBoostConfig = entityBoostConfig;
         this.minimumWave = minimumWave;
+    }
+
+    public static FactionEntityType load(CompoundNBT compoundNbt) {
+        return new FactionEntityType(
+                new ResourceLocation(compoundNbt.getString("entityType")),
+                compoundNbt.getCompound("tag"),
+                compoundNbt.getInt("weight"),
+                compoundNbt.getInt("strength"),
+                FactionRank.byName(compoundNbt.getString("rank"), FactionRank.SOLDIER),
+                FactionRank.byName(compoundNbt.getString("maximumRank"), null),
+                EntityBoostConfig.load(compoundNbt.getCompound("entityBoostConfig")),
+                compoundNbt.getInt("minimumWave"));
     }
 
     public ResourceLocation getEntityType() {
@@ -82,18 +93,29 @@ public class FactionEntityType {
         return minimumWave;
     }
 
-    public boolean canBeCaptain() {
-        FactionRank rank = this.getRank();
+    public boolean canBeBannerHolder() {
+        FactionRank currentRank = this.getRank();
         List<FactionRank> possibleCaptains = Arrays.asList(FactionRank.CAPTAIN, FactionRank.GENERAL, FactionRank.LEADER);
-        while(rank != null) {
-            if(possibleCaptains.contains(rank)){
+        while (currentRank != null) {
+            if (possibleCaptains.contains(currentRank)) {
                 return true;
-            }else{
-                if(rank.equals(getMaximumRank())){
+            } else {
+                if (currentRank.equals(getMaximumRank())) {
                     return false;
                 }
             }
-            rank = rank.promote();
+            currentRank = currentRank.promote();
+        }
+        return false;
+    }
+
+    public boolean hasRank(FactionRank requiredRank) {
+        FactionRank currentRank = rank;
+        while (currentRank != null) {
+            if (currentRank.equals(requiredRank)) {
+                return true;
+            }
+            currentRank = currentRank.promote();
         }
         return false;
     }
@@ -102,42 +124,64 @@ public class FactionEntityType {
     //See and use SummonCommand approach for tag and add to the world
     public Entity createEntity(ServerWorld level, Faction faction, BlockPos spawnBlockPos, boolean bannerHolder, SpawnReason spawnReason) {
         EntityType<?> entityType = ENTITIES.getValue(this.getEntityType());
-        Entity entity =  null;
-        if(!this.getTag().isEmpty()) {
+        Entity entity = null;
+        if (!this.getTag().isEmpty()) {
             CompoundNBT compoundnbt = this.getTag().copy();
             compoundnbt.putString("id", this.getEntityType().toString());
             entity = EntityType.loadEntityRecursive(compoundnbt, level, createdEntity -> {
                 createdEntity.moveTo(spawnBlockPos.getX() + 0.5D, spawnBlockPos.getY() + 1.0D, spawnBlockPos.getZ() + 0.5D, createdEntity.yRot, createdEntity.xRot);
                 return createdEntity;
             });
-        }else{
+        } else {
             entity = entityType.create(level);
             entity.setPos(spawnBlockPos.getX() + 0.5D, spawnBlockPos.getY() + 1.0D, spawnBlockPos.getZ() + 0.5D);
         }
-        if(entity == null){
+        if (entity == null) {
             return null;
         }
-        if(entity instanceof MobEntity){
+        if (entity instanceof MobEntity) {
             MobEntity mobEntity = (MobEntity) entity;
-            if(bannerHolder){
+            if (bannerHolder) {
                 faction.makeBannerHolder(mobEntity);
             }
             if (net.minecraftforge.common.ForgeHooks.canEntitySpawn(mobEntity, level, spawnBlockPos.getX(), spawnBlockPos.getY(), spawnBlockPos.getZ(), null, spawnReason) == -1)
                 return null;
-            if(this.tag.isEmpty()) {
+            if (this.tag.isEmpty()) {
                 mobEntity.finalizeSpawn(level, level.getCurrentDifficultyAt(spawnBlockPos), SpawnReason.EVENT, null, null);
             }
             mobEntity.setOnGround(true);
         }
-        entity.getRootVehicle().getSelfAndPassengers().forEach(stackedEntity -> {if(stackedEntity instanceof MobEntity) FactionEntityHelper.getFactionEntityCapabilityLazy((MobEntity) stackedEntity).ifPresent(cap -> cap.setFaction(faction));});
+        entity.getRootVehicle().getSelfAndPassengers()
+            .forEach(stackedEntity -> {
+                if (stackedEntity instanceof MobEntity)
+                    FactionEntityHelper.getFactionEntityCapabilityLazy((MobEntity) stackedEntity)
+                        .ifPresent(cap -> {
+                            cap.setFaction(faction);
+                            cap.setFactionEntityType(this);
+                        });
+            });
 
         level.addFreshEntityWithPassengers(entity.getRootVehicle());
         return entity;
     }
 
+    public CompoundNBT save(CompoundNBT compoundNbt) {
+        compoundNbt.putString("entityType", this.entityType.toString());
+        compoundNbt.put("tag", tag);
+        compoundNbt.putInt("weight", weight);
+        compoundNbt.putInt("strength", strength);
+        compoundNbt.putString("rank", rank.getName());
+        compoundNbt.putString("maximumRank", maximumRank.getName());
+        CompoundNBT boostConfigNbt = new CompoundNBT();
+        compoundNbt.put("entityBoostConfig", entityBoostConfig.save(boostConfigNbt));
+        compoundNbt.putInt("minimumWave", minimumWave);
+        return compoundNbt;
+    }
+
     public enum FactionRank {
         LEADER("leader", null),
         SUPPORT("support", null),
+        MOUNT("mount", null),
         GENERAL("general", LEADER),
         CAPTAIN("captain", GENERAL),
         SOLDIER("soldier", CAPTAIN);
@@ -152,16 +196,18 @@ public class FactionEntityType {
             this.promotion = promotion;
         }
 
-        public FactionRank promote(){ return promotion;}
-
         public static FactionRank byName(String name, FactionRank defaultRank) {
-            for(FactionRank factionRank : values()) {
+            for (FactionRank factionRank : values()) {
                 if (factionRank.name.equals(name)) {
                     return factionRank;
                 }
             }
 
             return defaultRank;
+        }
+
+        public FactionRank promote() {
+            return promotion;
         }
 
         public String getName() {
