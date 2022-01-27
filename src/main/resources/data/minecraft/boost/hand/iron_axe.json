@@ -5,7 +5,7 @@
       "id": "minecraft:iron_axe",
       "Count": 1
     },
-  "strength_adjustment": 1,
+  "strength_adjustment": 4,
   "boost_type":"mainhand",
   "rarity": "uncommon"
 }

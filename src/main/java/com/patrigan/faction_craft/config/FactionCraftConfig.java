@@ -30,8 +30,10 @@ public class FactionCraftConfig {
     public static ForgeConfigSpec.ConfigValue<Integer> VILLAGE_RAID_VILLAGER_WEIGHT;
     public static ForgeConfigSpec.ConfigValue<Integer> VILLAGE_RAID_IRON_GOLEM_WEIGHT;
 
+    public static ForgeConfigSpec.ConfigValue<Integer> PLAYER_RAID_TARGET_BASE_STRENGTH;
     public static ForgeConfigSpec.ConfigValue<Float> PLAYER_RAID_TARGET_STRENGTH_MULTIPLIER;
 
+    public static ForgeConfigSpec.ConfigValue<Integer> FACTION_BATTLE_RAID_TARGET_BASE_STRENGTH;
     public static ForgeConfigSpec.ConfigValue<Float> FACTION_BATTLE_RAID_TARGET_STRENGTH_MULTIPLIER;
 
     public static ForgeConfigSpec.ConfigValue<Boolean> DISABLE_FACTION_PATROLS;
@@ -117,15 +119,19 @@ public class FactionCraftConfig {
                     .define("villageRaidAdditionalWaveChance", 0.08F);
             VILLAGE_RAID_VILLAGER_WEIGHT = builder
                     .comment("The amount that 1 villager adds to the strength of a village. \n" +
-                            "Default 1")
-                    .define("villageRaidVillagerWeight", 1);
+                            "Default 5")
+                    .define("villageRaidVillagerWeight", 5);
             VILLAGE_RAID_IRON_GOLEM_WEIGHT = builder
                     .comment("The amount that 1 Iron Golem adds to the strength of a village. \n" +
-                            "Default 2")
-                    .define("villageRaidIronGolemWeight", 2);
+                            "Default 15")
+                    .define("villageRaidIronGolemWeight", 15);
             builder.pop();
 
             builder.comment("Player Raid Target Calculations").push("player_raid_target_calculations");
+            PLAYER_RAID_TARGET_BASE_STRENGTH = builder
+                    .comment("Base target strength of the player \n" +
+                            "Default 70")
+                    .define("playerRaidTargetBaseStrength", 70);
             PLAYER_RAID_TARGET_STRENGTH_MULTIPLIER = builder
                     .comment("Applied to the target strength of the player \n" +
                             "Multiplies the target strength and rounds down. Default 1.0F")
@@ -133,6 +139,10 @@ public class FactionCraftConfig {
             builder.pop();
 
             builder.comment("Faction Battle Raid Target Calculations").push("faction_battle_raid_target_calculations");
+            FACTION_BATTLE_RAID_TARGET_BASE_STRENGTH = builder
+                    .comment("Base target strength of a faction battle. \n" +
+                            "Will be divided over both factions. Default 140")
+                    .define("playerRaidTargetBaseStrength", 140);
             FACTION_BATTLE_RAID_TARGET_STRENGTH_MULTIPLIER = builder
                     .comment("Applied to the target strength of a faction battle. \n" +
                             "Multiplies the target strength and rounds down. Default 1.0F")

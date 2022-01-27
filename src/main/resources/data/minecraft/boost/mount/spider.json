@@ -1,6 +1,6 @@
 {
   "type": "faction_craft:mount_boost",
   "mount": "minecraft:spider",
-  "strength_adjustment": 1.0,
+  "strength_adjustment": 6.0,
   "rarity": "none"
 }

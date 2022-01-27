@@ -5,7 +5,7 @@
       "id": "minecraft:diamond_axe",
       "Count": 1
     },
-  "strength_adjustment": 1,
+  "strength_adjustment": 5,
   "boost_type":"mainhand",
   "rarity": "very_rare"
 }

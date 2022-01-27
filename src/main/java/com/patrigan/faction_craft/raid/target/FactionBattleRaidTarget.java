@@ -17,8 +17,7 @@ import net.minecraft.world.spawner.WorldEntitySpawner;
 
 import java.util.stream.Collectors;
 
-import static com.patrigan.faction_craft.config.FactionCraftConfig.FACTION_BATTLE_RAID_TARGET_STRENGTH_MULTIPLIER;
-import static com.patrigan.faction_craft.config.FactionCraftConfig.VILLAGE_RAID_ADDITIONAL_WAVE_CHANCE;
+import static com.patrigan.faction_craft.config.FactionCraftConfig.*;
 import static com.patrigan.faction_craft.raid.target.RaidTarget.Type.*;
 
 public class FactionBattleRaidTarget implements RaidTarget {
@@ -37,7 +36,7 @@ public class FactionBattleRaidTarget implements RaidTarget {
     }
 
     private int calculateTargetStrength(ServerWorld level) {
-        int strength = 50;
+        int strength = FACTION_BATTLE_RAID_TARGET_BASE_STRENGTH.get();
         CalculateStrengthEvent event = new CalculateStrengthEvent.FactionBattle(BATTLE, targetBlockPos, level, strength, strength, faction1, faction2);
         net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event);
         FactionCraft.LOGGER.info("Strength = " + strength);

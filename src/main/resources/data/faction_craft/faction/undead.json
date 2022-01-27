@@ -8,7 +8,7 @@
     {
       "entity_type": "minecraft:skeleton",
       "weight": 100,
-      "strength": 1,
+      "strength": 6,
       "rank": "soldier",
       "maximum_rank": "leader",
       "minimum_wave": 1,
@@ -29,7 +29,7 @@
     {
       "entity_type": "minecraft:zombie",
       "weight": 100,
-      "strength": 1,
+      "strength": 5,
       "rank": "soldier",
       "maximum_rank": "leader",
       "minimum_wave": 1,
@@ -49,7 +49,7 @@
       "strength": 1,
       "rank": "soldier",
       "maximum_rank": "leader",
-      "minimum_wave": 1,
+      "minimum_wave": 5,
       "boosts": {
         "mandatory": ["minecraft:special/leather_daylight_protection"],
         "rarity_overrides": [
@@ -63,7 +63,7 @@
     {
       "entity_type": "minecraft:spider",
       "weight": 30,
-      "strength": 1,
+      "strength": 6,
       "rank": "mount",
       "maximum_rank": "mount",
       "minimum_wave": 3
@@ -75,7 +75,7 @@
         "IsBaby": 1
       },
       "tag": {"Passengers":[{"id":"minecraft:zombie","IsBaby":1, "Passengers":[{"id":"minecraft:zombie","IsBaby":1, "Passengers":[{"id":"minecraft:zombie","IsBaby":1, "Passengers":[{"id":"minecraft:zombie","IsBaby":1, "Passengers":[{"id":"minecraft:zombie","IsBaby":1}]}]}]}]}]},
-      "strength": 3,
+      "strength": 10,
       "rank": "soldier",
       "maximum_rank": "leader",
       "minimum_wave": 1,
@@ -84,23 +84,12 @@
       }
     },
     {
-      "entity_type": "minecraft:phantom",
-      "weight": 50,
-      "strength": 1,
-      "rank": "soldier",
-      "maximum_rank": "soldier",
-      "minimum_wave": 3,
-      "boosts": {
-        "mandatory": ["minecraft:special/leather_daylight_protection"]
-      }
-    },
-    {
       "entity_type": "minecraft:zombie",
       "tag": {
         "IsBaby": 1
       },
       "weight": 70,
-      "strength": 2,
+      "strength": 6,
       "rank": "soldier",
       "maximum_rank": "leader",
       "minimum_wave": 3,
@@ -120,7 +109,7 @@
         "IsBaby": 1
       },
       "weight": 70,
-      "strength": 2,
+      "strength": 6,
       "rank": "soldier",
       "maximum_rank": "leader",
       "minimum_wave": 3,
@@ -137,7 +126,7 @@
     {
       "entity_type": "minecraft:stray",
       "weight": 50,
-      "strength": 2,
+      "strength": 9,
       "rank": "soldier",
       "maximum_rank": "leader",
       "minimum_wave": 3,
@@ -154,7 +143,7 @@
     {
       "entity_type": "minecraft:husk",
       "weight": 50,
-      "strength": 2,
+      "strength": 8,
       "rank": "soldier",
       "maximum_rank": "leader",
       "minimum_wave": 3,

@@ -6,7 +6,7 @@
     {
       "entity_type": "minecraft:pillager",
       "weight": 100,
-      "strength": 1,
+      "strength": 6,
       "rank": "soldier",
       "maximum_rank": "general",
       "minimum_wave": 1,
@@ -22,7 +22,7 @@
     {
       "entity_type": "minecraft:vindicator",
       "weight": 80,
-      "strength": 2,
+      "strength": 8,
       "rank": "soldier",
       "maximum_rank": "leader",
       "minimum_wave": 2
@@ -30,7 +30,7 @@
     {
       "entity_type": "minecraft:evoker",
       "weight": 40,
-      "strength": 4,
+      "strength": 10,
       "rank": "captain",
       "maximum_rank": "leader",
       "minimum_wave": 5,
@@ -46,7 +46,7 @@
     {
       "entity_type": "minecraft:witch",
       "weight": 40,
-      "strength": 3,
+      "strength": 9,
       "rank": "captain",
       "maximum_rank": "leader",
       "minimum_wave": 4,
@@ -61,7 +61,7 @@
     },
     {
       "entity_type": "minecraft:ravager",
-      "weight": 10,
+      "weight": 15,
       "strength": 5,
       "rank": "mount",
       "maximum_rank": "mount",
@@ -69,7 +69,7 @@
     },
     {
       "entity_type": "minecraft:ravager",
-      "weight": 10,
+      "weight": 15,
       "strength": 5,
       "rank": "support",
       "maximum_rank": "support",

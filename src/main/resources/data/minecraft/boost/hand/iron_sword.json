@@ -5,7 +5,7 @@
       "id": "minecraft:iron_sword",
       "Count": 1
     },
-  "strength_adjustment": 1,
+  "strength_adjustment": 3,
   "boost_type":"mainhand",
   "rarity": "uncommon"
 }
