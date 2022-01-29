@@ -398,7 +398,8 @@ public class Raid {
         // Apply Boosts
         FactionBoostHelper.applyBoosts(targetStrength-waveStrength, entities, faction, this.level);
 
-        entities.stream().flatMap(mobEntity -> mobEntity.getRootVehicle().getSelfAndPassengers()).filter(entity -> !entities.contains(entity)).forEach(entity -> {
+        List<Entity> newEntities = entities.stream().flatMap(mobEntity -> mobEntity.getRootVehicle().getSelfAndPassengers()).filter(entity -> !entities.contains(entity)).collect(Collectors.toList());
+        newEntities.forEach(entity -> {
             if(entity instanceof MobEntity) {
                 MobEntity mobEntity = (MobEntity) entity;
                 IFactionEntity entityCapability = FactionEntityHelper.getFactionEntityCapability(mobEntity);
