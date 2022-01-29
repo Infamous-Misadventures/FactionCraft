@@ -5,6 +5,7 @@ import com.google.common.collect.Sets;
 import com.mojang.datafixers.util.Pair;
 import com.patrigan.faction_craft.capabilities.factionentity.FactionEntity;
 import com.patrigan.faction_craft.capabilities.factionentity.FactionEntityHelper;
+import com.patrigan.faction_craft.capabilities.factionentity.IFactionEntity;
 import com.patrigan.faction_craft.capabilities.raider.IRaider;
 import com.patrigan.faction_craft.capabilities.raider.RaiderHelper;
 import com.patrigan.faction_craft.capabilities.raidmanager.IRaidManager;
@@ -352,11 +353,11 @@ public class Raid {
         int waveNumber = this.groupsSpawned + 1;
         this.totalHealth = 0.0F;
 
-        float waveMultiplier = BASE_WAVE_MULTIPLIER.get() + (this.groupsSpawned * MULTIPLIER_INCREASE_PER_WAVE.get());
-        float spreadMultiplier = ((level.random.nextFloat()*2)-1)*WAVE_TARGET_STRENGTH_SPREAD.get();
-        float difficultyMultiplier = getDifficultyMultiplier(level.getDifficulty());
-        float badOmenMultiplier = MULTIPLIER_INCREASE_PER_BAD_OMEN.get() * (factions.size()-1);
-        float totalMultiplier = waveMultiplier + spreadMultiplier + difficultyMultiplier + badOmenMultiplier;
+        double waveMultiplier = BASE_WAVE_MULTIPLIER.get() + (this.groupsSpawned * MULTIPLIER_INCREASE_PER_WAVE.get());
+        double spreadMultiplier = ((level.random.nextFloat()*2)-1)*WAVE_TARGET_STRENGTH_SPREAD.get();
+        double difficultyMultiplier = getDifficultyMultiplier(level.getDifficulty());
+        double badOmenMultiplier = MULTIPLIER_INCREASE_PER_BAD_OMEN.get() * (factions.size()-1);
+        double totalMultiplier = waveMultiplier + spreadMultiplier + difficultyMultiplier + badOmenMultiplier;
         int targetStrength = (int) Math.floor(raidTarget.getTargetStrength() * totalMultiplier);
         Map<Faction, Integer> factionFractions = determineFactionFractions(targetStrength);
         factionFractions.entrySet().forEach(entry -> spawnGroupForFaction(this.waveSpawnPos.poll(), waveNumber, entry.getValue(), entry.getKey()));
@@ -397,6 +398,19 @@ public class Raid {
         // Apply Boosts
         FactionBoostHelper.applyBoosts(targetStrength-waveStrength, entities, faction, this.level);
 
+        entities.stream().flatMap(mobEntity -> mobEntity.getRootVehicle().getSelfAndPassengers()).filter(entity -> !entities.contains(entity)).forEach(entity -> {
+            if(entity instanceof MobEntity) {
+                MobEntity mobEntity = (MobEntity) entity;
+                IFactionEntity entityCapability = FactionEntityHelper.getFactionEntityCapability(mobEntity);
+                if(entityCapability.getFaction() != null && entityCapability.getFactionEntityType() != null) {
+                    this.joinRaid(waveNumber, mobEntity, spawnBlockPos, false);
+                    entities.add(mobEntity);
+                    entityCapability.getFaction().getBoostConfig().getMandatoryBoosts().forEach(boost -> boost.apply(mobEntity));
+                    entityCapability.getFactionEntityType().getBoostConfig().getMandatoryBoosts().forEach(boost -> boost.apply(mobEntity));
+                }
+            }
+        });
+
         List<MobEntity> captainEntities = entities.stream().filter(mobEntity -> FactionEntityHelper.getFactionEntityCapability(mobEntity).getFactionEntityType().canBeBannerHolder()).collect(Collectors.toList());
         MobEntity randomItem = GeneralUtils.getRandomItem(captainEntities, level.getRandom());
         if(randomItem != null) {
@@ -433,7 +447,7 @@ public class Raid {
         return waveFactionEntities;
     }
 
-    public float getDifficultyMultiplier(Difficulty difficulty) {
+    public double getDifficultyMultiplier(Difficulty difficulty) {
         switch(difficulty) {
             case EASY:
                 return TARGET_STRENGTH_DIFFICULTY_MULTIPLIER_EASY.get();

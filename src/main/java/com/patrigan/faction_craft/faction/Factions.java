@@ -87,7 +87,7 @@ public class Factions {
     }
 
     public static Faction getDefaultFaction(){
-        return FACTION_DATA.data.get(new ResourceLocation("vanilla"));
+        return FACTION_DATA.data.get(new ResourceLocation("illager"));
     }
 
     @SubscribeEvent
@@ -97,6 +97,9 @@ public class Factions {
     }
 
     public static Faction getRandomFaction(Random random) {
-        return GeneralUtils.getRandomItem(new ArrayList<>(FACTION_DATA.data.values()), random);
+        return GeneralUtils.getRandomItem(new ArrayList<>(getFactionData().values()), random);
+    }
+    public static Faction getRandomFactionWithEnemies(Random random) {
+        return GeneralUtils.getRandomItem(getFactionData().values().stream().filter(faction -> !faction.getRelations().getEnemies().isEmpty()).collect(Collectors.toList()), random);
     }
 }

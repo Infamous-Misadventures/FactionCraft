@@ -40,9 +40,9 @@ public class PatrolSpawner implements ISpecialSpawner {
          if (this.nextTick > 0) {
             return 0;
          } else {
-            this.nextTick += FactionCraftConfig.TICK_DELAY_BETWEEN_SPAWN_ATTEMPTS.get() + random.nextInt(FactionCraftConfig.VARIABLE_TICK_DELAY_BETWEEN_SPAWN_ATTEMPTS.get());
-            if (pLevel.getDayTime() >= FactionCraftConfig.DAYTIME_BEFORE_SPAWNING.get() && pLevel.isDay()) {
-               if (random.nextFloat() <= FactionCraftConfig.SPAWN_CHANCE_ON_SPAWN_ATTEMPT.get()) {
+            this.nextTick += FactionCraftConfig.PATROL_TICK_DELAY_BETWEEN_SPAWN_ATTEMPTS.get() + random.nextInt(FactionCraftConfig.PATROL_VARIABLE_TICK_DELAY_BETWEEN_SPAWN_ATTEMPTS.get());
+            if (pLevel.getDayTime() >= FactionCraftConfig.PATROL_DAYTIME_BEFORE_SPAWNING.get() && pLevel.isDay()) {
+               if (random.nextFloat() <= FactionCraftConfig.PATROL_SPAWN_CHANCE_ON_SPAWN_ATTEMPT.get()) {
                   return 0;
                } else {
                   int j = pLevel.players().size();

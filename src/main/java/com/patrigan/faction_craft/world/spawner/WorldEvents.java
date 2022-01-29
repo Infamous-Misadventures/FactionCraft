@@ -28,6 +28,7 @@ public class WorldEvents {
                     .filter(WorldEvents::filterVanillaPatrols)
                     .collect(Collectors.toList());
             newCustomSpawners.add(new com.patrigan.faction_craft.world.spawner.PatrolSpawner());
+            newCustomSpawners.add(new BattleSpawner());
             accessor.setCustomSpawners(newCustomSpawners);
 
         }
