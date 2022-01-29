@@ -2,9 +2,9 @@ package com.patrigan.faction_craft.boost;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.MobEntity;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
 
@@ -54,13 +54,13 @@ public class WearArmorBoost extends Boost {
         if (!canApply(livingEntity)) {
             return 0;
         }
-        itemStacks.forEach(itemStack -> ((MobEntity) livingEntity).setItemSlot(((MobEntity) livingEntity).getEquipmentSlotForItem(itemStack), itemStack));
+        itemStacks.forEach(itemStack -> livingEntity.setItemSlot(LivingEntity.getEquipmentSlotForItem(itemStack), itemStack));
         super.apply(livingEntity);
         return strengthAdjustment;
     }
 
     @Override
     public boolean canApply(LivingEntity livingEntity) {
-        return livingEntity instanceof MobEntity;
+        return livingEntity instanceof Mob;
     }
 }

@@ -3,14 +3,13 @@ package com.patrigan.faction_craft.boost;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.patrigan.faction_craft.entity.ai.goal.GoalHelper;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.MobEntity;
-import net.minecraft.entity.ai.goal.FleeSunGoal;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.entity.ai.goal.PrioritizedGoal;
-import net.minecraft.entity.ai.goal.RestrictSunGoal;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.goal.FleeSunGoal;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.ai.goal.WrappedGoal;
+import net.minecraft.world.entity.ai.goal.RestrictSunGoal;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -57,19 +56,19 @@ public class DaylightProtectionBoost extends Boost {
         if (!canApply(livingEntity)) {
             return 0;
         }
-        if(livingEntity instanceof MobEntity) {
-            livingEntity.setItemSlot(MobEntity.getEquipmentSlotForItem(headpiece), headpiece);
-            ((MobEntity) livingEntity).setDropChance(MobEntity.getEquipmentSlotForItem(headpiece), 0);
+        if(livingEntity instanceof Mob) {
+            livingEntity.setItemSlot(Mob.getEquipmentSlotForItem(headpiece), headpiece);
+            ((Mob) livingEntity).setDropChance(Mob.getEquipmentSlotForItem(headpiece), 0);
         }
         super.apply(livingEntity);
         return 1;
     }
 
     @Override
-    public void updateAIOnJoin(MobEntity mobEntity) {
+    public void updateAIOnJoin(Mob mobEntity) {
         List<Goal> toRemove = GoalHelper.getAvailableGoals(mobEntity).stream()
                 .filter(prioritizedGoal -> prioritizedGoal.getGoal() instanceof FleeSunGoal || prioritizedGoal.getGoal() instanceof RestrictSunGoal)
-                .map(PrioritizedGoal::getGoal)
+                .map(WrappedGoal::getGoal)
                 .collect(Collectors.toList());
         toRemove.forEach(mobEntity.goalSelector::removeGoal);
         super.updateAIOnJoin(mobEntity);

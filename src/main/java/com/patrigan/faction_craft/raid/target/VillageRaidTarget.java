@@ -3,18 +3,18 @@ package com.patrigan.faction_craft.raid.target;
 import com.patrigan.faction_craft.FactionCraft;
 import com.patrigan.faction_craft.event.CalculateStrengthEvent;
 import com.patrigan.faction_craft.raid.Raid;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.EntitySpawnPlacementRegistry;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.merchant.villager.AbstractVillagerEntity;
-import net.minecraft.entity.passive.IronGolemEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.SectionPos;
-import net.minecraft.world.server.ServerWorld;
-import net.minecraft.world.spawner.WorldEntitySpawner;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.entity.SpawnPlacements;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.npc.AbstractVillager;
+import net.minecraft.world.entity.animal.IronGolem;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.core.SectionPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.NaturalSpawner;
 
 import java.util.Comparator;
 import java.util.stream.Stream;
@@ -26,21 +26,21 @@ public class VillageRaidTarget implements RaidTarget {
 
     private final RaidTarget.Type raidType = VILLAGE;
     private BlockPos blockPos;
-    private int targetStrength;
+    private final int targetStrength;
 
-    public VillageRaidTarget(BlockPos blockPos, ServerWorld level) {
+    public VillageRaidTarget(BlockPos blockPos, ServerLevel level) {
         this.blockPos = blockPos;
         updateTargetBlockPos(level);
         this.targetStrength = calculateTargetStrength(blockPos, level);
     }
 
-    private int calculateTargetStrength(BlockPos blockPos, ServerWorld level) {
+    private int calculateTargetStrength(BlockPos blockPos, ServerLevel level) {
         int strength = 0;
-        strength += level.getLoadedEntitiesOfClass(AbstractVillagerEntity.class,
-                new AxisAlignedBB(blockPos).inflate(100),
+        strength += level.getEntitiesOfClass(AbstractVillager.class,
+                new AABB(blockPos).inflate(100),
                 abstractVillagerEntity -> true).size() * VILLAGE_RAID_VILLAGER_WEIGHT.get();
-        strength += level.getLoadedEntitiesOfClass(IronGolemEntity.class,
-                new AxisAlignedBB(blockPos).inflate(100),
+        strength += level.getEntitiesOfClass(IronGolem.class,
+                new AABB(blockPos).inflate(100),
                 ironGolemEntity -> true).size() * VILLAGE_RAID_IRON_GOLEM_WEIGHT.get();
         CalculateStrengthEvent event = new CalculateStrengthEvent(VILLAGE, blockPos, level, strength, strength);
         net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event);
@@ -59,7 +59,7 @@ public class VillageRaidTarget implements RaidTarget {
     }
 
     @Override
-    public void updateTargetBlockPos(ServerWorld level) {
+    public void updateTargetBlockPos(ServerLevel level) {
         if (!level.isVillage(blockPos)) {
             this.moveRaidCenterToNearbyVillageSection(level);
         }
@@ -80,16 +80,16 @@ public class VillageRaidTarget implements RaidTarget {
     }
 
     @Override
-    public boolean checkLossCondition(Raid raid, ServerWorld level) {
+    public boolean checkLossCondition(Raid raid, ServerLevel level) {
         return !level.isVillage(blockPos);
     }
 
     @Override
-    public boolean isValidSpawnPos(int outerAttempt, BlockPos.Mutable blockpos$mutable, ServerWorld level) {
+    public boolean isValidSpawnPos(int outerAttempt, BlockPos.MutableBlockPos blockpos$mutable, ServerLevel level) {
         return (!level.isVillage(blockpos$mutable) || outerAttempt >= 2)
                 && level.hasChunksAt(blockpos$mutable.getX() - 10, blockpos$mutable.getY() - 10, blockpos$mutable.getZ() - 10, blockpos$mutable.getX() + 10, blockpos$mutable.getY() + 10, blockpos$mutable.getZ() + 10)
-                && level.getChunkSource().isEntityTickingChunk(new ChunkPos(blockpos$mutable))
-                && (WorldEntitySpawner.isSpawnPositionOk(EntitySpawnPlacementRegistry.PlacementType.ON_GROUND, level, blockpos$mutable, EntityType.RAVAGER)
+                && level.isPositionEntityTicking(blockpos$mutable)
+                && (NaturalSpawner.isSpawnPositionOk(SpawnPlacements.Type.ON_GROUND, level, blockpos$mutable, EntityType.RAVAGER)
                     || level.getBlockState(blockpos$mutable.below()).is(Blocks.SNOW) && level.getBlockState(blockpos$mutable).isAir());
     }
 
@@ -98,7 +98,7 @@ public class VillageRaidTarget implements RaidTarget {
         return raidType;
     }
 
-    private void moveRaidCenterToNearbyVillageSection(ServerWorld level) {
+    private void moveRaidCenterToNearbyVillageSection(ServerLevel level) {
         Stream<SectionPos> stream = SectionPos.cube(SectionPos.of(blockPos), 2);
         stream.filter(level::isVillage).map(SectionPos::center).min(Comparator.comparingDouble((p_223025_1_) -> {
             return p_223025_1_.distSqr(blockPos);
@@ -106,7 +106,7 @@ public class VillageRaidTarget implements RaidTarget {
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT compoundNbt){
+    public CompoundTag save(CompoundTag compoundNbt){
         compoundNbt.putString("Type", this.raidType.getName());
         compoundNbt.putInt("X", blockPos.getX());
         compoundNbt.putInt("Y", blockPos.getY());

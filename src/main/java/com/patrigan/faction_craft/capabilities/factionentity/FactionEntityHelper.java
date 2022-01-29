@@ -1,24 +1,25 @@
 package com.patrigan.faction_craft.capabilities.factionentity;
 
-import net.minecraft.entity.MobEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraftforge.common.util.LazyOptional;
 
-import static com.patrigan.faction_craft.capabilities.factionentity.FactionEntityProvider.FACTION_ENTITY_CAPABILITY;
+import static com.patrigan.faction_craft.capabilities.ModCapabilities.FACTION_ENTITY_CAPABILITY;
+
 
 public class FactionEntityHelper {
 
-    public static LazyOptional<IFactionEntity> getFactionEntityCapabilityLazy(MobEntity mobEntity)
+    public static LazyOptional<FactionEntity> getFactionEntityCapabilityLazy(Mob mobEntity)
     {
         if(FACTION_ENTITY_CAPABILITY == null) {
             return LazyOptional.empty();
         }
-        LazyOptional<IFactionEntity> lazyCap = mobEntity.getCapability(FACTION_ENTITY_CAPABILITY);
+        LazyOptional<FactionEntity> lazyCap = mobEntity.getCapability(FACTION_ENTITY_CAPABILITY);
         return lazyCap;
     }
 
-    public static IFactionEntity getFactionEntityCapability(MobEntity mobEntity)
+    public static FactionEntity getFactionEntityCapability(Mob mobEntity)
     {
-        LazyOptional<IFactionEntity> lazyCap = mobEntity.getCapability(FACTION_ENTITY_CAPABILITY);
+        LazyOptional<FactionEntity> lazyCap = mobEntity.getCapability(FACTION_ENTITY_CAPABILITY);
         if (lazyCap.isPresent()) {
             return lazyCap.orElseThrow(() -> new IllegalStateException("Couldn't get the RaidManager capability from the world!"));
         }

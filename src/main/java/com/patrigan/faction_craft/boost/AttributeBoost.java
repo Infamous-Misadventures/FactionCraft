@@ -2,10 +2,10 @@ package com.patrigan.faction_craft.boost;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.attributes.Attribute;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.resources.ResourceLocation;
 
 import static com.patrigan.faction_craft.boost.BoostProviders.ATTRIBUTE;
 import static net.minecraftforge.registries.ForgeRegistries.ATTRIBUTES;

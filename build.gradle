@@ -21,15 +21,15 @@ apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
 mixin {
-    add sourceSets.main, "faction_craft.refmap.json"
+    add sourceSets.main, "${modid}.refmap.json"
     config "faction_craft.mixins.json"
 }
 
 version = "${mc_version}-${mod_version}"
-group = 'com.infamous.faction_craft' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+group = 'com.patrigan.faction_craft' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "${modid}"
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(8) //Gradle 7+ & FG v5.1+ are compatible with JDK 16 but for minecraft versions below 1.17 we have to target Java 8
+java.toolchain.languageVersion = JavaLanguageVersion.of(17) //Gradle 7+ & FG v5.1+ are compatible with JDK 16 but for minecraft versions below 1.17 we have to target Java 8
 
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 minecraft {
@@ -49,6 +49,7 @@ minecraft {
             property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
 
             // Recommended logging level for the console
+            arg "-mixin.config=${modid}.mixins.json"
             property 'forge.logging.console.level', 'debug'
             property 'mixin.env.remapRefMap', 'true'
             property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
@@ -68,6 +69,7 @@ minecraft {
 
             // Recommended logging level for the console
             property 'forge.logging.console.level', 'debug'
+            property 'forge.logging.console.level', 'debug'
             property 'mixin.env.remapRefMap', 'true'
             property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
 
@@ -84,6 +86,7 @@ minecraft {
             // Recommended logging data for a userdev environment
             property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
 
+            property 'forge.logging.console.level', 'debug'
             property 'mixin.env.remapRefMap', 'true'
             property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
 
@@ -133,7 +136,7 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 dependencies {
     minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
-    annotationProcessor 'org.spongepowered:mixin:0.8.4:processor'
+    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
 //    implementation fg.deobf('software.bernie.geckolib:geckolib-forge-1.16.5:3.0.45')
 //    implementation fg.deobf('software.bernie.geckolib:geckolib-forge-1.16.5:3.0.45')

@@ -1,24 +1,25 @@
 package com.patrigan.faction_craft.capabilities.factioninteraction;
 
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.util.LazyOptional;
 
-import static com.patrigan.faction_craft.capabilities.factioninteraction.FactionInteractionProvider.FACTION_INTERACTION_CAPABILITY;
+import static com.patrigan.faction_craft.capabilities.ModCapabilities.FACTION_INTERACTION_CAPABILITY;
+
 
 public class FactionInteractionHelper {
 
-    public static LazyOptional<IFactionInteraction> getFactionInteractionCapabilityLazy(PlayerEntity player)
+    public static LazyOptional<FactionInteraction> getFactionInteractionCapabilityLazy(Player player)
     {
         if(FACTION_INTERACTION_CAPABILITY == null) {
             return LazyOptional.empty();
         }
-        LazyOptional<IFactionInteraction> lazyCap = player.getCapability(FACTION_INTERACTION_CAPABILITY);
+        LazyOptional<FactionInteraction> lazyCap = player.getCapability(FACTION_INTERACTION_CAPABILITY);
         return lazyCap;
     }
 
-    public static IFactionInteraction getFactionInteractionCapability(PlayerEntity player)
+    public static FactionInteraction getFactionInteractionCapability(Player player)
     {
-        LazyOptional<IFactionInteraction> lazyCap = player.getCapability(FACTION_INTERACTION_CAPABILITY);
+        LazyOptional<FactionInteraction> lazyCap = player.getCapability(FACTION_INTERACTION_CAPABILITY);
         if (lazyCap.isPresent()) {
             return lazyCap.orElseThrow(() -> new IllegalStateException("Couldn't get the FactionInteraction capability from the world!"));
         }

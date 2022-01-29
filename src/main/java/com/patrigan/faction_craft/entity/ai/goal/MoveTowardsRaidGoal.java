@@ -1,19 +1,20 @@
 package com.patrigan.faction_craft.entity.ai.goal;
 
-import com.patrigan.faction_craft.capabilities.raider.IRaider;
+import com.patrigan.faction_craft.capabilities.raider.Raider;
 import com.patrigan.faction_craft.capabilities.raider.RaiderHelper;
 import com.patrigan.faction_craft.raid.Raid;
-import net.minecraft.entity.CreatureEntity;
-import net.minecraft.entity.MobEntity;
-import net.minecraft.entity.ai.RandomPositionGenerator;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.entity.PathfinderMob;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.util.DefaultRandomPos;
+import net.minecraft.world.entity.ai.util.RandomPos;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.common.util.LazyOptional;
 
 import java.util.EnumSet;
 
-public class MoveTowardsRaidGoal<T extends MobEntity> extends Goal {
+public class MoveTowardsRaidGoal<T extends Mob> extends Goal {
     private final T mob;
 
     public MoveTowardsRaidGoal(T p_i50323_1_) {
@@ -26,31 +27,31 @@ public class MoveTowardsRaidGoal<T extends MobEntity> extends Goal {
      * method as well.
      */
     public boolean canUse() {
-        LazyOptional<IRaider> raiderCapabilityLazy = RaiderHelper.getRaiderCapabilityLazy(this.mob);
+        LazyOptional<Raider> raiderCapabilityLazy = RaiderHelper.getRaiderCapabilityLazy(this.mob);
         if(!raiderCapabilityLazy.isPresent()){
             return false;
         }
-        IRaider raiderCapability = RaiderHelper.getRaiderCapability(this.mob);
-        return this.mob instanceof CreatureEntity
+        Raider raiderCapability = RaiderHelper.getRaiderCapability(this.mob);
+        return this.mob instanceof PathfinderMob
                 && this.mob.getTarget() == null
                 && !this.mob.isVehicle() && raiderCapability.hasActiveRaid()
                 && !raiderCapability.getRaid().isOver()
-                && !((ServerWorld)this.mob.level).isVillage(this.mob.blockPosition());
+                && !((ServerLevel)this.mob.level).isVillage(this.mob.blockPosition());
     }
 
     /**
      * Returns whether an in-progress EntityAIBase should continue executing
      */
     public boolean canContinueToUse() {
-        IRaider raiderCapability = RaiderHelper.getRaiderCapability(this.mob);
-        return raiderCapability.hasActiveRaid() && this.mob.getTarget() == null && !raiderCapability.getRaid().isOver() && this.mob.level instanceof ServerWorld && !((ServerWorld)this.mob.level).isVillage(this.mob.blockPosition());
+        Raider raiderCapability = RaiderHelper.getRaiderCapability(this.mob);
+        return raiderCapability.hasActiveRaid() && this.mob.getTarget() == null && !raiderCapability.getRaid().isOver() && this.mob.level instanceof ServerLevel && !((ServerLevel)this.mob.level).isVillage(this.mob.blockPosition());
     }
 
     /**
      * Keep ticking a continuous task that has already been started
      */
     public void tick() {
-        IRaider raiderCapability = RaiderHelper.getRaiderCapability(this.mob);
+        Raider raiderCapability = RaiderHelper.getRaiderCapability(this.mob);
         if (raiderCapability.hasActiveRaid()) {
             Raid raid = raiderCapability.getRaid();
 //            if (this.mob.tickCount % 20 == 0) {
@@ -58,7 +59,7 @@ public class MoveTowardsRaidGoal<T extends MobEntity> extends Goal {
 //            }
 
             if (this.mob.getNavigation().isDone()) {
-                Vector3d vector3d = RandomPositionGenerator.getPosTowards((CreatureEntity) this.mob, 15, 4, Vector3d.atBottomCenterOf(raid.getCenter()));
+                Vec3 vector3d = DefaultRandomPos.getPosTowards((PathfinderMob) this.mob, 15, 4, Vec3.atBottomCenterOf(raid.getCenter()), (double)((float)Math.PI / 2F));
                 if (vector3d != null) {
                     this.mob.getNavigation().moveTo(vector3d.x, vector3d.y, vector3d.z, 1.0D);
                 }

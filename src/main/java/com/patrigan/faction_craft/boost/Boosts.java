@@ -1,13 +1,13 @@
 package com.patrigan.faction_craft.boost;
 
+import com.mojang.datafixers.util.Pair;
 import com.patrigan.faction_craft.FactionCraft;
+import com.patrigan.faction_craft.capabilities.appliedboosts.AppliedBoosts;
 import com.patrigan.faction_craft.capabilities.appliedboosts.AppliedBoostsHelper;
-import com.patrigan.faction_craft.capabilities.appliedboosts.IAppliedBoosts;
 import com.patrigan.faction_craft.data.util.CodecJsonDataManager;
 import com.patrigan.faction_craft.util.GeneralUtils;
-import net.minecraft.entity.LivingEntity;
-import com.mojang.datafixers.util.Pair;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -59,11 +59,11 @@ public class Boosts {
         if(BOOSTS.data.size() == 0){
             return null;
         }
-        LazyOptional<IAppliedBoosts> lazyCap = AppliedBoostsHelper.getAppliedBoostsCapabilityLazy(livingEntity);
+        LazyOptional<AppliedBoosts> lazyCap = AppliedBoostsHelper.getAppliedBoostsCapabilityLazy(livingEntity);
         if(!lazyCap.isPresent()){
             return null;
         }
-        IAppliedBoosts cap = lazyCap.resolve().get();
+        AppliedBoosts cap = lazyCap.resolve().get();
         List<Pair<Boost, Integer>> filtered = BOOSTS.data.values().stream()
                 .filter(boost -> (whitelist.isEmpty() && !getRarity(boost, rarityOverrides).equals(Boost.Rarity.NONE)) || whitelist.contains(boost))
                 .filter(boost -> !blacklist.contains(boost))

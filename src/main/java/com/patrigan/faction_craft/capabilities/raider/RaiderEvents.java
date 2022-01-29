@@ -1,9 +1,9 @@
 package com.patrigan.faction_craft.capabilities.raider;
 
 import com.patrigan.faction_craft.raid.Raid;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.MobEntity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent;
@@ -19,8 +19,8 @@ public class RaiderEvents {
     @SubscribeEvent
     public static void onLivingHurtEvent(LivingHurtEvent event){
         LivingEntity livingEntity = event.getEntityLiving();
-        if(!livingEntity.level.isClientSide() && livingEntity instanceof MobEntity) {
-            RaiderHelper.getRaiderCapabilityLazy((MobEntity) livingEntity).ifPresent(cap -> {
+        if(!livingEntity.level.isClientSide() && livingEntity instanceof Mob) {
+            RaiderHelper.getRaiderCapabilityLazy((Mob) livingEntity).ifPresent(cap -> {
                 if (cap.hasActiveRaid()) {
                     cap.getRaid().updateBossbar();
                 }
@@ -30,8 +30,8 @@ public class RaiderEvents {
     @SubscribeEvent
     public static void onLivingDeathEvent(LivingDeathEvent event){
         LivingEntity livingEntity = event.getEntityLiving();
-        if(!livingEntity.level.isClientSide() && livingEntity instanceof MobEntity) {
-            MobEntity mobEntity = (MobEntity) livingEntity;
+        if(!livingEntity.level.isClientSide() && livingEntity instanceof Mob) {
+            Mob mobEntity = (Mob) livingEntity;
             RaiderHelper.getRaiderCapabilityLazy(mobEntity).ifPresent(cap -> {
                 if (cap.hasActiveRaid()) {
                     Raid raid = cap.getRaid();
@@ -64,8 +64,8 @@ public class RaiderEvents {
     @SubscribeEvent
     public static void onAllowDespawn(LivingSpawnEvent.AllowDespawn event){
         LivingEntity livingEntity = event.getEntityLiving();
-        if(!livingEntity.level.isClientSide() && livingEntity instanceof MobEntity) {
-            MobEntity mobEntity = (MobEntity) livingEntity;
+        if(!livingEntity.level.isClientSide() && livingEntity instanceof Mob) {
+            Mob mobEntity = (Mob) livingEntity;
             RaiderHelper.getRaiderCapabilityLazy(mobEntity).ifPresent(cap -> {
                 if (cap.hasActiveRaid()) {
                     event.setResult(Event.Result.DENY);

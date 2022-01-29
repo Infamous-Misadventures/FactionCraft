@@ -1,7 +1,7 @@
 package com.patrigan.faction_craft.boost;
 
 import com.mojang.serialization.Codec;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.world.entity.LivingEntity;
 
 import java.util.function.Supplier;
 

@@ -1,9 +1,9 @@
 package com.patrigan.faction_craft.faction;
 
 import com.patrigan.faction_craft.capabilities.factionentity.FactionEntityHelper;
-import com.patrigan.faction_craft.capabilities.factionentity.IFactionEntity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.MobEntity;
+import com.patrigan.faction_craft.capabilities.factionentity.FactionEntity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -16,9 +16,9 @@ public class FactionEvents {
     @SubscribeEvent
     public static void onLivingHurtEvent(LivingAttackEvent event){
         LivingEntity livingEntity = event.getEntityLiving();
-        if(!livingEntity.level.isClientSide() && event.getEntityLiving() instanceof MobEntity && event.getSource().getEntity() instanceof MobEntity) {
-            IFactionEntity targetCap = FactionEntityHelper.getFactionEntityCapability((MobEntity) event.getEntityLiving());
-            IFactionEntity sourceCap = FactionEntityHelper.getFactionEntityCapability((MobEntity) event.getSource().getEntity());
+        if(!livingEntity.level.isClientSide() && event.getEntityLiving() instanceof Mob && event.getSource().getEntity() instanceof Mob) {
+            FactionEntity targetCap = FactionEntityHelper.getFactionEntityCapability((Mob) event.getEntityLiving());
+            FactionEntity sourceCap = FactionEntityHelper.getFactionEntityCapability((Mob) event.getSource().getEntity());
             if(targetCap.getFaction() != null && sourceCap.getFaction() != null) {
                 if (targetCap.getFaction() == sourceCap.getFaction() || sourceCap.getFaction().getRelations().getAllies().contains(targetCap.getFaction().getName())) {
                     event.setCanceled(true);

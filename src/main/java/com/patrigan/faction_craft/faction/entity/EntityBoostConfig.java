@@ -5,11 +5,9 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.patrigan.faction_craft.boost.Boost;
 import com.patrigan.faction_craft.boost.Boosts;
-import com.patrigan.faction_craft.faction.FactionBoostConfig;
-import com.sun.prism.image.CompoundTexture;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,17 +38,17 @@ public class EntityBoostConfig {
         this.rarityOverridesLocations = rarityOverridesLocations;
     }
 
-    public static EntityBoostConfig load(CompoundNBT compoundNbt) {
-        ListNBT mandatory = compoundNbt.getList("mandatory", 10);
-        ListNBT whitelist = compoundNbt.getList("whitelist", 10);
-        ListNBT blacklist = compoundNbt.getList("blacklist", 10);
-        ListNBT rarityOverrides = compoundNbt.getList("rarityOverrides", 10);
-        List<ResourceLocation> mandatoryList = mandatory.stream().map(inbt -> new ResourceLocation(((CompoundNBT) inbt).getString("resourceLocation"))).collect(Collectors.toList());
-        List<ResourceLocation> whitelistList = whitelist.stream().map(inbt -> new ResourceLocation(((CompoundNBT) inbt).getString("resourceLocation"))).collect(Collectors.toList());
-        List<ResourceLocation> blacklistList = blacklist.stream().map(inbt -> new ResourceLocation(((CompoundNBT) inbt).getString("resourceLocation"))).collect(Collectors.toList());
+    public static EntityBoostConfig load(CompoundTag compoundNbt) {
+        ListTag mandatory = compoundNbt.getList("mandatory", 10);
+        ListTag whitelist = compoundNbt.getList("whitelist", 10);
+        ListTag blacklist = compoundNbt.getList("blacklist", 10);
+        ListTag rarityOverrides = compoundNbt.getList("rarityOverrides", 10);
+        List<ResourceLocation> mandatoryList = mandatory.stream().map(inbt -> new ResourceLocation(((CompoundTag) inbt).getString("resourceLocation"))).collect(Collectors.toList());
+        List<ResourceLocation> whitelistList = whitelist.stream().map(inbt -> new ResourceLocation(((CompoundTag) inbt).getString("resourceLocation"))).collect(Collectors.toList());
+        List<ResourceLocation> blacklistList = blacklist.stream().map(inbt -> new ResourceLocation(((CompoundTag) inbt).getString("resourceLocation"))).collect(Collectors.toList());
         List<Pair<ResourceLocation, Boost.Rarity>> rarityOverridesList = rarityOverrides.stream().map(inbt -> {
-            ResourceLocation resourceLocation = new ResourceLocation(((CompoundNBT) inbt).getString("resourceLocation"));
-            Boost.Rarity rarity = Boost.Rarity.byName(((CompoundNBT) inbt).getString("rarity"), Boost.Rarity.NONE);
+            ResourceLocation resourceLocation = new ResourceLocation(((CompoundTag) inbt).getString("resourceLocation"));
+            Boost.Rarity rarity = Boost.Rarity.byName(((CompoundTag) inbt).getString("rarity"), Boost.Rarity.NONE);
             return new Pair<>(resourceLocation, rarity);
         }).collect(Collectors.toList());
         return new EntityBoostConfig(
@@ -93,31 +91,31 @@ public class EntityBoostConfig {
         return rarityOverridesLocations.stream().collect(Collectors.toMap(pair -> Boosts.getBoost(pair.getFirst()), Pair::getSecond));
     }
 
-    public CompoundNBT save(CompoundNBT compoundNbt){
-        ListNBT mandatory = new ListNBT();
+    public CompoundTag save(CompoundTag compoundNbt){
+        ListTag mandatory = new ListTag();
         mandatory.addAll(mandatoryResourceLocations.stream().map(resourceLocation -> {
-            CompoundNBT listItemNbt = new CompoundNBT();
+            CompoundTag listItemNbt = new CompoundTag();
             listItemNbt.putString("resourceLocation", resourceLocation.toString());
             return listItemNbt;
         }).collect(Collectors.toList()));
         compoundNbt.put("mandatory", mandatory);
-        ListNBT whitelist = new ListNBT();
+        ListTag whitelist = new ListTag();
         whitelist.addAll(whitelistResourceLocations.stream().map(resourceLocation -> {
-            CompoundNBT listItemNbt = new CompoundNBT();
+            CompoundTag listItemNbt = new CompoundTag();
             listItemNbt.putString("resourceLocation", resourceLocation.toString());
             return listItemNbt;
         }).collect(Collectors.toList()));
         compoundNbt.put("whitelist", whitelist);
-        ListNBT blacklist = new ListNBT();
+        ListTag blacklist = new ListTag();
         blacklist.addAll(blacklistResourceLocations.stream().map(resourceLocation -> {
-            CompoundNBT listItemNbt = new CompoundNBT();
+            CompoundTag listItemNbt = new CompoundTag();
             listItemNbt.putString("resourceLocation", resourceLocation.toString());
             return listItemNbt;
         }).collect(Collectors.toList()));
         compoundNbt.put("blacklist", blacklist);
-        ListNBT rarityOverrides = new ListNBT();
+        ListTag rarityOverrides = new ListTag();
         rarityOverrides.addAll(rarityOverridesLocations.stream().map(pair -> {
-            CompoundNBT listItemNbt = new CompoundNBT();
+            CompoundTag listItemNbt = new CompoundTag();
             listItemNbt.putString("resourceLocation", pair.getFirst().toString());
             listItemNbt.putString("rarity", pair.getSecond().getName());
             return listItemNbt;

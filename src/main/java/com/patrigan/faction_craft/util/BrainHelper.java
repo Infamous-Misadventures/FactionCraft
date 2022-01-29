@@ -5,10 +5,10 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.mojang.datafixers.util.Pair;
 import com.patrigan.faction_craft.mixin.BrainAccessor;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.brain.Brain;
-import net.minecraft.entity.ai.brain.schedule.Activity;
-import net.minecraft.entity.ai.brain.task.Task;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.Brain;
+import net.minecraft.world.entity.schedule.Activity;
+import net.minecraft.world.entity.ai.behavior.Behavior;
 
 public class BrainHelper {
 
@@ -20,11 +20,11 @@ public class BrainHelper {
     }
     */
 
-    public static <E extends LivingEntity> ImmutableList<? extends Pair<Integer, ? extends Task<? super E>>> createPriorityPairs(int priorityStart, ImmutableList<? extends Task<? super E>> tasks) {
+    public static <E extends LivingEntity> ImmutableList<? extends Pair<Integer, ? extends Behavior<? super E>>> createPriorityPairs(int priorityStart, ImmutableList<? extends Behavior<? super E>> tasks) {
         int priorityIndex = priorityStart;
-        ImmutableList.Builder<Pair<Integer, ? extends Task<? super E>>> priorityPairs = ImmutableList.builder();
+        ImmutableList.Builder<Pair<Integer, ? extends Behavior<? super E>>> priorityPairs = ImmutableList.builder();
 
-        for(Task<? super E> task : tasks) {
+        for(Behavior<? super E> task : tasks) {
             priorityPairs.add(Pair.of(priorityIndex++, task));
         }
 
@@ -52,10 +52,10 @@ public class BrainHelper {
     }
      */
 
-    public static <E extends LivingEntity> void addPrioritizedBehaviors(Activity activity, ImmutableList<? extends Pair<Integer, ? extends Task<? super E>>> prioritizedTasks, Brain<E> brain) {
+    public static <E extends LivingEntity> void addPrioritizedBehaviors(Activity activity, ImmutableList<? extends Pair<Integer, ? extends Behavior<? super E>>> prioritizedTasks, Brain<E> brain) {
         BrainAccessor<E> brainAccessor = castToAccessor(brain);
 
-        for(Pair<Integer, ? extends Task<? super E>> pair : prioritizedTasks) {
+        for(Pair<Integer, ? extends Behavior<? super E>> pair : prioritizedTasks) {
             brainAccessor.getAvailableBehaviorsByPriority()
                     .computeIfAbsent(pair.getFirst(), (p) -> Maps.newHashMap())
                     .computeIfAbsent(activity, (a) -> Sets.newLinkedHashSet())

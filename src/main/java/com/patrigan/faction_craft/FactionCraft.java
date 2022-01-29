@@ -2,31 +2,13 @@ package com.patrigan.faction_craft;
 
 import com.patrigan.faction_craft.boost.Boost;
 import com.patrigan.faction_craft.boost.BoostProviders;
-import com.patrigan.faction_craft.capabilities.appliedboosts.AppliedBoosts;
-import com.patrigan.faction_craft.capabilities.appliedboosts.AppliedBoostsStorage;
-import com.patrigan.faction_craft.capabilities.appliedboosts.IAppliedBoosts;
-import com.patrigan.faction_craft.capabilities.factionentity.FactionEntity;
-import com.patrigan.faction_craft.capabilities.factionentity.FactionEntityStorage;
-import com.patrigan.faction_craft.capabilities.factionentity.IFactionEntity;
-import com.patrigan.faction_craft.capabilities.factioninteraction.FactionInteraction;
-import com.patrigan.faction_craft.capabilities.factioninteraction.FactionInteractionStorage;
-import com.patrigan.faction_craft.capabilities.factioninteraction.IFactionInteraction;
-import com.patrigan.faction_craft.capabilities.patroller.IPatroller;
-import com.patrigan.faction_craft.capabilities.patroller.Patroller;
-import com.patrigan.faction_craft.capabilities.patroller.PatrollerStorage;
-import com.patrigan.faction_craft.capabilities.raider.IRaider;
-import com.patrigan.faction_craft.capabilities.raider.Raider;
-import com.patrigan.faction_craft.capabilities.raider.RaiderStorage;
-import com.patrigan.faction_craft.capabilities.raidmanager.IRaidManager;
-import com.patrigan.faction_craft.capabilities.raidmanager.RaidManager;
-import com.patrigan.faction_craft.capabilities.raidmanager.RaidManagerStorage;
+import com.patrigan.faction_craft.capabilities.ModCapabilities;
 import com.patrigan.faction_craft.config.FactionCraftConfig;
 import com.patrigan.faction_craft.entity.ai.brain.ModActivities;
 import com.patrigan.faction_craft.network.NetworkHandler;
 import com.patrigan.faction_craft.util.RegistryDispatcher;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
@@ -64,15 +46,11 @@ public class FactionCraft
         );
         ModActivities.ACTIVITIES.register(modEventBus);
         BoostProviders.BOOST_PROVIDERS.register(modEventBus);
+
+        ModCapabilities.setupCapabilities();
     }
 
     private void setup(final FMLCommonSetupEvent event){
-        CapabilityManager.INSTANCE.register(IRaidManager.class, new RaidManagerStorage(), RaidManager::new);
-        CapabilityManager.INSTANCE.register(IRaider.class, new RaiderStorage(), Raider::new);
-        CapabilityManager.INSTANCE.register(IPatroller.class, new PatrollerStorage(), Patroller::new);
-        CapabilityManager.INSTANCE.register(IFactionEntity.class, new FactionEntityStorage(), FactionEntity::new);
-        CapabilityManager.INSTANCE.register(IAppliedBoosts.class, new AppliedBoostsStorage(), AppliedBoosts::new);
-        CapabilityManager.INSTANCE.register(IFactionInteraction.class, new FactionInteractionStorage(), FactionInteraction::new);
         event.enqueueWork(NetworkHandler::init);
     }
 

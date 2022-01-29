@@ -1,13 +1,13 @@
 {
   "required": true,
   "package": "com.patrigan.faction_craft.mixin",
-  "compatibilityLevel": "JAVA_8",
+  "compatibilityLevel": "JAVA_17",
   "minVersion": "0.8",
   "refmap": "faction_craft.refmap.json",
   "mixins": [
     "BrainAccessor",
     "GoalSelectorAccessor",
-    "ServerWorldAccessor"
+    "ServerLevelAccessor"
   ],
   "client": [
   ],

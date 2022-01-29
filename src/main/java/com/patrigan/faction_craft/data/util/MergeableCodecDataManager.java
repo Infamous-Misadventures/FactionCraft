@@ -27,32 +27,35 @@ SOFTWARE.
 package com.patrigan.faction_craft.data.util;
 
 import com.google.common.collect.Maps;
+import com.google.common.util.concurrent.Runnables;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
-import net.minecraft.client.resources.ReloadListener;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.profiler.IProfiler;
-import net.minecraft.resources.IResource;
-import net.minecraft.resources.IResourceManager;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.fml.LogicalSide;
-import net.minecraftforge.fml.LogicalSidedProvider;
-import net.minecraftforge.fml.network.PacketDistributor;
-import net.minecraftforge.fml.network.simple.SimpleChannel;
+import net.minecraftforge.network.PacketDistributor;
+import net.minecraftforge.network.simple.SimpleChannel;
+import net.minecraftforge.server.ServerLifecycleHooks;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nonnull;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -61,10 +64,10 @@ import java.util.function.Function;
  * This works best if initialized during your mod's construction.
  * After creating the manager, subscribeAsSyncable can optionally be called on it to subscribe the manager
  * to the forge events necessary for syncing datapack data to clients.
- * @param <RAW> The boostType of the objects that the codec is parsing jsons as
- * @param <FINE> The boostType of the object we get after merging the parsed objects. Can be the same as RAW
+ * @param <RAW> The type of the objects that the codec is parsing jsons as
+ * @param <FINE> The type of the object we get after merging the parsed objects. Can be the same as RAW
  */
-public class MergeableCodecDataManager<RAW, FINE> extends ReloadListener<Map<ResourceLocation, FINE>>
+public class MergeableCodecDataManager<RAW, FINE> extends SimplePreparableReloadListener<Map<ResourceLocation, FINE>>
 {
     protected static final String JSON_EXTENSION = ".json";
     protected static final int JSON_EXTENSION_LENGTH = JSON_EXTENSION.length();
@@ -79,7 +82,7 @@ public class MergeableCodecDataManager<RAW, FINE> extends ReloadListener<Map<Res
     private final Codec<RAW> codec;
     private final Function<List<RAW>, FINE> merger;
     private final Gson gson;
-    private Optional<Runnable> syncOnReloadCallback = Optional.empty();
+    private Runnable syncOnReloadCallback = Runnables.doNothing();
 
     /**
      * Initialize a data manager with the given folder name, codec, and merger
@@ -128,7 +131,7 @@ public class MergeableCodecDataManager<RAW, FINE> extends ReloadListener<Map<Res
 
     /** Off-thread processing (can include reading files from hard drive) **/
     @Override
-    protected Map<ResourceLocation, FINE> prepare(final IResourceManager resourceManager, final IProfiler profiler)
+    protected Map<ResourceLocation, FINE> prepare(final ResourceManager resourceManager, final ProfilerFiller profiler)
     {
         final Map<ResourceLocation, List<RAW>> map = Maps.newHashMap();
 
@@ -146,7 +149,7 @@ public class MergeableCodecDataManager<RAW, FINE> extends ReloadListener<Map<Res
             // we can query the resource manager for these
             try
             {
-                for (IResource resource : resourceManager.getResources(resourceLocation))
+                for (Resource resource : resourceManager.getResources(resourceLocation))
                 {
                     try // with resources
                             (
@@ -156,7 +159,7 @@ public class MergeableCodecDataManager<RAW, FINE> extends ReloadListener<Map<Res
                     {
                         // read the json file and save the parsed object for later
                         // this json element may return null
-                        final JsonElement jsonElement = JSONUtils.fromJson(this.gson, reader, JsonElement.class);
+                        final JsonElement jsonElement = GsonHelper.fromJson(this.gson, reader, JsonElement.class);
                         this.codec.parse(JsonOps.INSTANCE, jsonElement)
                                 // resultOrPartial either returns a non-empty optional or calls the consumer given
                                 .resultOrPartial(MergeableCodecDataManager::throwJsonParseException)
@@ -205,27 +208,17 @@ public class MergeableCodecDataManager<RAW, FINE> extends ReloadListener<Map<Res
 
     /** Main-thread processing, runs after prepare concludes **/
     @Override
-    protected void apply(final Map<ResourceLocation, FINE> processedData, final IResourceManager resourceManager, final IProfiler profiler)
+    protected void apply(final Map<ResourceLocation, FINE> processedData, final ResourceManager resourceManager, final ProfilerFiller profiler)
     {
         this.logger.info("Beginning loading of data for data loader: {}", this.folderName);
         // now that we're on the main thread, we can finalize the data
         this.data = processedData;
         this.logger.info("Data loader for {} loaded {} finalized objects", this.folderName, this.data.size());
 
-        // hacky server test until we can find a better way to do this
-        boolean isServer = true;
-        try
-        {
-            LogicalSidedProvider.INSTANCE.get(LogicalSide.SERVER);
-        }
-        catch(Exception e)
-        {
-            isServer = false;
-        }
-        if (isServer)
+        if (ServerLifecycleHooks.getCurrentServer() != null)
         {
             // if we're on the server and we are configured to send syncing packets, send syncing packets
-            this.syncOnReloadCallback.ifPresent(Runnable::run);
+            this.syncOnReloadCallback.run();
         }
     }
 
@@ -234,8 +227,8 @@ public class MergeableCodecDataManager<RAW, FINE> extends ReloadListener<Map<Res
      * Calling this method in static init may cause it to be called later than it should be.
      * Calling this method A) causes the data manager to send a data-syncing packet to all players when a server /reloads data,
      * and B) subscribes the data manager to the PlayerLoggedIn event to allow it to sync itself to players when they log in.
-     * Be aware that the invoker must still manually subscribe the relevant packet boostType to the channel themselves.
-     * @param <PACKET> the packet boostType that will be sent on the given channel
+     * Be aware that the invoker must still manually subscribe the relevant packet type to the channel themselves.
+     * @param <PACKET> the packet type that will be sent on the given channel
      * @param channel The networking channel of your mod
      * @param packetFactory  A packet constructor or factory method that converts the given map to a packet object to send on the given channel
      * @return this manager object
@@ -244,7 +237,7 @@ public class MergeableCodecDataManager<RAW, FINE> extends ReloadListener<Map<Res
                                                                              final Function<Map<ResourceLocation, FINE>, PACKET> packetFactory)
     {
         MinecraftForge.EVENT_BUS.addListener(this.getLoginListener(channel, packetFactory));
-        this.syncOnReloadCallback = Optional.of(() -> channel.send(PacketDistributor.ALL.noArg(), packetFactory.apply(this.data)));
+        this.syncOnReloadCallback = () -> channel.send(PacketDistributor.ALL.noArg(), packetFactory.apply(this.data));
         return this;
     }
 
@@ -253,10 +246,10 @@ public class MergeableCodecDataManager<RAW, FINE> extends ReloadListener<Map<Res
                                                                                 final Function<Map<ResourceLocation, FINE>, PACKET> packetFactory)
     {
         return event -> {
-            PlayerEntity player = event.getPlayer();
-            if (player instanceof ServerPlayerEntity)
+            Player player = event.getPlayer();
+            if (player instanceof ServerPlayer serverPlayer)
             {
-                channel.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity)player), packetFactory.apply(this.data));
+                channel.send(PacketDistributor.PLAYER.with(() -> serverPlayer), packetFactory.apply(this.data));
             }
         };
     }

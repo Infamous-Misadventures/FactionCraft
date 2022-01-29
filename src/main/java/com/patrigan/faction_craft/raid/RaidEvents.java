@@ -1,6 +1,6 @@
 package com.patrigan.faction_craft.raid;
 
-import com.patrigan.faction_craft.capabilities.raidmanager.IRaidManager;
+import com.patrigan.faction_craft.capabilities.raidmanager.RaidManager;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -13,7 +13,7 @@ public class RaidEvents {
 
     @SubscribeEvent
     public static void onWorldTickEvent(TickEvent.WorldTickEvent event){
-        IRaidManager raidManagerCapability = getRaidManagerCapability(event.world);
+        RaidManager raidManagerCapability = getRaidManagerCapability(event.world);
         if(event.phase == TickEvent.Phase.END) {
             raidManagerCapability.tick();
         }

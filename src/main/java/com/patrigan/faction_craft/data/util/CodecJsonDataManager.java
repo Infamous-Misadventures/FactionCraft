@@ -26,29 +26,28 @@ SOFTWARE.
 
 package com.patrigan.faction_craft.data.util;
 
+import com.google.common.util.concurrent.Runnables;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
-import net.minecraft.client.resources.JsonReloadListener;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.profiler.IProfiler;
-import net.minecraft.resources.IResourceManager;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
+import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.fml.LogicalSide;
-import net.minecraftforge.fml.LogicalSidedProvider;
-import net.minecraftforge.fml.network.PacketDistributor;
-import net.minecraftforge.fml.network.simple.SimpleChannel;
+import net.minecraftforge.network.PacketDistributor;
+import net.minecraftforge.network.simple.SimpleChannel;
+import net.minecraftforge.server.ServerLifecycleHooks;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -106,7 +105,7 @@ import java.util.function.Function;
  * name collisions, e.g. using "blockholdermod/block_holders" as the folder name would result in a json with the
  * id "bananas:banana_block" to be located at data/bananas/blockholdermod/block_holders/some_json.json</p>
  */
-public class CodecJsonDataManager<T> extends JsonReloadListener
+public class CodecJsonDataManager<T> extends SimpleJsonResourceReloadListener
 {
     // default gson if unspecified
     private static final Gson STANDARD_GSON = new Gson();
@@ -121,7 +120,7 @@ public class CodecJsonDataManager<T> extends JsonReloadListener
 
     /** The raw data that we parsed from json last time resources were reloaded **/
     public Map<ResourceLocation, T> data = new HashMap<>();
-    private Optional<Runnable> syncOnReloadCallback = Optional.empty();
+    private Runnable syncOnReloadCallback = Runnables.doNothing();
 
     /**
      * Creates a data manager with a standard gson parser
@@ -144,7 +143,7 @@ public class CodecJsonDataManager<T> extends JsonReloadListener
      * @param codec A codec to deserialize the json into your T, see javadocs above class
      * @param logger A logger that will log json parsing problems when they are caught.
      * @param gson A gson for parsing the raw json data into JsonElements. JsonElement-to-T conversion will be done by the codec,
-     * so gson boostType adapters shouldn't be necessary here
+     * so gson type adapters shouldn't be necessary here
      */
     public CodecJsonDataManager(String folderName, Codec<T> codec, Logger logger, Gson gson)
     {
@@ -166,30 +165,15 @@ public class CodecJsonDataManager<T> extends JsonReloadListener
     }
 
     @Override
-    protected void apply(Map<ResourceLocation, JsonElement> jsons, IResourceManager resourceManager, IProfiler profiler)
+    protected void apply(Map<ResourceLocation, JsonElement> jsons, ResourceManager resourceManager, ProfilerFiller profiler)
     {
         this.logger.info("Beginning loading of data for data loader: {}", this.folderName);
         this.data = this.mapValues(jsons);
         this.logger.info("Data loader for {} loaded {} jsons", this.folderName, this.data.size());
-
-        // hacky server test until we can find a better way to do this
-        boolean isServer = true;
-        try
-        {
-            LogicalSidedProvider.INSTANCE.get(LogicalSide.SERVER);
-        }
-        catch(IllegalStateException e)
-        {
-            isServer = false;
-        }
-        catch(NullPointerException e)
-        {
-            isServer = false;
-        }
-        if (isServer)
+        if (ServerLifecycleHooks.getCurrentServer() != null)
         {
             // if we're on the server and we are configured to send syncing packets, send syncing packets
-            this.syncOnReloadCallback.ifPresent(Runnable::run);
+            this.syncOnReloadCallback.run();
         }
     }
 
@@ -217,8 +201,8 @@ public class CodecJsonDataManager<T> extends JsonReloadListener
      * Calling this method in static init may cause it to be called later than it should be.
      * Calling this method A) causes the data manager to send a data-syncing packet to all players when a server /reloads data,
      * and B) subscribes the data manager to the PlayerLoggedIn event to allow it to sync itself to players when they log in.
-     * Be aware that the invoker must still manually subscribe the relevant packet boostType to the channel themselves.
-     * @param <PACKET> the packet boostType that will be sent on the given channel
+     * Be aware that the invoker must still manually subscribe the relevant packet type to the channel themselves.
+     * @param <PACKET> the packet type that will be sent on the given channel
      * @param channel The networking channel of your mod
      * @param packetFactory  A packet constructor or factory method that converts the given map to a packet object to send on the given channel
      * @return this manager object
@@ -227,7 +211,7 @@ public class CodecJsonDataManager<T> extends JsonReloadListener
                                                                 final Function<Map<ResourceLocation, T>, PACKET> packetFactory)
     {
         MinecraftForge.EVENT_BUS.addListener(this.getLoginListener(channel, packetFactory));
-        this.syncOnReloadCallback = Optional.of(() -> channel.send(PacketDistributor.ALL.noArg(), packetFactory.apply(this.data)));
+        this.syncOnReloadCallback = () -> channel.send(PacketDistributor.ALL.noArg(), packetFactory.apply(this.data));
         return this;
     }
 
@@ -236,15 +220,15 @@ public class CodecJsonDataManager<T> extends JsonReloadListener
                                                                                 final Function<Map<ResourceLocation, T>, PACKET> packetFactory)
     {
         return event -> {
-            PlayerEntity player = event.getPlayer();
-            if (player instanceof ServerPlayerEntity)
+            Player player = event.getPlayer();
+            if (player instanceof ServerPlayer serverPlayer)
             {
-                channel.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity)player), packetFactory.apply(this.data));
+                channel.send(PacketDistributor.PLAYER.with(() -> serverPlayer), packetFactory.apply(this.data));
             }
         };
     }
 
-    public boolean hasData(){
-        return !data.isEmpty();
+    public boolean hasData() {
+        return data.size() > 0;
     }
 }

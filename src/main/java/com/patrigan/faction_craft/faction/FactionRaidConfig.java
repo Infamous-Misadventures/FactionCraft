@@ -2,10 +2,10 @@ package com.patrigan.faction_craft.faction;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 
 public class FactionRaidConfig {
     public static final float DEFAULT_MOBS_FRACTION = 0.7F;
@@ -25,11 +25,11 @@ public class FactionRaidConfig {
     private final String name;
     private final String victoryAlt;
     private final String defeatAlt;
-    private final ITextComponent victoryComponent;
-    private final ITextComponent defeatComponent;
-    private final ITextComponent raidBarNameComponent;
-    private final ITextComponent raidBarVictoryComponent;
-    private final ITextComponent raidBarDefeatComponent;
+    private final Component victoryComponent;
+    private final Component defeatComponent;
+    private final Component raidBarNameComponent;
+    private final Component raidBarVictoryComponent;
+    private final Component raidBarDefeatComponent;
     private final float mobsFraction;
     private final SoundEvent waveSoundEvent;
     private final SoundEvent victorySoundEvent;
@@ -39,9 +39,9 @@ public class FactionRaidConfig {
         this.name = name;
         this.victoryAlt = victoryAlt;
         this.defeatAlt = defeatAlt;
-        this.victoryComponent = new TranslationTextComponent(victoryAlt);
-        this.defeatComponent = new TranslationTextComponent(defeatAlt);
-        this.raidBarNameComponent = new TranslationTextComponent(name);
+        this.victoryComponent = new TranslatableComponent(victoryAlt);
+        this.defeatComponent = new TranslatableComponent(defeatAlt);
+        this.raidBarNameComponent = new TranslatableComponent(name);
         this.raidBarVictoryComponent = raidBarNameComponent.copy().append(" - ").append(victoryComponent);
         this.raidBarDefeatComponent = raidBarNameComponent.copy().append(" - ").append(defeatComponent);
         this.mobsFraction = mobsFraction;
@@ -62,15 +62,15 @@ public class FactionRaidConfig {
         return defeatAlt;
     }
 
-    public ITextComponent getRaidBarNameComponent() {
+    public Component getRaidBarNameComponent() {
         return raidBarNameComponent;
     }
 
-    public ITextComponent getRaidBarVictoryComponent() {
+    public Component getRaidBarVictoryComponent() {
         return raidBarVictoryComponent;
     }
 
-    public ITextComponent getRaidBarDefeatComponent() {
+    public Component getRaidBarDefeatComponent() {
         return raidBarDefeatComponent;
     }
 

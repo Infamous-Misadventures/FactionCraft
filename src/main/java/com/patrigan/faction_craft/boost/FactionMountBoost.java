@@ -4,25 +4,22 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.patrigan.faction_craft.capabilities.factionentity.FactionEntityHelper;
-import com.patrigan.faction_craft.capabilities.factionentity.IFactionEntity;
-import com.patrigan.faction_craft.capabilities.raider.IRaider;
+import com.patrigan.faction_craft.capabilities.factionentity.FactionEntity;
+import com.patrigan.faction_craft.capabilities.raider.Raider;
 import com.patrigan.faction_craft.capabilities.raider.RaiderHelper;
 import com.patrigan.faction_craft.faction.entity.FactionEntityType;
 import com.patrigan.faction_craft.util.GeneralUtils;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.MobEntity;
-import net.minecraft.entity.SpawnReason;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.MobSpawnType;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.patrigan.faction_craft.boost.BoostProviders.FACTION_MOUNT;
-import static com.patrigan.faction_craft.boost.BoostProviders.MOUNT;
-import static net.minecraftforge.registries.ForgeRegistries.ENTITIES;
 
 public class FactionMountBoost extends Boost {
     public static final Codec<FactionMountBoost> CODEC = RecordCodecBuilder.create(instance -> instance.group(
@@ -58,15 +55,15 @@ public class FactionMountBoost extends Boost {
         if(livingEntity.isPassenger()){
             return 0;
         }
-        if(livingEntity.level instanceof ServerWorld && livingEntity instanceof MobEntity) {
-            ServerWorld level = (ServerWorld) livingEntity.level;
-            MobEntity mob = (MobEntity) livingEntity;
-            IFactionEntity cap = FactionEntityHelper.getFactionEntityCapability(mob);
+        if(livingEntity.level instanceof ServerLevel && livingEntity instanceof Mob) {
+            ServerLevel level = (ServerLevel) livingEntity.level;
+            Mob mob = (Mob) livingEntity;
+            FactionEntity cap = FactionEntityHelper.getFactionEntityCapability(mob);
             if (cap.getFaction() == null) {
                 return 0;
             } else {
                 List<Pair<FactionEntityType, Integer>> weightMap = cap.getFaction().getWeightMapForRank(FactionEntityType.FactionRank.MOUNT).stream().filter(pair -> pair.getFirst().getEntityType().equals(entityTypeLocation)).collect(Collectors.toList());
-                IRaider raiderCap = RaiderHelper.getRaiderCapability(mob);
+                Raider raiderCap = RaiderHelper.getRaiderCapability(mob);
                 if (raiderCap != null && raiderCap.hasActiveRaid()) {
                     weightMap = weightMap.stream().filter(pair -> pair.getFirst().getMinimumWave() <= raiderCap.getWave()).collect(Collectors.toList());
                 }
@@ -74,7 +71,7 @@ public class FactionMountBoost extends Boost {
                     return 0;
                 }
                 FactionEntityType randomEntry = GeneralUtils.getRandomEntry(weightMap, mob.getRandom());
-                Entity entity = randomEntry.createEntity(level, cap.getFaction(), livingEntity.blockPosition(), false, SpawnReason.JOCKEY);
+                Entity entity = randomEntry.createEntity(level, cap.getFaction(), livingEntity.blockPosition(), false, MobSpawnType.JOCKEY);
                 mob.startRiding(entity);
                 return randomEntry.getStrength();
             }
@@ -88,14 +85,14 @@ public class FactionMountBoost extends Boost {
     }
 
     private boolean factionHasMount(LivingEntity livingEntity) {
-        if(livingEntity instanceof MobEntity) {
-            MobEntity mob = (MobEntity) livingEntity;
-            IFactionEntity cap = FactionEntityHelper.getFactionEntityCapability(mob);
+        if(livingEntity instanceof Mob) {
+            Mob mob = (Mob) livingEntity;
+            FactionEntity cap = FactionEntityHelper.getFactionEntityCapability(mob);
             if(cap.getFaction() == null){
                 return false;
             }
             List<Pair<FactionEntityType, Integer>> weightMap = cap.getFaction().getWeightMapForRank(FactionEntityType.FactionRank.MOUNT).stream().filter(pair -> pair.getFirst().getEntityType().equals(entityTypeLocation)).collect(Collectors.toList());
-            IRaider raiderCap = RaiderHelper.getRaiderCapability(mob);
+            Raider raiderCap = RaiderHelper.getRaiderCapability(mob);
             if (raiderCap != null && raiderCap.hasActiveRaid()) {
                 weightMap = weightMap.stream().filter(pair -> pair.getFirst().getMinimumWave() <= raiderCap.getWave()).collect(Collectors.toList());
             }

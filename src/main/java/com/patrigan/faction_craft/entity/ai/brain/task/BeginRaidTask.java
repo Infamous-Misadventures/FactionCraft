@@ -1,27 +1,27 @@
 package com.patrigan.faction_craft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableMap;
-import com.patrigan.faction_craft.capabilities.raidmanager.IRaidManager;
+import com.patrigan.faction_craft.capabilities.raidmanager.RaidManager;
 import com.patrigan.faction_craft.capabilities.raidmanager.RaidManagerHelper;
 import com.patrigan.faction_craft.entity.ai.brain.ModActivities;
 import com.patrigan.faction_craft.raid.Raid;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.brain.Brain;
-import net.minecraft.entity.ai.brain.task.Task;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.Brain;
+import net.minecraft.world.entity.ai.behavior.Behavior;
+import net.minecraft.server.level.ServerLevel;
 
-public class BeginRaidTask extends Task<LivingEntity> {
+public class BeginRaidTask extends Behavior<LivingEntity> {
     public BeginRaidTask() {
         super(ImmutableMap.of());
     }
 
-    protected boolean checkExtraStartConditions(ServerWorld pLevel, LivingEntity pOwner) {
+    protected boolean checkExtraStartConditions(ServerLevel pLevel, LivingEntity pOwner) {
         return pLevel.random.nextInt(20) == 0;
     }
 
-    protected void start(ServerWorld level, LivingEntity entity, long gameTime) {
+    protected void start(ServerLevel level, LivingEntity entity, long gameTime) {
         Brain<?> brain = entity.getBrain();
-        IRaidManager raidManagerCapability = RaidManagerHelper.getRaidManagerCapability(level);
+        RaidManager raidManagerCapability = RaidManagerHelper.getRaidManagerCapability(level);
         Raid raid = raidManagerCapability.getRaidAt(entity.blockPosition());
         if (raid != null) {
             if (raid.hasFirstWaveSpawned() && !raid.isBetweenWaves()) {

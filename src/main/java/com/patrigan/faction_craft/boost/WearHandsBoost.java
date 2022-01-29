@@ -2,10 +2,10 @@ package com.patrigan.faction_craft.boost;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.MobEntity;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.ItemStack;
 
 import static com.patrigan.faction_craft.boost.Boost.BoostType.MAINHAND;
 import static com.patrigan.faction_craft.boost.Boost.BoostType.OFFHAND;
@@ -57,9 +57,9 @@ public class WearHandsBoost extends Boost {
             return 0;
         }
         if(boostType.equals(OFFHAND)){
-            livingEntity.setItemSlot(EquipmentSlotType.OFFHAND, item);
+            livingEntity.setItemSlot(EquipmentSlot.OFFHAND, item);
         }else {
-            livingEntity.setItemSlot(EquipmentSlotType.MAINHAND, item);
+            livingEntity.setItemSlot(EquipmentSlot.MAINHAND, item);
         }
         super.apply(livingEntity);
         return strengthAdjustment;
@@ -67,6 +67,6 @@ public class WearHandsBoost extends Boost {
 
     @Override
     public boolean canApply(LivingEntity livingEntity) {
-        return livingEntity instanceof MobEntity;
+        return livingEntity instanceof Mob;
     }
 }

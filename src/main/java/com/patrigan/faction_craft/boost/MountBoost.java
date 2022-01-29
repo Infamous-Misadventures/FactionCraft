@@ -2,13 +2,13 @@ package com.patrigan.faction_craft.boost;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.MobEntity;
-import net.minecraft.entity.SpawnReason;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.server.level.ServerLevel;
 
 import static com.patrigan.faction_craft.boost.BoostProviders.MOUNT;
 import static net.minecraftforge.registries.ForgeRegistries.ENTITIES;
@@ -54,17 +54,17 @@ public class MountBoost extends Boost {
         if(livingEntity.isPassenger()){
             return 0;
         }
-        if(livingEntity.level instanceof ServerWorld) {
-            ServerWorld level = (ServerWorld) livingEntity.level;
+        if(livingEntity.level instanceof ServerLevel) {
+            ServerLevel level = (ServerLevel) livingEntity.level;
             Entity mount = ENTITIES.getValue(entityTypeLocation).create(level);
             if (mount != null) {
-                Vector3d pos = livingEntity.position();
+                Vec3 pos = livingEntity.position();
                 mount.setPos(pos.x, pos.y, pos.z);
-                if (mount instanceof MobEntity) {
-                    MobEntity mobMount = (MobEntity) mount;
-                    if (net.minecraftforge.common.ForgeHooks.canEntitySpawn(mobMount, level, mount.blockPosition().getX(), mount.blockPosition().getY(), mount.blockPosition().getZ(), null, SpawnReason.EVENT) == -1)
+                if (mount instanceof Mob) {
+                    Mob mobMount = (Mob) mount;
+                    if (net.minecraftforge.common.ForgeHooks.canEntitySpawn(mobMount, level, mount.blockPosition().getX(), mount.blockPosition().getY(), mount.blockPosition().getZ(), null, MobSpawnType.EVENT) == -1)
                         return 0;
-                    mobMount.finalizeSpawn(level, level.getCurrentDifficultyAt(mount.blockPosition()), SpawnReason.EVENT, null, null);
+                    mobMount.finalizeSpawn(level, level.getCurrentDifficultyAt(mount.blockPosition()), MobSpawnType.EVENT, null, null);
                 }
                 super.apply(livingEntity);
                 level.addFreshEntity(mount);

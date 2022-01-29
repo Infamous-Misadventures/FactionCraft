@@ -1,69 +1,67 @@
 package com.patrigan.faction_craft.capabilities.raider;
 
 
-import com.patrigan.faction_craft.capabilities.raidmanager.IRaidManager;
+import com.patrigan.faction_craft.capabilities.raidmanager.RaidManager;
 import com.patrigan.faction_craft.capabilities.raidmanager.RaidManagerHelper;
-import com.patrigan.faction_craft.entity.ai.goal.InvadeHomeGoal;
+import com.patrigan.faction_craft.entity.ai.goal.RaiderMoveThroughVillageGoal;
 import com.patrigan.faction_craft.entity.ai.goal.MoveTowardsRaidGoal;
 import com.patrigan.faction_craft.entity.ai.goal.RaidOpenDoorGoal;
 import com.patrigan.faction_craft.raid.Raid;
-import net.minecraft.entity.MobEntity;
-import net.minecraft.entity.ai.goal.NearestAttackableTargetGoal;
-import net.minecraft.entity.merchant.villager.AbstractVillagerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.GroundPathHelper;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
+import net.minecraft.world.entity.ai.util.GoalUtils;
+import net.minecraft.world.entity.npc.AbstractVillager;
+import net.minecraftforge.common.util.INBTSerializable;
 
-public class Raider implements IRaider {
+import static com.patrigan.faction_craft.capabilities.ModCapabilities.RAIDER_CAPABILITY;
+
+public class Raider implements INBTSerializable<CompoundTag> {
 
     protected Raid raid;
     private int wave;
     private boolean canJoinRaid = true;
     private int ticksOutsideRaid;
     private boolean waveLeader = false;
-    private MobEntity entity;
-    private MoveTowardsRaidGoal<MobEntity> moveTowardsRaidGoal;
-    private InvadeHomeGoal invadeHomeGoal;
+    private final Mob entity;
+    private MoveTowardsRaidGoal<Mob> moveTowardsRaidGoal;
+    private RaiderMoveThroughVillageGoal raiderMoveThroughVillageGoal;
     private RaidOpenDoorGoal raidOpenDoorGoal;
-    private NearestAttackableTargetGoal<AbstractVillagerEntity> abstractVillagerEntityNearestAttackableTargetGoal;
+    private NearestAttackableTargetGoal<AbstractVillager> abstractVillagerEntityNearestAttackableTargetGoal;
 
 
     public Raider() {
         this.entity = null;
     }
 
-    public Raider(MobEntity entity) {
+    public Raider(Mob entity) {
         this.entity = entity;
         moveTowardsRaidGoal = new MoveTowardsRaidGoal<>(this.entity);
-        invadeHomeGoal = new InvadeHomeGoal(entity, 1.05F, 1);
-        abstractVillagerEntityNearestAttackableTargetGoal = new NearestAttackableTargetGoal<>(this.entity, AbstractVillagerEntity.class, false);
-        if(GroundPathHelper.hasGroundPathNavigation(this.entity)) {
+        raiderMoveThroughVillageGoal = new RaiderMoveThroughVillageGoal(entity, 1.05F, 1);
+        abstractVillagerEntityNearestAttackableTargetGoal = new NearestAttackableTargetGoal<>(this.entity, AbstractVillager.class, false);
+        if(GoalUtils.hasGroundPathNavigation(this.entity)) {
             raidOpenDoorGoal = new RaidOpenDoorGoal(entity);
         }
     }
 
-    @Override
     public Raid getRaid() {
         return raid;
     }
 
-    @Override
     public void setRaid(Raid raid) {
         this.raid = raid;
         updateRaidGoals();
     }
 
-    @Override
     public boolean hasActiveRaid() {
         return raid != null && raid.isActive();
     }
 
-    @Override
     public int getWave() {
         return wave;
     }
 
-    @Override
     public void setWave(int wave) {
         this.wave = wave;
     }
@@ -72,22 +70,18 @@ public class Raider implements IRaider {
         return canJoinRaid;
     }
 
-    @Override
     public void setCanJoinRaid(boolean canJoinRaid) {
         this.canJoinRaid = canJoinRaid;
     }
 
-    @Override
     public int getTicksOutsideRaid() {
         return ticksOutsideRaid;
     }
 
-    @Override
     public void setTicksOutsideRaid(int ticksOutsideRaid) {
         this.ticksOutsideRaid = ticksOutsideRaid;
     }
 
-    @Override
     public void addToRaid(int pWave, Raid raid) {
         setRaid(raid);
         setWave(pWave);
@@ -103,24 +97,44 @@ public class Raider implements IRaider {
         this.waveLeader = waveLeader;
     }
 
-    @Override
-    public CompoundNBT save(CompoundNBT tag) {
-        tag.putInt("Wave", this.wave);
-        tag.putBoolean("CanJoinRaid", this.canJoinRaid);
-        if (this.raid != null) {
-            tag.putInt("RaidId", this.raid.getId());
+    private void updateRaidGoals(){
+        if(this.raid != null){
+            if(raidOpenDoorGoal != null) {
+                this.entity.goalSelector.addGoal(2, raidOpenDoorGoal);
+            }
+            this.entity.goalSelector.addGoal(3, moveTowardsRaidGoal);
+            this.entity.goalSelector.addGoal(4, raiderMoveThroughVillageGoal);
+            this.entity.targetSelector.addGoal(3, abstractVillagerEntityNearestAttackableTargetGoal);
+        }else{
+            this.entity.goalSelector.removeGoal(raidOpenDoorGoal);
+            this.entity.goalSelector.removeGoal(moveTowardsRaidGoal);
+            this.entity.goalSelector.removeGoal(raiderMoveThroughVillageGoal);
         }
-        return tag;
     }
 
     @Override
-    public void load(CompoundNBT tag) {
+    public CompoundTag serializeNBT() {
+        if (RAIDER_CAPABILITY == null) {
+            return new CompoundTag();
+        } else {
+            CompoundTag tag = new CompoundTag();
+            tag.putInt("Wave", this.wave);
+            tag.putBoolean("CanJoinRaid", this.canJoinRaid);
+            if (this.raid != null) {
+                tag.putInt("RaidId", this.raid.getId());
+            }
+            return tag;
+        }
+    }
+
+    @Override
+    public void deserializeNBT(CompoundTag tag) {
         this.wave = tag.getInt("Wave");
         this.canJoinRaid = tag.getBoolean("CanJoinRaid");
         if (tag.contains("RaidId", 3)) {
-            if (this.entity.level instanceof ServerWorld) {
-                ServerWorld level = (ServerWorld) this.entity.level;
-                IRaidManager raidManagerCapability = RaidManagerHelper.getRaidManagerCapability(level);
+            if (this.entity.level instanceof ServerLevel) {
+                ServerLevel level = (ServerLevel) this.entity.level;
+                RaidManager raidManagerCapability = RaidManagerHelper.getRaidManagerCapability(level);
                 this.raid = raidManagerCapability.getRaids().get(tag.getInt("RaidId"));
                 updateRaidGoals();
             }
@@ -132,20 +146,6 @@ public class Raider implements IRaider {
                 }
             }
         }
-    }
 
-    private void updateRaidGoals(){
-        if(this.raid != null){
-            if(raidOpenDoorGoal != null) {
-                this.entity.goalSelector.addGoal(2, raidOpenDoorGoal);
-            }
-            this.entity.goalSelector.addGoal(3, moveTowardsRaidGoal);
-            this.entity.goalSelector.addGoal(4, invadeHomeGoal);
-            this.entity.targetSelector.addGoal(3, abstractVillagerEntityNearestAttackableTargetGoal);
-        }else{
-            this.entity.goalSelector.removeGoal(raidOpenDoorGoal);
-            this.entity.goalSelector.removeGoal(moveTowardsRaidGoal);
-            this.entity.goalSelector.removeGoal(invadeHomeGoal);
-        }
     }
 }

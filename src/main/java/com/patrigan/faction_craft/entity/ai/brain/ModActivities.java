@@ -1,9 +1,9 @@
 package com.patrigan.faction_craft.entity.ai.brain;
 
-import net.minecraft.entity.ai.brain.schedule.Activity;
-import net.minecraftforge.fml.RegistryObject;
+import net.minecraft.world.entity.schedule.Activity;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
 
 import static com.patrigan.faction_craft.FactionCraft.MODID;
 

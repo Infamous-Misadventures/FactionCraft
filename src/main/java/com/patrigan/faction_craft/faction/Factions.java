@@ -6,8 +6,8 @@ import com.patrigan.faction_craft.boost.Boost;
 import com.patrigan.faction_craft.data.util.MergeableCodecDataManager;
 import com.patrigan.faction_craft.faction.entity.FactionEntityType;
 import com.patrigan.faction_craft.util.GeneralUtils;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -25,7 +25,7 @@ public class Factions {
 
     public static Faction factionMerger(List<Faction> raws){
         ResourceLocation name = null;
-        CompoundNBT banner = null;
+        CompoundTag banner = null;
         FactionRaidConfig factionRaidConfig = null;
         FactionBoostConfig boostConfig = null;
         FactionRelations factionRelations = null;

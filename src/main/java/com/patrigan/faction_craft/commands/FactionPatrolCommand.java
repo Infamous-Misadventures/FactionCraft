@@ -7,22 +7,20 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.patrigan.faction_craft.commands.arguments.FactionArgument;
 import com.patrigan.faction_craft.faction.Faction;
 import com.patrigan.faction_craft.world.spawner.PatrolSpawner;
-import net.minecraft.command.CommandSource;
-import net.minecraft.command.Commands;
-import net.minecraft.command.arguments.BlockPosArgument;
-import net.minecraft.command.arguments.EntityArgument;
-import net.minecraft.command.arguments.Vec3Argument;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 
 public class FactionPatrolCommand {
-    private static final SimpleCommandExceptionType ERROR_START_FAILED = new SimpleCommandExceptionType(new TranslationTextComponent("commands.patrol.failed"));
+    private static final SimpleCommandExceptionType ERROR_START_FAILED = new SimpleCommandExceptionType(new TranslatableComponent("commands.patrol.failed"));
 
-    public static void register(CommandDispatcher<CommandSource> dispatcher) {
-        LiteralArgumentBuilder<CommandSource> factionRaidCommand
+    public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
+        LiteralArgumentBuilder<CommandSourceStack> factionRaidCommand
                 = Commands.literal("factionpatrol")
                 .requires(commandSource -> commandSource.hasPermission(2))
                 .then(Commands.argument("faction", FactionArgument.factions()).executes(sourceCommandContext ->
@@ -35,22 +33,22 @@ public class FactionPatrolCommand {
         dispatcher.register(factionRaidCommand);
     }
 
-    private static int spawnPatrol(CommandSource source, Faction faction) throws CommandSyntaxException {
-        ServerPlayerEntity player = source.getPlayerOrException();
+    private static int spawnPatrol(CommandSourceStack source, Faction faction) throws CommandSyntaxException {
+        ServerPlayer player = source.getPlayerOrException();
         return spawnPatrol(source, faction, player.blockPosition());
     }
 
-    private static int spawnPatrol(CommandSource source, Faction faction, ServerPlayerEntity player) throws CommandSyntaxException {
+    private static int spawnPatrol(CommandSourceStack source, Faction faction, ServerPlayer player) throws CommandSyntaxException {
         return spawnPatrol(source, faction, player.blockPosition());
     }
 
-    private static int spawnPatrol(CommandSource source, Faction faction, BlockPos blockPos) throws CommandSyntaxException {
-        ServerWorld level = source.getLevel();
+    private static int spawnPatrol(CommandSourceStack source, Faction faction, BlockPos blockPos) throws CommandSyntaxException {
+        ServerLevel level = source.getLevel();
         int spawns = PatrolSpawner.spawnPatrol(level, level.getRandom(), faction, blockPos);
         if (spawns < 0) {
             throw ERROR_START_FAILED.create();
         } else {
-            source.sendSuccess(new TranslationTextComponent("commands.patrol.success", spawns, blockPos), true);
+            source.sendSuccess(new TranslatableComponent("commands.patrol.success", spawns, blockPos), true);
         }
         return 1;
     }

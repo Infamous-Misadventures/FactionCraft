@@ -3,26 +3,26 @@ package com.patrigan.faction_craft.raid.target;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.patrigan.faction_craft.raid.Raid;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.common.IExtensibleEnum;
 
 public interface RaidTarget {
 
     BlockPos getTargetBlockPos();
 
-    void updateTargetBlockPos(ServerWorld level);
+    void updateTargetBlockPos(ServerLevel level);
 
     int getTargetStrength();
 
     int getAdditionalWaves();
 
-    boolean checkLossCondition(Raid raid, ServerWorld level);
+    boolean checkLossCondition(Raid raid, ServerLevel level);
 
-    CompoundNBT save(CompoundNBT compoundNbt);
+    CompoundTag save(CompoundTag compoundNbt);
 
-    boolean isValidSpawnPos(int outerAttempt, BlockPos.Mutable blockpos$mutable, ServerWorld level);
+    boolean isValidSpawnPos(int outerAttempt, BlockPos.MutableBlockPos blockpos$mutable, ServerLevel level);
 
     Type getRaidType();
 

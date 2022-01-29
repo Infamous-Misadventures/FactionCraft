@@ -9,10 +9,10 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.patrigan.faction_craft.faction.Faction;
 import com.patrigan.faction_craft.faction.Factions;
-import net.minecraft.command.CommandSource;
-import net.minecraft.command.ISuggestionProvider;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.TranslatableComponent;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -21,14 +21,14 @@ import java.util.concurrent.CompletableFuture;
 public class FactionArgument implements ArgumentType<Faction> {
     private static final Collection<String> EXAMPLES = Arrays.asList("minecraft:vanilla");
     public static final DynamicCommandExceptionType ERROR_UNKNOWN_FACTION = new DynamicCommandExceptionType((p_208663_0_) -> {
-        return new TranslationTextComponent("commands.argument.factionNotFound", p_208663_0_);
+        return new TranslatableComponent("commands.argument.factionNotFound", p_208663_0_);
     });
 
     public static FactionArgument factions() {
         return new FactionArgument();
     }
 
-    public static Faction getFaction(CommandContext<CommandSource> source, String name) throws CommandSyntaxException {
+    public static Faction getFaction(CommandContext<CommandSourceStack> source, String name) throws CommandSyntaxException {
         return source.getArgument(name, Faction.class);
     }
 
@@ -42,7 +42,7 @@ public class FactionArgument implements ArgumentType<Faction> {
     }
 
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> p_listSuggestions_1_, SuggestionsBuilder p_listSuggestions_2_) {
-        return ISuggestionProvider.suggestResource(Factions.factionKeys(), p_listSuggestions_2_);
+        return SharedSuggestionProvider.suggestResource(Factions.factionKeys(), p_listSuggestions_2_);
     }
 
     public Collection<String> getExamples() {

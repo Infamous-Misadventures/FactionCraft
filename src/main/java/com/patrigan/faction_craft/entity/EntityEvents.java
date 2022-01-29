@@ -1,11 +1,10 @@
 package com.patrigan.faction_craft.entity;
 
-import com.patrigan.faction_craft.capabilities.raider.IRaider;
+import com.patrigan.faction_craft.capabilities.raider.Raider;
 import com.patrigan.faction_craft.capabilities.raider.RaiderHelper;
 import com.patrigan.faction_craft.entity.ai.goal.NearestFactionEnemyTargetGoal;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.MobEntity;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.Mob;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingConversionEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -18,8 +17,8 @@ public class EntityEvents {
 
     @SubscribeEvent
     public static void onLivingConversionEvent(LivingConversionEvent.Pre event){
-        if(event.getEntity() instanceof MobEntity){
-            IRaider cap = RaiderHelper.getRaiderCapability((MobEntity) event.getEntity());
+        if(event.getEntity() instanceof Mob){
+            Raider cap = RaiderHelper.getRaiderCapability((Mob) event.getEntity());
             if(cap.hasActiveRaid()){
                 event.setCanceled(true);
                 event.setConversionTimer(0);
@@ -30,8 +29,8 @@ public class EntityEvents {
     @SubscribeEvent
     public static void onEntityJoinWorld(EntityJoinWorldEvent event){
         Entity entity = event.getEntity();
-        if(entity instanceof MobEntity){
-            MobEntity mob = (MobEntity) entity;
+        if(entity instanceof Mob){
+            Mob mob = (Mob) entity;
             mob.targetSelector.addGoal(2, new NearestFactionEnemyTargetGoal<>(mob, 10, true, false));
         }
     }

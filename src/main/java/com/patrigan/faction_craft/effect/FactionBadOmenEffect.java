@@ -1,17 +1,17 @@
 package com.patrigan.faction_craft.effect;
 
 import com.patrigan.faction_craft.capabilities.factioninteraction.FactionInteractionHelper;
-import com.patrigan.faction_craft.capabilities.factioninteraction.IFactionInteraction;
-import com.patrigan.faction_craft.capabilities.raidmanager.IRaidManager;
+import com.patrigan.faction_craft.capabilities.factioninteraction.FactionInteraction;
+import com.patrigan.faction_craft.capabilities.raidmanager.RaidManager;
 import com.patrigan.faction_craft.capabilities.raidmanager.RaidManagerHelper;
 import com.patrigan.faction_craft.raid.target.VillageRaidTarget;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.potion.Effect;
-import net.minecraft.potion.EffectType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.Difficulty;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.event.entity.living.PotionEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -19,8 +19,8 @@ import net.minecraftforge.fml.common.Mod;
 import static com.patrigan.faction_craft.FactionCraft.MODID;
 
 @Mod.EventBusSubscriber(modid = MODID)
-public class FactionBadOmenEffect extends Effect {
-    public FactionBadOmenEffect(EffectType pCategory, int pColor) {
+public class FactionBadOmenEffect extends MobEffect {
+    public FactionBadOmenEffect(MobEffectCategory pCategory, int pColor) {
         super(pCategory, pColor);
     }
 
@@ -32,15 +32,15 @@ public class FactionBadOmenEffect extends Effect {
     }
 
     public void applyEffectTick(LivingEntity pLivingEntity, int pAmplifier) {
-        if (pLivingEntity instanceof ServerPlayerEntity && !pLivingEntity.isSpectator()) {
-            ServerPlayerEntity player = (ServerPlayerEntity)pLivingEntity;
-            ServerWorld serverworld = player.getLevel();
+        if (pLivingEntity instanceof ServerPlayer && !pLivingEntity.isSpectator()) {
+            ServerPlayer player = (ServerPlayer)pLivingEntity;
+            ServerLevel serverworld = player.getLevel();
             if (serverworld.getDifficulty() == Difficulty.PEACEFUL) {
                 return;
             }
 
             if (serverworld.isVillage(pLivingEntity.blockPosition())) {
-                IRaidManager raidManagerCapability = RaidManagerHelper.getRaidManagerCapability(serverworld);
+                RaidManager raidManagerCapability = RaidManagerHelper.getRaidManagerCapability(serverworld);
                 raidManagerCapability.createBadOmenRaid(new VillageRaidTarget(player.blockPosition(), serverworld), player);
             }
         }
@@ -49,8 +49,8 @@ public class FactionBadOmenEffect extends Effect {
     @SubscribeEvent
     public static void onPotionRemoveEvent(PotionEvent.PotionRemoveEvent event){
         if(event.getPotion() instanceof FactionBadOmenEffect && !event.getEntityLiving().level.isClientSide()) {
-            if(event.getEntityLiving() instanceof PlayerEntity){
-                IFactionInteraction cap = FactionInteractionHelper.getFactionInteractionCapability((PlayerEntity) event.getEntityLiving());
+            if(event.getEntityLiving() instanceof Player){
+                FactionInteraction cap = FactionInteractionHelper.getFactionInteractionCapability((Player) event.getEntityLiving());
                 cap.clearBadOmenFactions();
             }
         }

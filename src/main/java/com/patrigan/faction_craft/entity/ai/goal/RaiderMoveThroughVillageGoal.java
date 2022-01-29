@@ -1,17 +1,17 @@
 package com.patrigan.faction_craft.entity.ai.goal;
 
 import com.google.common.collect.Lists;
-import com.patrigan.faction_craft.capabilities.raider.IRaider;
+import com.patrigan.faction_craft.capabilities.raider.Raider;
 import com.patrigan.faction_craft.capabilities.raider.RaiderHelper;
-import net.minecraft.entity.CreatureEntity;
-import net.minecraft.entity.MobEntity;
-import net.minecraft.entity.ai.RandomPositionGenerator;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.village.PointOfInterestManager;
-import net.minecraft.village.PointOfInterestType;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.PathfinderMob;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.ai.util.DefaultRandomPos;
+import net.minecraft.world.entity.ai.village.poi.PoiManager;
+import net.minecraft.world.entity.ai.village.poi.PoiType;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.util.LazyOptional;
 
 import java.util.EnumSet;
@@ -19,15 +19,15 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-public class InvadeHomeGoal extends Goal {
-    private final MobEntity raider;
+public class RaiderMoveThroughVillageGoal extends Goal {
+    private final Mob raider;
     private final double speedModifier;
     private BlockPos poiPos;
     private final List<BlockPos> visited = Lists.newArrayList();
     private final int distanceToPoi;
     private boolean stuck;
 
-    public InvadeHomeGoal(MobEntity p_i50570_1_, double p_i50570_2_, int p_i50570_4_) {
+    public RaiderMoveThroughVillageGoal(Mob p_i50570_1_, double p_i50570_2_, int p_i50570_4_) {
         this.raider = p_i50570_1_;
         this.speedModifier = p_i50570_2_;
         this.distanceToPoi = p_i50570_4_;
@@ -40,24 +40,24 @@ public class InvadeHomeGoal extends Goal {
      */
     public boolean canUse() {
         this.updateVisited();
-        return this.raider instanceof CreatureEntity && this.isValidRaid() && this.hasSuitablePoi() && this.raider.getTarget() == null;
+        return this.raider instanceof PathfinderMob && this.isValidRaid() && this.hasSuitablePoi() && this.raider.getTarget() == null;
     }
 
     private boolean isValidRaid() {
-        LazyOptional<IRaider> raiderCapabilityLazy = RaiderHelper.getRaiderCapabilityLazy(this.raider);
+        LazyOptional<Raider> raiderCapabilityLazy = RaiderHelper.getRaiderCapabilityLazy(this.raider);
         if(!raiderCapabilityLazy.isPresent()){
             return false;
         }
-        IRaider raiderCapability = RaiderHelper.getRaiderCapability(this.raider);
+        Raider raiderCapability = RaiderHelper.getRaiderCapability(this.raider);
         return raiderCapability.hasActiveRaid() && !raiderCapability.getRaid().isOver();
     }
 
     private boolean hasSuitablePoi() {
-        ServerWorld serverworld = (ServerWorld)this.raider.level;
+        ServerLevel serverworld = (ServerLevel)this.raider.level;
         BlockPos blockpos = this.raider.blockPosition();
         Optional<BlockPos> optional = serverworld.getPoiManager().getRandom((p_220859_0_) -> {
-            return p_220859_0_ == PointOfInterestType.HOME;
-        }, this::hasNotVisited, PointOfInterestManager.Status.ANY, blockpos, 48, this.raider.getRandom());
+            return p_220859_0_ == PoiType.HOME;
+        }, this::hasNotVisited, PoiManager.Occupancy.ANY, blockpos, 48, this.raider.getRandom());
         if (!optional.isPresent()) {
             return false;
         } else {
@@ -73,7 +73,7 @@ public class InvadeHomeGoal extends Goal {
         if (this.raider.getNavigation().isDone()) {
             return false;
         } else {
-            return this.raider.getTarget() == null && !this.poiPos.closerThan(this.raider.position(), (double)(this.raider.getBbWidth() + (float)this.distanceToPoi)) && !this.stuck;
+            return this.raider.getTarget() == null && !this.poiPos.closerThan(this.raider.position(), this.raider.getBbWidth() + (float)this.distanceToPoi) && !this.stuck;
         }
     }
 
@@ -81,7 +81,7 @@ public class InvadeHomeGoal extends Goal {
      * Reset the task's internal state. Called when this task is interrupted by another one
      */
     public void stop() {
-        if (this.poiPos.closerThan(this.raider.position(), (double)this.distanceToPoi)) {
+        if (this.poiPos.closerThan(this.raider.position(), this.distanceToPoi)) {
             this.visited.add(this.poiPos);
         }
 
@@ -93,7 +93,7 @@ public class InvadeHomeGoal extends Goal {
     public void start() {
         super.start();
         this.raider.setNoActionTime(0);
-        this.raider.getNavigation().moveTo((double)this.poiPos.getX(), (double)this.poiPos.getY(), (double)this.poiPos.getZ(), this.speedModifier);
+        this.raider.getNavigation().moveTo(this.poiPos.getX(), this.poiPos.getY(), this.poiPos.getZ(), this.speedModifier);
         this.stuck = false;
     }
 
@@ -102,10 +102,10 @@ public class InvadeHomeGoal extends Goal {
      */
     public void tick() {
         if (this.raider.getNavigation().isDone()) {
-            Vector3d vector3d = Vector3d.atBottomCenterOf(this.poiPos);
-            Vector3d vector3d1 = RandomPositionGenerator.getPosTowards((CreatureEntity) this.raider, 16, 7, vector3d, (double)((float)Math.PI / 10F));
+            Vec3 vector3d = Vec3.atBottomCenterOf(this.poiPos);
+            Vec3 vector3d1 = DefaultRandomPos.getPosTowards((PathfinderMob) this.raider, 16, 7, vector3d, (double)((float)Math.PI / 10F));
             if (vector3d1 == null) {
-                vector3d1 = RandomPositionGenerator.getPosTowards((CreatureEntity) this.raider, 8, 7, vector3d);
+                vector3d1 = DefaultRandomPos.getPosTowards((PathfinderMob)this.raider, 8, 7, vector3d, (double)((float)Math.PI / 2F));
             }
 
             if (vector3d1 == null) {

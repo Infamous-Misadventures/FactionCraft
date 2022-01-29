@@ -5,11 +5,14 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.patrigan.faction_craft.capabilities.factionentity.FactionEntityHelper;
 import com.patrigan.faction_craft.faction.Faction;
-import net.minecraft.entity.*;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.MobSpawnType;
 
 import java.util.Arrays;
 import java.util.List;
@@ -20,7 +23,7 @@ public class FactionEntityType {
     public static final Codec<FactionEntityType> CODEC = RecordCodecBuilder.create(builder ->
             builder.group(
                     ResourceLocation.CODEC.fieldOf("entity_type").forGetter(data -> data.entityType),
-                    CompoundNBT.CODEC.optionalFieldOf("tag", new CompoundNBT()).forGetter(data -> data.tag),
+                    CompoundTag.CODEC.optionalFieldOf("tag", new CompoundTag()).forGetter(data -> data.tag),
                     Codec.INT.fieldOf("weight").forGetter(data -> data.weight),
                     Codec.INT.fieldOf("strength").forGetter(data -> data.strength),
                     FactionRank.CODEC.fieldOf("rank").forGetter(data -> data.rank),
@@ -30,7 +33,7 @@ public class FactionEntityType {
             ).apply(builder, FactionEntityType::new));
 
     private final ResourceLocation entityType;
-    private final CompoundNBT tag;
+    private final CompoundTag tag;
     private final int weight;
     private final int strength;
     private final FactionRank rank;
@@ -38,7 +41,7 @@ public class FactionEntityType {
     private final EntityBoostConfig entityBoostConfig;
     private final int minimumWave;
 
-    public FactionEntityType(ResourceLocation entityType, CompoundNBT tag, int weight, int strength, FactionRank rank, FactionRank maximumRank, EntityBoostConfig entityBoostConfig, int minimumWave) {
+    public FactionEntityType(ResourceLocation entityType, CompoundTag tag, int weight, int strength, FactionRank rank, FactionRank maximumRank, EntityBoostConfig entityBoostConfig, int minimumWave) {
         this.entityType = entityType;
         this.tag = tag;
         this.weight = weight;
@@ -49,7 +52,7 @@ public class FactionEntityType {
         this.minimumWave = minimumWave;
     }
 
-    public static FactionEntityType load(CompoundNBT compoundNbt) {
+    public static FactionEntityType load(CompoundTag compoundNbt) {
         return new FactionEntityType(
                 new ResourceLocation(compoundNbt.getString("entityType")),
                 compoundNbt.getCompound("tag"),
@@ -65,7 +68,7 @@ public class FactionEntityType {
         return entityType;
     }
 
-    public CompoundNBT getTag() {
+    public CompoundTag getTag() {
         return tag;
     }
 
@@ -122,14 +125,14 @@ public class FactionEntityType {
 
 
     //See and use SummonCommand approach for tag and add to the world
-    public Entity createEntity(ServerWorld level, Faction faction, BlockPos spawnBlockPos, boolean bannerHolder, SpawnReason spawnReason) {
+    public Entity createEntity(ServerLevel level, Faction faction, BlockPos spawnBlockPos, boolean bannerHolder, MobSpawnType spawnReason) {
         EntityType<?> entityType = ENTITIES.getValue(this.getEntityType());
         Entity entity = null;
         if (!this.getTag().isEmpty()) {
-            CompoundNBT compoundnbt = this.getTag().copy();
+            CompoundTag compoundnbt = this.getTag().copy();
             compoundnbt.putString("id", this.getEntityType().toString());
             entity = EntityType.loadEntityRecursive(compoundnbt, level, createdEntity -> {
-                createdEntity.moveTo(spawnBlockPos.getX() + 0.5D, spawnBlockPos.getY() + 1.0D, spawnBlockPos.getZ() + 0.5D, createdEntity.yRot, createdEntity.xRot);
+                createdEntity.moveTo(spawnBlockPos.getX() + 0.5D, spawnBlockPos.getY() + 1.0D, spawnBlockPos.getZ() + 0.5D, createdEntity.getYRot(), createdEntity.getXRot());
                 return createdEntity;
             });
         } else {
@@ -139,22 +142,22 @@ public class FactionEntityType {
         if (entity == null) {
             return null;
         }
-        if (entity instanceof MobEntity) {
-            MobEntity mobEntity = (MobEntity) entity;
+        if (entity instanceof Mob) {
+            Mob mobEntity = (Mob) entity;
             if (bannerHolder) {
                 faction.makeBannerHolder(mobEntity);
             }
             if (net.minecraftforge.common.ForgeHooks.canEntitySpawn(mobEntity, level, spawnBlockPos.getX(), spawnBlockPos.getY(), spawnBlockPos.getZ(), null, spawnReason) == -1)
                 return null;
             if (this.tag.isEmpty()) {
-                mobEntity.finalizeSpawn(level, level.getCurrentDifficultyAt(spawnBlockPos), SpawnReason.EVENT, null, null);
+                mobEntity.finalizeSpawn(level, level.getCurrentDifficultyAt(spawnBlockPos), MobSpawnType.EVENT, null, null);
             }
             mobEntity.setOnGround(true);
         }
         entity.getRootVehicle().getSelfAndPassengers()
             .forEach(stackedEntity -> {
-                if (stackedEntity instanceof MobEntity)
-                    FactionEntityHelper.getFactionEntityCapabilityLazy((MobEntity) stackedEntity)
+                if (stackedEntity instanceof Mob)
+                    FactionEntityHelper.getFactionEntityCapabilityLazy((Mob) stackedEntity)
                         .ifPresent(cap -> {
                             cap.setFaction(faction);
                             cap.setFactionEntityType(this);
@@ -165,14 +168,14 @@ public class FactionEntityType {
         return entity;
     }
 
-    public CompoundNBT save(CompoundNBT compoundNbt) {
+    public CompoundTag save(CompoundTag compoundNbt) {
         compoundNbt.putString("entityType", this.entityType.toString());
         compoundNbt.put("tag", tag);
         compoundNbt.putInt("weight", weight);
         compoundNbt.putInt("strength", strength);
         compoundNbt.putString("rank", rank.getName());
         compoundNbt.putString("maximumRank", maximumRank.getName());
-        CompoundNBT boostConfigNbt = new CompoundNBT();
+        CompoundTag boostConfigNbt = new CompoundTag();
         compoundNbt.put("entityBoostConfig", entityBoostConfig.save(boostConfigNbt));
         compoundNbt.putInt("minimumWave", minimumWave);
         return compoundNbt;

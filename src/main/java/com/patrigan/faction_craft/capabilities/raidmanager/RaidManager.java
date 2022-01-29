@@ -1,31 +1,32 @@
 package com.patrigan.faction_craft.capabilities.raidmanager;
 
-
 import com.google.common.collect.Maps;
+import com.patrigan.faction_craft.capabilities.factioninteraction.FactionInteraction;
 import com.patrigan.faction_craft.capabilities.factioninteraction.FactionInteractionHelper;
-import com.patrigan.faction_craft.capabilities.factioninteraction.IFactionInteraction;
 import com.patrigan.faction_craft.config.FactionCraftConfig;
 import com.patrigan.faction_craft.effect.Effects;
 import com.patrigan.faction_craft.faction.Faction;
+import com.patrigan.faction_craft.raid.Raid;
 import com.patrigan.faction_craft.raid.target.RaidTarget;
 import net.minecraft.advancements.CriteriaTriggers;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.network.play.server.SEntityStatusPacket;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.network.protocol.game.ClientboundEntityEventPacket;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.GameRules;
-import com.patrigan.faction_craft.raid.Raid;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.level.GameRules;
+import net.minecraftforge.common.util.INBTSerializable;
 
 import java.util.*;
 
+import static com.patrigan.faction_craft.capabilities.ModCapabilities.RAID_MANAGER_CAPABILITY;
 import static com.patrigan.faction_craft.config.FactionCraftConfig.RAID_MAX_FACTIONS;
 
-public class RaidManager implements IRaidManager {
+public class RaidManager implements INBTSerializable<CompoundTag> {
     private final Map<Integer, Raid> raidMap = Maps.newHashMap();
-    private final ServerWorld level;
+    private final ServerLevel level;
     private int nextAvailableID = 1;
     private int tick;
 
@@ -33,7 +34,7 @@ public class RaidManager implements IRaidManager {
         level = null;
     }
 
-    public RaidManager(ServerWorld level) {
+    public RaidManager(ServerLevel level) {
         this.level = level;
     }
 
@@ -57,7 +58,6 @@ public class RaidManager implements IRaidManager {
 //        DebugPacketSender.sendRaids(this.level, this.raidMap.values());
     }
 
-    @Override
     public Map<Integer, Raid> getRaids() {
         return raidMap;
     }
@@ -85,12 +85,10 @@ public class RaidManager implements IRaidManager {
         return raid;
     }
 
-    @Override
     public Raid createRaid(Faction faction, RaidTarget raidTarget) {
         return createRaid(Arrays.asList(faction), raidTarget);
     }
 
-    @Override
     public Raid createRaid(List<Faction> factions, RaidTarget raidTarget) {
         if (FactionCraftConfig.DISABLE_FACTION_RAIDS.get()) {
             return null;
@@ -106,13 +104,12 @@ public class RaidManager implements IRaidManager {
         }
     }
 
-    @Override
-    public Raid createBadOmenRaid(RaidTarget raidTarget, ServerPlayerEntity player) {
+    public Raid createBadOmenRaid(RaidTarget raidTarget, ServerPlayer player) {
         if (FactionCraftConfig.DISABLE_FACTION_RAIDS.get()) {
             return null;
         } else {
             Raid raid = this.getRaidAt(raidTarget.getTargetBlockPos());
-            IFactionInteraction cap = FactionInteractionHelper.getFactionInteractionCapability(player);
+            FactionInteraction cap = FactionInteractionHelper.getFactionInteractionCapability(player);
             List<Faction> badOmenFactions = cap.getBadOmenFactions();
             if(raid == null) {
                 raid = createRaid(new ArrayList<>(badOmenFactions), raidTarget);
@@ -135,43 +132,47 @@ public class RaidManager implements IRaidManager {
         }
     }
 
-    private void clearBadOmen(IFactionInteraction cap, ServerPlayerEntity player, Raid raid, boolean contributed) {
+    private void clearBadOmen(FactionInteraction cap, ServerPlayer player, Raid raid, boolean contributed) {
         cap.clearBadOmenFactions();
         player.removeEffect(Effects.FACTION_BAD_OMEN);
-        player.connection.send(new SEntityStatusPacket(player, (byte)43));
+        player.connection.send(new ClientboundEntityEventPacket(player, (byte)43));
         if (contributed && !raid.hasFirstWaveSpawned()) {
             player.awardStat(Stats.RAID_TRIGGER);
             CriteriaTriggers.BAD_OMEN.trigger(player);
         }
     }
 
+    @Override
+    public CompoundTag serializeNBT() {
+        if (RAID_MANAGER_CAPABILITY == null) {
+            return new CompoundTag();
+        } else {
+            CompoundTag tag = new CompoundTag();
+            tag.putInt("NextAvailableID", this.nextAvailableID);
+            tag.putInt("Tick", this.tick);
+            ListTag listnbt = new ListTag();
 
-    public void load(CompoundNBT tag) {
+            for(Raid raid : this.raidMap.values()) {
+                CompoundTag compoundnbt = new CompoundTag();
+                raid.save(compoundnbt);
+                listnbt.add(compoundnbt);
+            }
+
+            tag.put("Raids", listnbt);
+            return tag;
+        }
+    }
+
+    @Override
+    public void deserializeNBT(CompoundTag tag) {
         this.nextAvailableID = tag.getInt("NextAvailableID");
         this.tick = tag.getInt("Tick");
-        ListNBT listnbt = tag.getList("Raids", 10);
+        ListTag listnbt = tag.getList("Raids", 10);
 
         for(int i = 0; i < listnbt.size(); ++i) {
-            CompoundNBT compoundnbt = listnbt.getCompound(i);
+            CompoundTag compoundnbt = listnbt.getCompound(i);
             Raid raid = new Raid(this.level, compoundnbt);
             this.raidMap.put(raid.getId(), raid);
         }
-
     }
-
-    public CompoundNBT save(CompoundNBT pCompound) {
-        pCompound.putInt("NextAvailableID", this.nextAvailableID);
-        pCompound.putInt("Tick", this.tick);
-        ListNBT listnbt = new ListNBT();
-
-        for(Raid raid : this.raidMap.values()) {
-            CompoundNBT compoundnbt = new CompoundNBT();
-            raid.save(compoundnbt);
-            listnbt.add(compoundnbt);
-        }
-
-        pCompound.put("Raids", listnbt);
-        return pCompound;
-    }
-
 }

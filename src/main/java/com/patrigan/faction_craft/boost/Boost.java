@@ -5,10 +5,10 @@ import com.mojang.serialization.DataResult;
 import com.patrigan.faction_craft.FactionCraft;
 import com.patrigan.faction_craft.capabilities.appliedboosts.AppliedBoostsHelper;
 import com.patrigan.faction_craft.util.RegistryDispatcher;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.MobEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.IExtensibleEnum;
 
 import java.util.Map;
@@ -31,17 +31,17 @@ public abstract class Boost extends RegistryDispatcher.Dispatchable<Boost.Serial
 
     public abstract boolean canApply(LivingEntity livingEntity);
 
-    public void updateAIOnJoin(MobEntity mobEntity){
+    public void updateAIOnJoin(Mob mobEntity){
         // noop
     }
 
-    public CompoundNBT save(CompoundNBT compoundNBT) {
+    public CompoundTag save(CompoundTag compoundNBT) {
         ResourceLocation resourceLocation = Boosts.BOOSTS.data.entrySet().stream().filter(entry -> entry.getValue().equals(this)).findFirst().map(Map.Entry::getKey).orElse(new ResourceLocation("empty"));
         compoundNBT.putString("name", resourceLocation.toString());
         return compoundNBT;
     }
 
-    public static Boost load(CompoundNBT compoundNBT) {
+    public static Boost load(CompoundTag compoundNBT) {
         ResourceLocation name = new ResourceLocation(compoundNBT.getString("name"));
         return Boosts.getBoost(name);
     }

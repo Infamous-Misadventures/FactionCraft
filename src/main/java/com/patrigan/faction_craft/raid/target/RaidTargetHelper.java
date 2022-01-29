@@ -2,14 +2,14 @@ package com.patrigan.faction_craft.raid.target;
 
 import com.patrigan.faction_craft.faction.Factions;
 import net.minecraft.client.Minecraft;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 
 public class RaidTargetHelper {
 
-    public static RaidTarget load(ServerWorld level, CompoundNBT compoundNBT){
+    public static RaidTarget load(ServerLevel level, CompoundTag compoundNBT){
         RaidTarget.Type type = RaidTarget.Type.byName(compoundNBT.getString("Type"), RaidTarget.Type.VILLAGE);
         if (type == RaidTarget.Type.VILLAGE) {
             return loadVillageRaidTarget(compoundNBT);
@@ -21,21 +21,21 @@ public class RaidTargetHelper {
         return null;
     }
 
-    private static RaidTarget loadPlayerRaidTarget(ServerWorld level, CompoundNBT compoundNBT) {
+    private static RaidTarget loadPlayerRaidTarget(ServerLevel level, CompoundTag compoundNBT) {
         return new PlayerRaidTarget(
                 level.players().stream().filter(serverPlayerEntity -> serverPlayerEntity.getStringUUID().equals(compoundNBT.getString("Player"))).findFirst().get(),
                 compoundNBT.getInt("TargetStrength")
         );
     }
 
-    private static RaidTarget loadVillageRaidTarget(CompoundNBT compoundNBT){
+    private static RaidTarget loadVillageRaidTarget(CompoundTag compoundNBT){
         return new VillageRaidTarget(
                 new BlockPos(compoundNBT.getInt("X"), compoundNBT.getInt("Y"), compoundNBT.getInt("Z")),
                 compoundNBT.getInt("TargetStrength")
         );
     }
 
-    private static RaidTarget loadFactionBattleRaidTarget(CompoundNBT compoundNBT){
+    private static RaidTarget loadFactionBattleRaidTarget(CompoundTag compoundNBT){
         return new FactionBattleRaidTarget(
                 compoundNBT.getInt("TargetStrength"),
                 new BlockPos(compoundNBT.getInt("X"), compoundNBT.getInt("Y"), compoundNBT.getInt("Z")),

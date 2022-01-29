@@ -2,20 +2,20 @@ package com.patrigan.faction_craft.event;
 
 import com.patrigan.faction_craft.faction.Faction;
 import com.patrigan.faction_craft.raid.target.RaidTarget;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.eventbus.api.Event;
 
 public class CalculateStrengthEvent extends Event {
 
     RaidTarget.Type type;
     BlockPos blockPos;
-    ServerWorld level;
+    ServerLevel level;
     int originalStrength;
     int strength;
 
-    public CalculateStrengthEvent(RaidTarget.Type type, BlockPos blockPos, ServerWorld level, int originalStrength, int strength) {
+    public CalculateStrengthEvent(RaidTarget.Type type, BlockPos blockPos, ServerLevel level, int originalStrength, int strength) {
         this.type = type;
         this.blockPos = blockPos;
         this.level = level;
@@ -31,7 +31,7 @@ public class CalculateStrengthEvent extends Event {
         return blockPos;
     }
 
-    public ServerWorld getLevel() {
+    public ServerLevel getLevel() {
         return level;
     }
 
@@ -49,14 +49,14 @@ public class CalculateStrengthEvent extends Event {
 
     public static class Player extends CalculateStrengthEvent
     {
-        ServerPlayerEntity player;
+        ServerPlayer player;
 
-        public Player(RaidTarget.Type type, ServerPlayerEntity player, ServerWorld level, int originalStrength, int strength) {
+        public Player(RaidTarget.Type type, ServerPlayer player, ServerLevel level, int originalStrength, int strength) {
             super(type, player.blockPosition(), level, originalStrength, strength);
             this.player = player;
         }
 
-        public ServerPlayerEntity getPlayer() {
+        public ServerPlayer getPlayer() {
             return player;
         }
     }
@@ -66,7 +66,7 @@ public class CalculateStrengthEvent extends Event {
         private final Faction faction1;
         private final Faction faction2;
 
-        public FactionBattle(RaidTarget.Type type, BlockPos blockPos, ServerWorld level, int originalStrength, int strength, Faction faction1, Faction faction2) {
+        public FactionBattle(RaidTarget.Type type, BlockPos blockPos, ServerLevel level, int originalStrength, int strength, Faction faction1, Faction faction2) {
             super(type, blockPos, level, originalStrength, strength);
             this.faction1 = faction1;
             this.faction2 = faction2;

@@ -1,7 +1,7 @@
 package com.patrigan.faction_craft.boost;
 
-import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.RegistryObject;
 
 import static com.patrigan.faction_craft.FactionCraft.BOOST_DISPATCHER;
 import static com.patrigan.faction_craft.FactionCraft.MODID;
