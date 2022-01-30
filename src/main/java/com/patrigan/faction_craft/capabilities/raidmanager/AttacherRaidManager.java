@@ -22,8 +22,13 @@ public class AttacherRaidManager {
     private static class RaidManagerProvider implements ICapabilityProvider, INBTSerializable<CompoundTag> {
 
         public static final ResourceLocation IDENTIFIER = new ResourceLocation(MODID, "raid_manager");
-        private final RaidManager backend = new RaidManager();
-        private final LazyOptional<RaidManager> optionalData = LazyOptional.of(() -> backend);
+        private final RaidManager backend;
+        private final LazyOptional<RaidManager> optionalData;
+
+        public RaidManagerProvider(ServerLevel level) {
+            backend = new RaidManager(level);
+            optionalData = LazyOptional.of(() -> backend);
+        }
 
         @Override
         public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> cap, Direction side) {
@@ -44,7 +49,7 @@ public class AttacherRaidManager {
     public static void attach(final AttachCapabilitiesEvent<Level> event) {
         Level level = event.getObject();
         if (level instanceof ServerLevel) {
-            final RaidManagerProvider provider = new RaidManagerProvider();
+            final RaidManagerProvider provider = new RaidManagerProvider((ServerLevel) level);
             event.addCapability(RaidManagerProvider.IDENTIFIER, provider);
         }
     }

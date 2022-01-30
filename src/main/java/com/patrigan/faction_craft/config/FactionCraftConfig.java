@@ -121,8 +121,8 @@ public class FactionCraftConfig {
             VILLAGE_RAID_ADDITIONAL_WAVE_CHANCE = builder
                     .comment("Applied to the target strength of the village \n" +
                             "Additional waves is calulcated by applying this value to target strength. \n" +
-                            "Vanilla villages have a target strength between 50 and 100. Default 0.02F")
-                    .defineInRange("villageRaidAdditionalWaveChance", 0.02, 0.0, 10);
+                            "Vanilla villages have a target strength between 50 and 100. Default 0.01F")
+                    .defineInRange("villageRaidAdditionalWaveChance", 0.01, 0.0, 10);
             VILLAGE_RAID_VILLAGER_WEIGHT = builder
                     .comment("The amount that 1 villager adds to the strength of a village. \n" +
                             "Default 5")

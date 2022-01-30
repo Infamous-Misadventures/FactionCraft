@@ -10,10 +10,14 @@ import com.patrigan.faction_craft.raid.Raid;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.util.GoalUtils;
 import net.minecraft.world.entity.npc.AbstractVillager;
 import net.minecraftforge.common.util.INBTSerializable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.patrigan.faction_craft.capabilities.ModCapabilities.RAIDER_CAPABILITY;
 
@@ -25,24 +29,10 @@ public class Raider implements INBTSerializable<CompoundTag> {
     private int ticksOutsideRaid;
     private boolean waveLeader = false;
     private final Mob entity;
-    private MoveTowardsRaidGoal<Mob> moveTowardsRaidGoal;
-    private RaiderMoveThroughVillageGoal raiderMoveThroughVillageGoal;
-    private RaidOpenDoorGoal raidOpenDoorGoal;
-    private NearestAttackableTargetGoal<AbstractVillager> abstractVillagerEntityNearestAttackableTargetGoal;
-
-
-    public Raider() {
-        this.entity = null;
-    }
+    private final List<Goal> addedGoals = new ArrayList<>();
 
     public Raider(Mob entity) {
         this.entity = entity;
-        moveTowardsRaidGoal = new MoveTowardsRaidGoal<>(this.entity);
-        raiderMoveThroughVillageGoal = new RaiderMoveThroughVillageGoal(entity, 1.05F, 1);
-        abstractVillagerEntityNearestAttackableTargetGoal = new NearestAttackableTargetGoal<>(this.entity, AbstractVillager.class, false);
-        if(GoalUtils.hasGroundPathNavigation(this.entity)) {
-            raidOpenDoorGoal = new RaidOpenDoorGoal(entity);
-        }
     }
 
     public Raid getRaid() {
@@ -99,17 +89,21 @@ public class Raider implements INBTSerializable<CompoundTag> {
 
     private void updateRaidGoals(){
         if(this.raid != null){
-            if(raidOpenDoorGoal != null) {
-                this.entity.goalSelector.addGoal(2, raidOpenDoorGoal);
+            if(GoalUtils.hasGroundPathNavigation(this.entity)) {
+                addGoal(2, new RaidOpenDoorGoal(entity));
             }
-            this.entity.goalSelector.addGoal(3, moveTowardsRaidGoal);
-            this.entity.goalSelector.addGoal(4, raiderMoveThroughVillageGoal);
-            this.entity.targetSelector.addGoal(3, abstractVillagerEntityNearestAttackableTargetGoal);
+            addGoal(3, new MoveTowardsRaidGoal<>(this.entity));
+            addGoal(4, new RaiderMoveThroughVillageGoal(entity, 1.05F, 1));
+            addGoal(3, new NearestAttackableTargetGoal<>(this.entity, AbstractVillager.class, false));
         }else{
-            this.entity.goalSelector.removeGoal(raidOpenDoorGoal);
-            this.entity.goalSelector.removeGoal(moveTowardsRaidGoal);
-            this.entity.goalSelector.removeGoal(raiderMoveThroughVillageGoal);
+            this.addedGoals.forEach(this.entity.goalSelector::removeGoal);
+            addedGoals.clear();
         }
+    }
+
+    private void addGoal(int priority, Goal goal) {
+        this.entity.goalSelector.addGoal(priority, goal);
+        addedGoals.add(goal);
     }
 
     @Override

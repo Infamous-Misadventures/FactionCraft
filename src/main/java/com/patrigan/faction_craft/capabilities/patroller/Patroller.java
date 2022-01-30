@@ -19,14 +19,9 @@ public class Patroller implements INBTSerializable<CompoundTag> {
     private final Mob entity;
     private Goal goal;
 
-    public Patroller() {
-        this.entity = null;
-    }
-
     public Patroller(Mob entity) {
         this.entity = entity;
         this.goal = new PatrolGoal<>(this.entity, 0.7D, 0.595D);
-        updatePatrolGoals();
     }
 
     public BlockPos getPatrolTarget() {

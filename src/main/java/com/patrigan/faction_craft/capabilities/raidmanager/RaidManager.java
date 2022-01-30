@@ -30,10 +30,6 @@ public class RaidManager implements INBTSerializable<CompoundTag> {
     private int nextAvailableID = 1;
     private int tick;
 
-    public RaidManager() {
-        level = null;
-    }
-
     public RaidManager(ServerLevel level) {
         this.level = level;
     }
