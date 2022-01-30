@@ -73,9 +73,8 @@
       "entity_type": "minecraft:zombie",
       "weight": 1,
       "tag": {
-        "IsBaby": 1
-      },
-      "tag": {"Passengers":[{"id":"minecraft:zombie","IsBaby":1, "Passengers":[{"id":"minecraft:zombie","IsBaby":1, "Passengers":[{"id":"minecraft:zombie","IsBaby":1, "Passengers":[{"id":"minecraft:zombie","IsBaby":1, "Passengers":[{"id":"minecraft:zombie","IsBaby":1}]}]}]}]}]},
+        "IsBaby": 1,
+        "Passengers":[{"id":"minecraft:zombie","IsBaby":1, "Passengers":[{"id":"minecraft:zombie","IsBaby":1, "Passengers":[{"id":"minecraft:zombie","IsBaby":1, "Passengers":[{"id":"minecraft:zombie","IsBaby":1, "Passengers":[{"id":"minecraft:zombie","IsBaby":1}]}]}]}]}]},
       "strength": 10,
       "rank": "soldier",
       "maximum_rank": "leader",
