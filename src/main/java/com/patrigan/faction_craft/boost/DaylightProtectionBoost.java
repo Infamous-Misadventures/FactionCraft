@@ -60,6 +60,7 @@ public class DaylightProtectionBoost extends Boost {
         if(livingEntity instanceof MobEntity) {
             livingEntity.setItemSlot(MobEntity.getEquipmentSlotForItem(headpiece), headpiece);
             ((MobEntity) livingEntity).setDropChance(MobEntity.getEquipmentSlotForItem(headpiece), 0);
+            updateAIOnJoin((MobEntity) livingEntity);
         }
         super.apply(livingEntity);
         return 1;
