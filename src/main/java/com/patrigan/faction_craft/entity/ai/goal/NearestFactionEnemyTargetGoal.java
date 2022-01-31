@@ -50,6 +50,9 @@ public class NearestFactionEnemyTargetGoal<T extends LivingEntity> extends Targe
          MobEntity targetMob = (MobEntity) livingEntity;
          IFactionEntity targetCap = FactionEntityHelper.getFactionEntityCapability(targetMob);
          IFactionEntity sourceCap = FactionEntityHelper.getFactionEntityCapability(this.mob);
+         if(sourceCap == null || targetCap == null){
+            return false;
+         }
          if(sourceCap.getFaction() != null && targetCap.getFaction() != null && sourceCap.getFaction().getRelations().getEnemies().contains(targetCap.getFaction().getName())){
             return true;
          }
