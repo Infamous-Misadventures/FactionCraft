@@ -44,7 +44,7 @@ public class AttacherFactionEntity {
         }
     }
 
-    // attach only to living entities
+    // attach only to Mob entities
     public static void attach(final AttachCapabilitiesEvent<Entity> event) {
         Entity entity = event.getObject();
         if (entity instanceof Mob) {
