@@ -1,0 +1,12 @@
+{
+  "commands.patrol.failed": "Impossibile generare una pattuglia",
+  "commands.patrol.success": "Pattuglia grande di %s generata a %s",
+  "commands.raid.failed": "Impossibile generare un'incursione",
+  "commands.raid.success": "Incursione generata a %s",
+  "commands.batle.failed": "Impossibile generare una battaglia",
+  "commands.battle.success": "Battaglia generata fra %s e %s a %s",
+  "effect.faction_craft.faction_bad_omen": "Malaugurio",
+  "event.faction_craft.battle": "Battaglia fra fazioni",
+  "event.faction_craft.battle.over": "La battaglia fra fazioni è finita"
+
+}
