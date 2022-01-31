@@ -19,7 +19,7 @@ public class FactionEvents {
         if(!livingEntity.level.isClientSide() && event.getEntityLiving() instanceof Mob && event.getSource().getEntity() instanceof Mob) {
             FactionEntity targetCap = FactionEntityHelper.getFactionEntityCapability((Mob) event.getEntityLiving());
             FactionEntity sourceCap = FactionEntityHelper.getFactionEntityCapability((Mob) event.getSource().getEntity());
-            if(targetCap.getFaction() != null && sourceCap.getFaction() != null) {
+            if(targetCap != null && sourceCap != null && targetCap.getFaction() != null && sourceCap.getFaction() != null) {
                 if (targetCap.getFaction() == sourceCap.getFaction() || sourceCap.getFaction().getRelations().getAllies().contains(targetCap.getFaction().getName())) {
                     event.setCanceled(true);
                 }
