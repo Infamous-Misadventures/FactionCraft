@@ -5,8 +5,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.patrigan.faction_craft.boost.Boost;
 import com.patrigan.faction_craft.boost.Boosts;
-import com.patrigan.faction_craft.faction.FactionBoostConfig;
-import com.sun.prism.image.CompoundTexture;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.ResourceLocation;
