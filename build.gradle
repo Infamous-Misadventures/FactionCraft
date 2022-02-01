@@ -133,7 +133,7 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 dependencies {
     minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
-    annotationProcessor 'org.spongepowered:mixin:0.8.4:processor'
+    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
 //    implementation fg.deobf('software.bernie.geckolib:geckolib-forge-1.16.5:3.0.45')
 //    implementation fg.deobf('software.bernie.geckolib:geckolib-forge-1.16.5:3.0.45')

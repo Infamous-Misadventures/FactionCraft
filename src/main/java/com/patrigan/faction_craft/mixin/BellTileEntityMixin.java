@@ -19,7 +19,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.List;
 
-@Mixin(value = BellTileEntity.class, remap = false)
+@Mixin(value = BellTileEntity.class)
 public abstract class BellTileEntityMixin extends TileEntity {
 
     @Shadow
@@ -35,7 +35,7 @@ public abstract class BellTileEntityMixin extends TileEntity {
     @Shadow
     public abstract void glow(LivingEntity p_222827_1_);
 
-    @Inject(method = "areRaidersNearby()Z",
+    @Inject(method = "Lnet/minecraft/tileentity/BellTileEntity;areRaidersNearby()Z",
             at = @At(value = "RETURN"),
             cancellable = true)
     private void factioncraft_areRaidersNearby(CallbackInfoReturnable<Boolean> cir) {
@@ -51,7 +51,7 @@ public abstract class BellTileEntityMixin extends TileEntity {
     }
 
 
-    @Inject(method = "makeRaidersGlow(Lnet/minecraft/world/World;)V",
+    @Inject(method = "Lnet/minecraft/tileentity/BellTileEntity;makeRaidersGlow(Lnet/minecraft/world/World;)V",
             at = @At(value = "TAIL"))
     private void factioncraft_makeRaidersGlow(World level, CallbackInfo ci) {
         if (!level.isClientSide) {
@@ -59,7 +59,7 @@ public abstract class BellTileEntityMixin extends TileEntity {
         }
     }
 
-    @Inject(method = "isRaiderWithinRange(Lnet/minecraft/entity/LivingEntity;)Z",
+    @Inject(method = "Lnet/minecraft/tileentity/BellTileEntity;isRaiderWithinRange(Lnet/minecraft/entity/LivingEntity;)Z",
             at = @At(value = "RETURN"),
             cancellable = true)
     private void factioncraft_isRaiderWithinRange(LivingEntity livingEntity, CallbackInfoReturnable<Boolean> cir) {
