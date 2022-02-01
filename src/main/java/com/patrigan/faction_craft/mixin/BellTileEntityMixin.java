@@ -21,7 +21,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.List;
 
-@Mixin(value = BellBlockEntity.class, remap = false)
+@Mixin(value = BellBlockEntity.class)
 public abstract class BellTileEntityMixin extends BlockEntity {
 
     @Invoker("isRaiderWithinRange")
