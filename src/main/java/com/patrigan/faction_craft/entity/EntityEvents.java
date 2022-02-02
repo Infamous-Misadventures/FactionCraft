@@ -1,5 +1,7 @@
 package com.patrigan.faction_craft.entity;
 
+import com.patrigan.faction_craft.capabilities.patroller.Patroller;
+import com.patrigan.faction_craft.capabilities.patroller.PatrollerHelper;
 import com.patrigan.faction_craft.capabilities.raider.Raider;
 import com.patrigan.faction_craft.capabilities.raider.RaiderHelper;
 import com.patrigan.faction_craft.entity.ai.goal.NearestFactionEnemyTargetGoal;
@@ -17,9 +19,10 @@ public class EntityEvents {
 
     @SubscribeEvent
     public static void onLivingConversionEvent(LivingConversionEvent.Pre event){
-        if(event.getEntity() instanceof Mob){
-            Raider cap = RaiderHelper.getRaiderCapability((Mob) event.getEntity());
-            if(cap.hasActiveRaid()){
+        if(event.getEntity() instanceof Mob mob){
+            Raider raiderCap = RaiderHelper.getRaiderCapability(mob);
+            Patroller patrollerCap = PatrollerHelper.getPatrollerCapability(mob);
+            if(raiderCap.hasActiveRaid() || patrollerCap.isPatrolling()){
                 event.setCanceled(true);
                 event.setConversionTimer(0);
             }
