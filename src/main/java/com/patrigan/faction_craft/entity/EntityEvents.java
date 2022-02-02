@@ -1,11 +1,12 @@
 package com.patrigan.faction_craft.entity;
 
+import com.patrigan.faction_craft.capabilities.patroller.IPatroller;
+import com.patrigan.faction_craft.capabilities.patroller.PatrollerHelper;
 import com.patrigan.faction_craft.capabilities.raider.IRaider;
 import com.patrigan.faction_craft.capabilities.raider.RaiderHelper;
 import com.patrigan.faction_craft.entity.ai.goal.NearestFactionEnemyTargetGoal;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MobEntity;
-import net.minecraft.world.World;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingConversionEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -19,8 +20,9 @@ public class EntityEvents {
     @SubscribeEvent
     public static void onLivingConversionEvent(LivingConversionEvent.Pre event){
         if(event.getEntity() instanceof MobEntity){
-            IRaider cap = RaiderHelper.getRaiderCapability((MobEntity) event.getEntity());
-            if(cap.hasActiveRaid()){
+            IRaider raiderCap = RaiderHelper.getRaiderCapability((MobEntity) event.getEntity());
+            IPatroller patrollerCap = PatrollerHelper.getPatrollerCapability((MobEntity) event.getEntity());
+            if(raiderCap.hasActiveRaid() || patrollerCap.isPatrolling()){
                 event.setCanceled(true);
                 event.setConversionTimer(0);
             }
