@@ -59,20 +59,20 @@ public class DaylightProtectionBoost extends Boost {
         if(livingEntity instanceof Mob) {
             livingEntity.setItemSlot(Mob.getEquipmentSlotForItem(headpiece), headpiece);
             ((Mob) livingEntity).setDropChance(Mob.getEquipmentSlotForItem(headpiece), 0);
-             updateAIOnJoin((Mob) livingEntity);
+             applyAIChanges((Mob) livingEntity);
         }
         super.apply(livingEntity);
         return 1;
     }
 
     @Override
-    public void updateAIOnJoin(Mob mobEntity) {
+    public void applyAIChanges(Mob mobEntity) {
         List<Goal> toRemove = GoalHelper.getAvailableGoals(mobEntity).stream()
                 .filter(prioritizedGoal -> prioritizedGoal.getGoal() instanceof FleeSunGoal || prioritizedGoal.getGoal() instanceof RestrictSunGoal)
                 .map(WrappedGoal::getGoal)
                 .collect(Collectors.toList());
         toRemove.forEach(mobEntity.goalSelector::removeGoal);
-        super.updateAIOnJoin(mobEntity);
+        super.applyAIChanges(mobEntity);
     }
 
     @Override
