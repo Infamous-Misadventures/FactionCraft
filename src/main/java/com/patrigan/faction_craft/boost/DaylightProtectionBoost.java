@@ -9,7 +9,6 @@ import net.minecraft.entity.ai.goal.FleeSunGoal;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.PrioritizedGoal;
 import net.minecraft.entity.ai.goal.RestrictSunGoal;
-import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 
 import java.util.List;
@@ -60,20 +59,20 @@ public class DaylightProtectionBoost extends Boost {
         if(livingEntity instanceof MobEntity) {
             livingEntity.setItemSlot(MobEntity.getEquipmentSlotForItem(headpiece), headpiece);
             ((MobEntity) livingEntity).setDropChance(MobEntity.getEquipmentSlotForItem(headpiece), 0);
-            updateAIOnJoin((MobEntity) livingEntity);
+            applyAIChanges((MobEntity) livingEntity);
         }
         super.apply(livingEntity);
         return 1;
     }
 
     @Override
-    public void updateAIOnJoin(MobEntity mobEntity) {
+    public void applyAIChanges(MobEntity mobEntity) {
         List<Goal> toRemove = GoalHelper.getAvailableGoals(mobEntity).stream()
                 .filter(prioritizedGoal -> prioritizedGoal.getGoal() instanceof FleeSunGoal || prioritizedGoal.getGoal() instanceof RestrictSunGoal)
                 .map(PrioritizedGoal::getGoal)
                 .collect(Collectors.toList());
         toRemove.forEach(mobEntity.goalSelector::removeGoal);
-        super.updateAIOnJoin(mobEntity);
+        super.applyAIChanges(mobEntity);
     }
 
     @Override

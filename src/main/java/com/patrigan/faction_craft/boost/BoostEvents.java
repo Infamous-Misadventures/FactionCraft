@@ -19,7 +19,7 @@ public class BoostEvents {
         if(!entity.level.isClientSide() && entity instanceof MobEntity) {
             MobEntity mobEntity = (MobEntity) event.getEntity();
             AppliedBoostsHelper.getAppliedBoostsCapabilityLazy(mobEntity).ifPresent(cap -> {
-                cap.getAppliedBoosts().forEach(boost -> boost.updateAIOnJoin(mobEntity));
+                cap.getAppliedBoosts().forEach(boost -> boost.applyAIChanges(mobEntity));
             });
         }
     }

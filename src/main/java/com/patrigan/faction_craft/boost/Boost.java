@@ -31,7 +31,7 @@ public abstract class Boost extends RegistryDispatcher.Dispatchable<Boost.Serial
 
     public abstract boolean canApply(LivingEntity livingEntity);
 
-    public void updateAIOnJoin(MobEntity mobEntity){
+    public void applyAIChanges(MobEntity mobEntity){
         // noop
     }
 

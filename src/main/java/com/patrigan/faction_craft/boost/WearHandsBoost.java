@@ -2,10 +2,20 @@ package com.patrigan.faction_craft.boost;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.patrigan.faction_craft.entity.ai.goal.GoalHelper;
+import net.minecraft.entity.CreatureEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
+import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.entity.ai.goal.MeleeAttackGoal;
+import net.minecraft.entity.ai.goal.PrioritizedGoal;
+import net.minecraft.entity.projectile.ProjectileHelper;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.patrigan.faction_craft.boost.Boost.BoostType.MAINHAND;
 import static com.patrigan.faction_craft.boost.Boost.BoostType.OFFHAND;
@@ -61,6 +71,9 @@ public class WearHandsBoost extends Boost {
         }else {
             livingEntity.setItemSlot(EquipmentSlotType.MAINHAND, item);
         }
+        if(livingEntity instanceof MobEntity) {
+            applyAIChanges((MobEntity) livingEntity);
+        }
         super.apply(livingEntity);
         return strengthAdjustment;
     }
@@ -68,5 +81,30 @@ public class WearHandsBoost extends Boost {
     @Override
     public boolean canApply(LivingEntity livingEntity) {
         return livingEntity instanceof MobEntity;
+    }
+
+    @Override
+    public void applyAIChanges(MobEntity mobEntity) {
+        ItemStack itemstack = mobEntity.getItemInHand(ProjectileHelper.getWeaponHoldingHand(mobEntity, item -> item instanceof net.minecraft.item.BowItem));
+        if (itemstack.getItem() == Items.BOW) {
+//                RangedBowAttackGoal<RangedAttackMob> bowGoal = new RangedBowAttackGoal<>(mobEntity, 1.0D, 20, 15.0F);
+//                int i = 20;
+//                if (mobEntity.level.getDifficulty() != Difficulty.HARD) {
+//                    i = 40;
+//                }
+//
+//                mobEntity.bowGoal.setMinAttackInterval(i);
+//                mobEntity.goalSelector.addGoal(4, mobEntity.bowGoal);
+        } else {
+            if(mobEntity instanceof CreatureEntity) {
+                CreatureEntity pathfinder = (CreatureEntity) mobEntity;
+                List<Goal> meleeGoals = GoalHelper.getAvailableGoals(pathfinder).stream().map(PrioritizedGoal::getGoal).filter(goal -> goal instanceof MeleeAttackGoal).collect(Collectors.toList());
+                if(meleeGoals.isEmpty()) {
+                    MeleeAttackGoal meleeGoal = new MeleeAttackGoal(pathfinder, 1.2D, false);
+                    mobEntity.goalSelector.addGoal(4, meleeGoal);
+                }
+            }
+        }
+
     }
 }
