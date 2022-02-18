@@ -25,7 +25,7 @@ import net.minecraftforge.fml.common.Mod;
 
 import static com.patrigan.faction_craft.FactionCraft.MODID;
 
-@Mod.EventBusSubscriber(modid = MODID)
+@Mod.EventBusSubscriber(modid = MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ModCapabilities {
 
     public static final Capability<AppliedBoosts> APPLIED_BOOSTS_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {});

@@ -3,16 +3,12 @@ package com.patrigan.faction_craft.boost;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.patrigan.faction_craft.entity.ai.goal.GoalHelper;
-import net.minecraft.entity.CreatureEntity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.MobEntity;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.entity.ai.goal.MeleeAttackGoal;
-import net.minecraft.entity.ai.goal.PrioritizedGoal;
-import net.minecraft.entity.projectile.ProjectileHelper;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.PathfinderMob;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
+import net.minecraft.world.entity.ai.goal.WrappedGoal;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -53,8 +49,8 @@ public class MeleeAttackBoost extends Boost {
         if (!canApply(livingEntity)) {
             return 0;
         }
-        if(livingEntity instanceof MobEntity) {
-            applyAIChanges((MobEntity) livingEntity);
+        if(livingEntity instanceof Mob mob) {
+            applyAIChanges(mob);
         }
         super.apply(livingEntity);
         return strengthAdjustment;
@@ -62,14 +58,13 @@ public class MeleeAttackBoost extends Boost {
 
     @Override
     public boolean canApply(LivingEntity livingEntity) {
-        return livingEntity instanceof MobEntity;
+        return livingEntity instanceof Mob;
     }
 
     @Override
-    public void applyAIChanges(MobEntity mobEntity) {
-        if(mobEntity instanceof CreatureEntity) {
-            CreatureEntity pathfinder = (CreatureEntity) mobEntity;
-            List<Goal> meleeGoals = GoalHelper.getAvailableGoals(pathfinder).stream().map(PrioritizedGoal::getGoal).filter(goal -> goal instanceof MeleeAttackGoal).collect(Collectors.toList());
+    public void applyAIChanges(Mob mobEntity) {
+        if(mobEntity instanceof PathfinderMob pathfinder) {
+            List<Goal> meleeGoals = GoalHelper.getAvailableGoals(pathfinder).stream().map(WrappedGoal::getGoal).filter(goal -> goal instanceof MeleeAttackGoal).collect(Collectors.toList());
             if(meleeGoals.isEmpty()) {
                 MeleeAttackGoal meleeGoal = new MeleeAttackGoal(pathfinder, 1.2D, false);
                 mobEntity.goalSelector.addGoal(3, meleeGoal);

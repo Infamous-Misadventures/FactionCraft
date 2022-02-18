@@ -423,7 +423,8 @@ public class Raid {
         baseEntity.getRootVehicle().getSelfAndPassengers().forEach(entity -> {
                 if(entity instanceof Mob) {
                     Mob mobEntity = (Mob) entity;
-                    if(faction.equals(FactionEntityHelper.getFactionEntityCapability(mobEntity).getFaction())) {
+                    FactionEntity factionEntityCapability = FactionEntityHelper.getFactionEntityCapability(mobEntity);
+                    if(factionEntityCapability != null && faction.equals(factionEntityCapability.getFaction())) {
                         this.joinRaid(waveNumber, mobEntity, spawnBlockPos, false);
                         entities.add(mobEntity);
                         faction.getBoostConfig().getMandatoryBoosts().forEach(boost -> boost.apply(mobEntity));
