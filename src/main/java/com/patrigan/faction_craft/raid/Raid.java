@@ -51,6 +51,7 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.patrigan.faction_craft.capabilities.raider.RaiderProvider.RAIDER_CAPABILITY;
 import static com.patrigan.faction_craft.capabilities.raidmanager.RaidManagerHelper.getRaidManagerCapability;
@@ -59,7 +60,7 @@ import static com.patrigan.faction_craft.util.GeneralUtils.getRandomEntry;
 
 public class Raid {
     private final int id;
-    private final List<Faction> factions;
+    private List<Faction> factions;
     private final ServerWorld level;
     private final RaidTarget raidTarget;
     private int badOmenLevel;
@@ -151,7 +152,9 @@ public class Raid {
     }
 
     public void addFactions(Collection<Faction> factions){
-        this.factions.addAll(factions);
+        this.factions = Stream.of(this.factions, factions)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
     }
     public void addFaction(Faction faction){
         this.factions.add(faction);
