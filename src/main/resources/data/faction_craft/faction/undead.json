@@ -9,7 +9,7 @@
     {
       "entity_type": "minecraft:skeleton",
       "weight": 100,
-      "strength": 6,
+      "strength": 5,
       "rank": "soldier",
       "maximum_rank": "leader",
       "minimum_wave": 1,
@@ -30,7 +30,7 @@
     {
       "entity_type": "minecraft:zombie",
       "weight": 100,
-      "strength": 5,
+      "strength": 4,
       "rank": "soldier",
       "maximum_rank": "leader",
       "minimum_wave": 1,
@@ -64,7 +64,7 @@
     {
       "entity_type": "minecraft:spider",
       "weight": 30,
-      "strength": 6,
+      "strength": 5,
       "rank": "mount",
       "maximum_rank": "mount",
       "minimum_wave": 3
@@ -89,7 +89,7 @@
         "IsBaby": 1
       },
       "weight": 70,
-      "strength": 6,
+      "strength": 5,
       "rank": "soldier",
       "maximum_rank": "leader",
       "minimum_wave": 3,
@@ -109,7 +109,7 @@
         "IsBaby": 1
       },
       "weight": 70,
-      "strength": 6,
+      "strength": 5,
       "rank": "soldier",
       "maximum_rank": "leader",
       "minimum_wave": 3,

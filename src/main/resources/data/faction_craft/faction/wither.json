@@ -9,8 +9,8 @@
   "entities": [
     {
       "entity_type": "minecraft:skeleton",
-      "weight": 100,
-      "strength": 6,
+      "weight": 70,
+      "strength": 5,
       "rank": "soldier",
       "maximum_rank": "leader",
       "minimum_wave": 1,
@@ -39,7 +39,7 @@
     {
       "entity_type": "minecraft:wither_skeleton",
       "weight": 100,
-      "strength": 6,
+      "strength": 8,
       "rank": "soldier",
       "maximum_rank": "leader",
       "minimum_wave": 1,
@@ -59,19 +59,11 @@
     },
     {
       "entity_type": "minecraft:blaze",
-      "weight": 100,
+      "weight": 50,
       "strength": 6,
       "rank": "soldier",
       "maximum_rank": "leader",
       "minimum_wave": 2
-    },
-    {
-      "entity_type": "minecraft:ghast",
-      "weight": 100,
-      "strength": 6,
-      "rank": "soldier",
-      "maximum_rank": "leader",
-      "minimum_wave": 3
     }
   ]
 }
