@@ -9,6 +9,7 @@ import com.patrigan.faction_craft.capabilities.factionentity.IFactionEntity;
 import com.patrigan.faction_craft.capabilities.raider.IRaider;
 import com.patrigan.faction_craft.capabilities.raider.RaiderHelper;
 import com.patrigan.faction_craft.capabilities.raidmanager.IRaidManager;
+import com.patrigan.faction_craft.config.FactionCraftConfig;
 import com.patrigan.faction_craft.event.FactionRaidEvent;
 import com.patrigan.faction_craft.faction.Faction;
 import com.patrigan.faction_craft.faction.FactionBoostHelper;
@@ -94,6 +95,7 @@ public class Raid {
         this.level = level;
         this.raidTarget = raidTarget;
         this.numGroups = this.getNumGroups(level.getDifficulty(), raidTarget);
+        this.groupsSpawned = raidTarget.getStartingWave();
         this.active = true;
         this.raidEvent.setName(getRaidEventName(raidTarget));
         this.raidEvent.setPercent(0.0F);
@@ -601,17 +603,22 @@ public class Raid {
     }
 
     public int getNumGroups(Difficulty difficulty, RaidTarget raidTarget) {
-        int additionalWaves = raidTarget.getAdditionalWaves();
+        int numberOfWaves = 0;
         switch(difficulty) {
             case EASY:
-                return NUMBER_WAVES_EASY.get() + additionalWaves;
+                numberOfWaves = NUMBER_WAVES_EASY.get();
+                break;
             case NORMAL:
-                return NUMBER_WAVES_NORMAL.get() + additionalWaves;
+                numberOfWaves = NUMBER_WAVES_NORMAL.get();
+                break;
             case HARD:
-                return NUMBER_WAVES_HARD.get() + additionalWaves;
+                numberOfWaves = NUMBER_WAVES_HARD.get();
+                break;
             default:
-                return 0;
+                numberOfWaves = 0;
         }
+        numberOfWaves = numberOfWaves + raidTarget.getAdditionalWaves();
+        return Math.min(numberOfWaves, MAX_NUMBER_WAVES.get());
     }
 
     private boolean hasMoreWaves() {
@@ -619,7 +626,7 @@ public class Raid {
     }
 
     private boolean isFinalWave() {
-        return this.getGroupsSpawned() == this.numGroups;
+        return this.getGroupsSpawned() >= this.numGroups;
     }
 
     public int getGroupsSpawned() {

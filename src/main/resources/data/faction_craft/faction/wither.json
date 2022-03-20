@@ -1,0 +1,77 @@
+{
+  "name": "faction_craft:wither",
+  "replace": false,
+  "banner": {"id":"minecraft:black_banner","Count":1,"tag":{"HideFlags":32,"BlockEntityTag":{"Patterns":[{"Color":0,"Pattern":"sc"},{"Color":0,"Pattern":"cr"},{"Color":0,"Pattern":"tts"},{"Color":0,"Pattern":"gru"},{"Color":8,"Pattern":"sku"}]},"display":{"Name":{"color":"gold","translate":"block.faction_raid.undead_banner"}}}},
+  "relations": {
+    "enemies": ["minecraft:illager"]
+  },
+  "activation_advancement": "minecraft:nether/root",
+  "entities": [
+    {
+      "entity_type": "minecraft:skeleton",
+      "weight": 100,
+      "strength": 6,
+      "rank": "soldier",
+      "maximum_rank": "leader",
+      "minimum_wave": 1,
+      "boosts": {
+        "mandatory": ["minecraft:special/leather_daylight_protection"],
+        "rarity_overrides": [
+          {
+            "boost": "minecraft:mount/skeleton_horse",
+            "rarity": "common"
+          },
+          {
+            "boost": "faction_craft:mount/faction_spider",
+            "rarity": "rare"
+          }
+        ]
+      }
+    },
+    {
+      "entity_type": "minecraft:spider",
+      "weight": 30,
+      "strength": 6,
+      "rank": "mount",
+      "maximum_rank": "mount",
+      "minimum_wave": 3
+    },
+    {
+      "entity_type": "minecraft:wither_skeleton",
+      "weight": 100,
+      "strength": 6,
+      "rank": "soldier",
+      "maximum_rank": "leader",
+      "minimum_wave": 1,
+      "boosts": {
+        "mandatory": ["minecraft:special/leather_daylight_protection"],
+        "rarity_overrides": [
+          {
+            "boost": "minecraft:mount/skeleton_horse",
+            "rarity": "common"
+          },
+          {
+            "boost": "faction_craft:mount/faction_spider",
+            "rarity": "rare"
+          }
+        ]
+      }
+    },
+    {
+      "entity_type": "minecraft:blaze",
+      "weight": 100,
+      "strength": 6,
+      "rank": "soldier",
+      "maximum_rank": "leader",
+      "minimum_wave": 2
+    },
+    {
+      "entity_type": "minecraft:ghast",
+      "weight": 100,
+      "strength": 6,
+      "rank": "soldier",
+      "maximum_rank": "leader",
+      "minimum_wave": 3
+    }
+  ]
+}

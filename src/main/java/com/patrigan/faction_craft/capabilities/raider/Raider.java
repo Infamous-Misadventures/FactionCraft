@@ -10,8 +10,12 @@ import com.patrigan.faction_craft.raid.Raid;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.ai.goal.NearestAttackableTargetGoal;
 import net.minecraft.entity.merchant.villager.AbstractVillagerEntity;
+import net.minecraft.entity.monster.GhastEntity;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.pathfinding.FlyingPathNavigator;
+import net.minecraft.pathfinding.PathNavigator;
 import net.minecraft.util.GroundPathHelper;
+import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 
 public class Raider implements IRaider {

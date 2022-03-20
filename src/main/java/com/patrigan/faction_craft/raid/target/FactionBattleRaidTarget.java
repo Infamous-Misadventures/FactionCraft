@@ -72,7 +72,7 @@ public class FactionBattleRaidTarget implements RaidTarget {
 
     @Override
     public boolean checkLossCondition(Raid raid, ServerWorld level) {
-        if(raid.getGroupsSpawned() == 0){
+        if(raid.getGroupsSpawned() <= getStartingWave()){
             return false;
         }
         return raid.getRaidersInWave(raid.getGroupsSpawned()).stream().filter(mob -> FactionEntityHelper.getFactionEntityCapabilityLazy(mob).isPresent()).map(mobEntity -> FactionEntityHelper.getFactionEntityCapability(mobEntity).getFaction()).collect(Collectors.toSet()).size()<=1;
@@ -90,6 +90,11 @@ public class FactionBattleRaidTarget implements RaidTarget {
     @Override
     public Type getRaidType() {
         return raidType;
+    }
+
+    @Override
+    public int getStartingWave() {
+        return BATTLE_STARTING_WAVE.get();
     }
 
     @Override

@@ -66,7 +66,7 @@ public class PatrolSpawner implements ISpecialSpawner {
                            if (biome$category == Biome.Category.MUSHROOM) {
                               return 0;
                            } else {
-                              Faction faction = Factions.getRandomFaction(random);
+                              Faction faction = Factions.getRandomFaction(pLevel, random);
                               return spawnPatrol(pLevel, random, faction, blockpos$mutable);
                            }
                         }

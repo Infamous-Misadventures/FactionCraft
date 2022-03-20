@@ -17,6 +17,7 @@ public class FactionCraftConfig {
     public static ForgeConfigSpec.ConfigValue<Integer> NUMBER_WAVES_EASY;
     public static ForgeConfigSpec.ConfigValue<Integer> NUMBER_WAVES_NORMAL;
     public static ForgeConfigSpec.ConfigValue<Integer> NUMBER_WAVES_HARD;
+    public static ForgeConfigSpec.ConfigValue<Integer> MAX_NUMBER_WAVES;
     public static ForgeConfigSpec.ConfigValue<Double> BASE_WAVE_MULTIPLIER;
     public static ForgeConfigSpec.ConfigValue<Double> MULTIPLIER_INCREASE_PER_WAVE;
     public static ForgeConfigSpec.ConfigValue<Double> MULTIPLIER_INCREASE_PER_BAD_OMEN;
@@ -48,6 +49,12 @@ public class FactionCraftConfig {
     public static ForgeConfigSpec.ConfigValue<Integer> BATTLE_TICK_DELAY_BETWEEN_SPAWN_ATTEMPTS;
     public static ForgeConfigSpec.ConfigValue<Integer> BATTLE_VARIABLE_TICK_DELAY_BETWEEN_SPAWN_ATTEMPTS;
     public static ForgeConfigSpec.ConfigValue<Double> BATTLE_SPAWN_CHANCE_ON_SPAWN_ATTEMPT;
+    public static ForgeConfigSpec.ConfigValue<Integer> BATTLE_STARTING_WAVE;
+
+    public static ForgeConfigSpec.ConfigValue<Boolean> RECONSTRUCT_ON_LOSS;
+    public static ForgeConfigSpec.ConfigValue<Integer> RECONSTRUCT_TICK_DELAY;
+    public static ForgeConfigSpec.ConfigValue<Integer> RECONSTRUCT_VARIABLE_TICK_DELAY;
+
 
     public static class Common {
 
@@ -81,6 +88,10 @@ public class FactionCraftConfig {
                     .comment("The number of waves for Hard difficulty. \n" +
                             "Default 6")
                     .defineInRange("numberWavesHard", 6, 1, 9999);
+            MAX_NUMBER_WAVES = builder
+                    .comment("The max number of waves. \n" +
+                            "Default 10")
+                    .defineInRange("maxNumberWaves", 10, 1, 9999);
             BASE_WAVE_MULTIPLIER = builder
                     .comment("The multiplier for the target strength for the first wave. \n" +
                             "1.0 disables Starting wave multiplier. Default 0.65")
@@ -171,15 +182,15 @@ public class FactionCraftConfig {
             PATROL_TICK_DELAY_BETWEEN_SPAWN_ATTEMPTS = builder
                     .comment("This value plus the variable version together make up the time between two spawn attempts. \n" +
                             "Vanilla default 12000, Default 6000")
-                    .defineInRange("patrolTickDelayBetweenSpawnAttempts", 6000, 0, 999999999);
+                    .defineInRange("patrolTickDelayBetweenSpawnAttempts", 9000, 0, 999999999);
             PATROL_VARIABLE_TICK_DELAY_BETWEEN_SPAWN_ATTEMPTS = builder
                     .comment("A random value between 0 and this value is added to the static delay to determine total delay. \n" +
                             "Vanilla default is 1200. Default 1200")
                     .defineInRange("patrolVariableTickDelayBetweenSpawnAttempts", 1200, 0, 999999999);
             PATROL_SPAWN_CHANCE_ON_SPAWN_ATTEMPT = builder
                     .comment("The chance a patrol spawns on a spawn attempt. \n" +
-                            "Vanilla default is 0.2 Default 0.4")
-                    .defineInRange("patrolSpawnChanceOnSpawnAttempt", 0.4, 0.0, 1.0);
+                            "Vanilla default is 0.2 Default 0.3")
+                    .defineInRange("patrolSpawnChanceOnSpawnAttempt", 0.3, 0.0, 1.0);
             builder.pop();
 
             builder.comment("Faction Battle Config").push("faction_battle_config");
@@ -203,6 +214,25 @@ public class FactionCraftConfig {
                     .comment("The chance a battle spawns on a spawn attempt. \n" +
                             "Default 0.15")
                     .defineInRange("battleSpawnChanceOnSpawnAttempt", 0.15, 0.0, 1.0);
+            BATTLE_STARTING_WAVE = builder
+                    .comment("Determines the starting wave for a battle. \n" +
+                            "Default 3")
+                    .defineInRange("battleStartingWave", 3, 0, 999999999);
+            builder.pop();
+
+            builder.comment("Reconstruct Block Config").push("reconstruct_block_config");
+            RECONSTRUCT_ON_LOSS = builder
+                    .comment("Reconstructs on loss \n" +
+                            "Default false")
+                    .define("reconstructOnLoss", false);
+            RECONSTRUCT_TICK_DELAY = builder
+                    .comment("This value plus the variable version together make up the time required before reconstructing. \n" +
+                            "Default 100")
+                    .defineInRange("reconstructTickDelay", 50, 0, 999999999);
+            RECONSTRUCT_VARIABLE_TICK_DELAY = builder
+                    .comment("A random value between 0 and this value is added to the static delay to determine total delay. \n" +
+                            "Default 200")
+                    .defineInRange("reconstructVariableTickDelay", 30, 0, 999999999);
             builder.pop();
         }
     }

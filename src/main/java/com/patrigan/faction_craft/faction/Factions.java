@@ -6,8 +6,12 @@ import com.patrigan.faction_craft.boost.Boost;
 import com.patrigan.faction_craft.data.util.MergeableCodecDataManager;
 import com.patrigan.faction_craft.faction.entity.FactionEntityType;
 import com.patrigan.faction_craft.util.GeneralUtils;
+import net.minecraft.advancements.Advancement;
+import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -30,6 +34,7 @@ public class Factions {
         FactionBoostConfig boostConfig = null;
         FactionRelations factionRelations = null;
         Set<FactionEntityType> entities = new HashSet<>();
+        ResourceLocation activationAdvancement = null;
         for (Faction raw : raws) {
             if (raw.isReplace()) {
                 banner = raw.getBanner();
@@ -38,6 +43,7 @@ public class Factions {
                 boostConfig = null;
                 factionRelations = null;
                 entities = new HashSet<>();
+                activationAdvancement = raw.getActivationAdvancement();
             }
             if(banner == null){
                 banner = raw.getBanner();
@@ -47,6 +53,9 @@ public class Factions {
             }
             if(factionRaidConfig == null){
                 factionRaidConfig = raw.getRaidConfig();
+            }
+            if(activationAdvancement == null){
+                activationAdvancement = raw.getActivationAdvancement();
             }
             if(boostConfig == null){
                 boostConfig = raw.getBoostConfig();
@@ -66,7 +75,7 @@ public class Factions {
             }
             entities.addAll(raw.getEntityTypes());
         }
-        return new Faction(name,false, banner, factionRaidConfig, boostConfig, factionRelations, new ArrayList<>(entities));
+        return new Faction(name,false, banner, factionRaidConfig, boostConfig, factionRelations, new ArrayList<>(entities), activationAdvancement);
     }
 
 
@@ -86,6 +95,16 @@ public class Factions {
         return FACTION_DATA.data.entrySet().stream().filter(entry -> !DISABLED_FACTIONS.get().contains(entry.getKey().toString())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
+    private static Collection<Faction> getActiveFactions(ServerWorld level){
+        return getFactionData().values().stream().filter(faction -> isFactionActive(level, faction)).collect(Collectors.toList());
+    }
+
+    private static boolean isFactionActive(ServerWorld level, Faction faction) {
+        Advancement advancement = level.getServer().getAdvancements().getAdvancement(faction.getActivationAdvancement());
+        if(advancement == null) return true;
+        return level.getServer().getPlayerList().getPlayers().stream().anyMatch(serverPlayerEntity -> serverPlayerEntity.getAdvancements().getOrStartProgress(advancement).isDone());
+    }
+
     public static Faction getDefaultFaction(){
         return FACTION_DATA.data.get(new ResourceLocation("illager"));
     }
@@ -96,10 +115,10 @@ public class Factions {
         event.addListener(FACTION_DATA);
     }
 
-    public static Faction getRandomFaction(Random random) {
-        return GeneralUtils.getRandomItem(new ArrayList<>(getFactionData().values()), random);
+    public static Faction getRandomFaction(ServerWorld level, Random random) {
+        return GeneralUtils.getRandomItem(new ArrayList<>(getActiveFactions(level)), random);
     }
-    public static Faction getRandomFactionWithEnemies(Random random) {
-        return GeneralUtils.getRandomItem(getFactionData().values().stream().filter(faction -> !faction.getRelations().getEnemies().isEmpty()).collect(Collectors.toList()), random);
+    public static Faction getRandomFactionWithEnemies(ServerWorld level, Random random) {
+        return GeneralUtils.getRandomItem(getActiveFactions(level).stream().filter(faction -> !faction.getRelations().getEnemies().isEmpty()).collect(Collectors.toList()), random);
     }
 }

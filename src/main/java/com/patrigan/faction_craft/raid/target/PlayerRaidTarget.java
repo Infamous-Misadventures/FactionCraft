@@ -81,6 +81,11 @@ public class PlayerRaidTarget implements RaidTarget {
     }
 
     @Override
+    public int getStartingWave() {
+        return 0;
+    }
+
+    @Override
     public CompoundNBT save(CompoundNBT compoundNbt){
         compoundNbt.putString("Type", this.raidType.getName());
         compoundNbt.putString("Player", player.getStringUUID());

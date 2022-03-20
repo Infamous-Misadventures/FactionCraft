@@ -72,7 +72,7 @@ public class BattleSpawner implements ISpecialSpawner {
    }
 
    public static int spawnFactionBattle(ServerWorld pLevel, Random random, BlockPos blockpos) {
-      Faction faction1 = Factions.getRandomFactionWithEnemies(random);
+      Faction faction1 = Factions.getRandomFactionWithEnemies(pLevel, random);
       List<Faction> enemies = faction1.getRelations().getEnemies().stream().filter(resourceLocation -> !FactionCraftConfig.DISABLED_FACTIONS.get().contains(resourceLocation.toString())).map(Factions::getFaction).filter(faction -> faction.getRelations().getEnemies().contains(faction1.getName())).collect(Collectors.toList());
       if(enemies.isEmpty()) {
          return 0;
