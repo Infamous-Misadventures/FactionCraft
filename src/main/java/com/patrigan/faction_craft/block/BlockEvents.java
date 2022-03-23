@@ -49,7 +49,7 @@ public class BlockEvents {
         }
     }
 
-    private static void setReconstructBlock(World world, BlockPos blockPos, Raid raid) {
+    public static void setReconstructBlock(World world, BlockPos blockPos, Raid raid) {
         BlockState blockState = world.getBlockState(blockPos);
         if(blockState.isAir()) return;
         TileEntity blockEntity = world.getBlockEntity(blockPos);

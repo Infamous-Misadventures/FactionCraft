@@ -17,7 +17,7 @@ import static com.patrigan.faction_craft.FactionCraft.MODID;
 public class ModBlocks {
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MODID);
 
-    public static final RegistryObject<Block> RECONSTRUCT_BLOCK = registerBlock("reconstruct_block", () -> new ReconstructBlock(AbstractBlock.Properties.of(Material.AIR, MaterialColor.NONE).noCollission().noOcclusion().noDrops()));
+    public static final RegistryObject<Block> RECONSTRUCT_BLOCK = registerBlock("reconstruct_block", () -> new ReconstructBlock(AbstractBlock.Properties.of(Material.METAL, MaterialColor.NONE).noCollission().noOcclusion().noDrops()));
 
     private static RegistryObject<Block> registerBlock(String id, Supplier<Block> sup) {
         RegistryObject<Block> blockRegistryObject = BLOCKS.register(id, sup);

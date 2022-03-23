@@ -159,7 +159,7 @@ public class FactionCraftConfig {
             FACTION_BATTLE_RAID_TARGET_BASE_STRENGTH = builder
                     .comment("Base target strength of a faction battle. \n" +
                             "Will be divided over both factions. Default 140")
-                    .defineInRange("playerRaidTargetBaseStrength", 140, 0, 9999);
+                    .defineInRange("factionBattleRaidTargetBaseStrength", 140, 0, 9999);
             FACTION_BATTLE_RAID_TARGET_STRENGTH_MULTIPLIER = builder
                     .comment("Applied to the target strength of a faction battle. \n" +
                             "Multiplies the target strength and rounds down. Default 1.0F")
