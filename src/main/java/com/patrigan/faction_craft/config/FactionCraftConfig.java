@@ -228,11 +228,11 @@ public class FactionCraftConfig {
             RECONSTRUCT_TICK_DELAY = builder
                     .comment("This value plus the variable version together make up the time required before reconstructing. \n" +
                             "Default 100")
-                    .defineInRange("reconstructTickDelay", 50, 0, 999999999);
+                    .defineInRange("reconstructTickDelay", 100, 0, 999999999);
             RECONSTRUCT_VARIABLE_TICK_DELAY = builder
                     .comment("A random value between 0 and this value is added to the static delay to determine total delay. \n" +
                             "Default 200")
-                    .defineInRange("reconstructVariableTickDelay", 30, 0, 999999999);
+                    .defineInRange("reconstructVariableTickDelay", 60, 0, 999999999);
             builder.pop();
         }
     }

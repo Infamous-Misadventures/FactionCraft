@@ -9,12 +9,14 @@ import com.patrigan.faction_craft.raid.Raid;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntitySpawnPlacementRegistry;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.MobEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.spawner.WorldEntitySpawner;
 
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.patrigan.faction_craft.config.FactionCraftConfig.*;
@@ -75,7 +77,9 @@ public class FactionBattleRaidTarget implements RaidTarget {
         if(raid.getGroupsSpawned() <= getStartingWave()){
             return false;
         }
-        return raid.getRaidersInWave(raid.getGroupsSpawned()).stream().filter(mob -> FactionEntityHelper.getFactionEntityCapabilityLazy(mob).isPresent()).map(mobEntity -> FactionEntityHelper.getFactionEntityCapability(mobEntity).getFaction()).collect(Collectors.toSet()).size()<=1;
+        Set<MobEntity> raidersInWave = raid.getRaidersInWave(raid.getGroupsSpawned());
+        if(raidersInWave == null) return true;
+        return raidersInWave.stream().filter(mob -> FactionEntityHelper.getFactionEntityCapabilityLazy(mob).isPresent()).map(mobEntity -> FactionEntityHelper.getFactionEntityCapability(mobEntity).getFaction()).collect(Collectors.toSet()).size()<=1;
     }
 
     @Override
