@@ -39,8 +39,50 @@ public class FactionRaidCommand {
                     startPlayerRaid(sourceCommandContext.getSource(), FactionArgument.getFaction(sourceCommandContext, "faction"))
                 ).then(Commands.argument("player", EntityArgument.player()).executes(sourceCommandContext ->
                     startPlayerRaid(sourceCommandContext.getSource(), FactionArgument.getFaction(sourceCommandContext, "faction"), EntityArgument.getPlayer(sourceCommandContext, "player"))
-                )))));
+                )))))
+                .then(Commands.literal("endwave").executes(sourceCommandContext ->
+                        endRaidWave(sourceCommandContext.getSource())
+                ).then(Commands.argument("location", BlockPosArgument.blockPos()).executes(sourceCommandContext ->
+                        endRaidWave(sourceCommandContext.getSource(), BlockPosArgument.getLoadedBlockPos(sourceCommandContext, "location"))
+                )).then(Commands.argument("player", EntityArgument.player()).executes(sourceCommandContext ->
+                        endRaidWave(sourceCommandContext.getSource(), EntityArgument.getPlayer(sourceCommandContext, "player"))
+                )))
+                .then(Commands.literal("end").executes(sourceCommandContext ->
+                        endRaid(sourceCommandContext.getSource())
+                ).then(Commands.argument("location", BlockPosArgument.blockPos()).executes(sourceCommandContext ->
+                        endRaid(sourceCommandContext.getSource(), BlockPosArgument.getLoadedBlockPos(sourceCommandContext, "location"))
+                )).then(Commands.argument("player", EntityArgument.player()).executes(sourceCommandContext ->
+                        endRaid(sourceCommandContext.getSource(), EntityArgument.getPlayer(sourceCommandContext, "player"))
+                )));
         dispatcher.register(factionRaidCommand);
+    }
+
+    private static int endRaid(CommandSource source) throws CommandSyntaxException {
+        ServerPlayerEntity player = source.getPlayerOrException();
+        return endRaid(source, player.blockPosition());
+    }
+
+    private static int endRaid(CommandSource source, ServerPlayerEntity playerEntity) throws CommandSyntaxException {
+        return endRaid(source, playerEntity.blockPosition());
+    }
+
+    private static int endRaid(CommandSource source, BlockPos blockPos) throws CommandSyntaxException {
+        ServerWorld level = source.getLevel();
+        return endRaid(source, level, blockPos);
+    }
+
+    private static int endRaidWave(CommandSource source) throws CommandSyntaxException {
+        ServerPlayerEntity player = source.getPlayerOrException();
+        return endRaidWave(source, player.blockPosition());
+    }
+
+    private static int endRaidWave(CommandSource source, ServerPlayerEntity playerEntity) throws CommandSyntaxException {
+        return endRaidWave(source, playerEntity.blockPosition());
+    }
+
+    private static int endRaidWave(CommandSource source, BlockPos blockPos) throws CommandSyntaxException {
+        ServerWorld level = source.getLevel();
+        return endRaidWave(source, level, blockPos);
     }
 
     private static int startVillageRaid(CommandSource source, Faction faction) throws CommandSyntaxException {
@@ -76,6 +118,30 @@ public class FactionRaidCommand {
             throw ERROR_START_FAILED.create();
         } else {
             source.sendSuccess(new TranslationTextComponent("commands.raid.success", targetArgument), true);
+        }
+        return 1;
+    }
+
+    private static int endRaidWave(CommandSource source, ServerWorld level, BlockPos blockPos) throws CommandSyntaxException {
+        IRaidManager raidManagerCapability = RaidManagerHelper.getRaidManagerCapability(level);
+        Raid raid = raidManagerCapability.getRaidAt(blockPos);
+        raid.endWave();
+        if (raid == null) {
+            throw ERROR_START_FAILED.create();
+        } else {
+            source.sendSuccess(new TranslationTextComponent("commands.raid.success", blockPos.toString()), true);
+        }
+        return 1;
+    }
+
+    private static int endRaid(CommandSource source, ServerWorld level, BlockPos blockPos) throws CommandSyntaxException {
+        IRaidManager raidManagerCapability = RaidManagerHelper.getRaidManagerCapability(level);
+        Raid raid = raidManagerCapability.getRaidAt(blockPos);
+        raid.stop();
+        if (raid == null) {
+            throw ERROR_START_FAILED.create();
+        } else {
+            source.sendSuccess(new TranslationTextComponent("commands.raid.success", blockPos.toString()), true);
         }
         return 1;
     }

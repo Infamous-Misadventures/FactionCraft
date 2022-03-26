@@ -15,6 +15,7 @@ public class AttributeBoost extends Boost {
     public static final Codec<AttributeBoost> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             ResourceLocation.CODEC.fieldOf("attribute").forGetter(AttributeBoost::getAttributeLocation),
             Codec.DOUBLE.fieldOf("adjustment").forGetter(AttributeBoost::getAdjustment),
+            Codec.DOUBLE.fieldOf("max_adjustment").forGetter(AttributeBoost::getMaxAdjustment),
             Codec.INT.optionalFieldOf("strength_adjustment", 1).forGetter(AttributeBoost::getStrengthAdjustment),
             Rarity.CODEC.fieldOf("rarity").forGetter(AttributeBoost::getRarity)
     ).apply(instance, AttributeBoost::new));
@@ -22,14 +23,16 @@ public class AttributeBoost extends Boost {
     private final ResourceLocation attributeLocation;
     private final Attribute attribute;
     private final double adjustment;
+    private final double maxAdjustment;
     private final int strengthAdjustment;
     private final Rarity rarity;
 
-    public AttributeBoost(ResourceLocation attributeLocation, double adjustment, int strengthAdjustment, Rarity rarity) {
+    public AttributeBoost(ResourceLocation attributeLocation, double adjustment, double maxAdjustment, int strengthAdjustment, Rarity rarity) {
         super(ATTRIBUTE);
         this.attributeLocation = attributeLocation;
         this.attribute = ATTRIBUTES.getValue(attributeLocation);
         this.adjustment = adjustment;
+        this.maxAdjustment = maxAdjustment;
         this.strengthAdjustment = strengthAdjustment;
         this.rarity = rarity;
     }
@@ -44,6 +47,10 @@ public class AttributeBoost extends Boost {
 
     public double getAdjustment() {
         return adjustment;
+    }
+
+    public double getMaxAdjustment() {
+        return maxAdjustment;
     }
 
     public int getStrengthAdjustment() {

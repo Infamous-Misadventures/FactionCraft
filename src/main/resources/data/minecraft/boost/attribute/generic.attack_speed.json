@@ -2,5 +2,6 @@
   "type": "faction_craft:attribute_boost",
   "attribute": "generic.attack_speed",
   "adjustment": 0.1,
+  "max_adjustment": 1024,
   "rarity": "uncommon"
 }

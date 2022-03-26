@@ -669,6 +669,10 @@ public class Raid {
     public void stop() {
         this.active = false;
         this.raidEvent.removeAllPlayers();
+        Set<MobEntity> raidersInWave = getRaidersInWave(getGroupsSpawned());
+        if(raidersInWave != null){
+            new HashSet<MobEntity>(raidersInWave).forEach(LivingEntity::kill);
+        }
         this.status = Status.STOPPED;
     }
 
@@ -719,6 +723,13 @@ public class Raid {
 
     private ITextComponent getRaidEventNameVictory(RaidTarget raidTarget) {
         return raidTarget.getRaidType() == RaidTarget.Type.BATTLE ? new TranslationTextComponent("event.faction_craft.battle.over") : this.factions.get(0).getRaidConfig().getRaidBarVictoryComponent();
+    }
+
+    public void endWave() {
+        Set<MobEntity> raidersInWave = getRaidersInWave(getGroupsSpawned());
+        if(raidersInWave != null){
+            new HashSet<MobEntity>(raidersInWave).forEach(LivingEntity::kill);
+        }
     }
 
     private enum Status {

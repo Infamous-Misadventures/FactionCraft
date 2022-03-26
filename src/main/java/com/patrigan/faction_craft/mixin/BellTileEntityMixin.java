@@ -42,7 +42,7 @@ public abstract class BellTileEntityMixin extends TileEntity {
         for(LivingEntity livingentity : this.nearbyEntities) {
             if(livingentity instanceof MobEntity) {
                 IRaider raiderCapability = RaiderHelper.getRaiderCapability((MobEntity) livingentity);
-                if (livingentity.isAlive() && !livingentity.removed && this.getBlockPos().closerThan(livingentity.position(), 32.0D) && raiderCapability != null && raiderCapability.hasActiveRaid()) {
+                if (livingentity.isAlive() && !livingentity.removed && this.getBlockPos().closerThan(livingentity.position(), 64.0D) && raiderCapability != null && raiderCapability.hasActiveRaid()) {
                     cir.setReturnValue(true);
                     break;
                 }
@@ -65,7 +65,7 @@ public abstract class BellTileEntityMixin extends TileEntity {
     private void factioncraft_isRaiderWithinRange(LivingEntity livingEntity, CallbackInfoReturnable<Boolean> cir) {
         if(livingEntity instanceof MobEntity) {
             IRaider raiderCapability = RaiderHelper.getRaiderCapability((MobEntity) livingEntity);
-            cir.setReturnValue(livingEntity.isAlive() && !livingEntity.removed && this.getBlockPos().closerThan(livingEntity.position(), 48.0D) && raiderCapability != null && raiderCapability.hasActiveRaid());
+            cir.setReturnValue(livingEntity.isAlive() && !livingEntity.removed && this.getBlockPos().closerThan(livingEntity.position(), 88.0D) && raiderCapability != null && raiderCapability.hasActiveRaid());
         }
     }
 

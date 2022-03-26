@@ -2,5 +2,6 @@
   "type": "faction_craft:attribute_boost",
   "attribute": "generic.attack_knockback",
   "adjustment": 0.3,
+  "max_adjustment": 5,
   "rarity": "uncommon"
 }
