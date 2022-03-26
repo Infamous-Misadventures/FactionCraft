@@ -2,6 +2,6 @@
   "type": "faction_craft:attribute_boost",
   "attribute": "generic.attack_damage",
   "adjustment": 1.0,
-  "max_adjustment": 2048,
+  "max_applications": 10,
   "rarity": "common"
 }

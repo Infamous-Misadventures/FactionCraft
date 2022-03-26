@@ -670,7 +670,7 @@ public class Raid {
         this.active = false;
         this.raidEvent.removeAllPlayers();
         Set<MobEntity> raidersInWave = getRaidersInWave(getGroupsSpawned());
-        if(raidersInWave != null){
+        if(raidersInWave != null && !this.isLoss()){
             new HashSet<MobEntity>(raidersInWave).forEach(LivingEntity::kill);
         }
         this.status = Status.STOPPED;

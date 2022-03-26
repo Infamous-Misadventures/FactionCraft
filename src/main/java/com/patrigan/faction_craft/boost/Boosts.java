@@ -68,6 +68,7 @@ public class Boosts {
                 .filter(boost -> (whitelist.isEmpty() && !getRarity(boost, rarityOverrides).equals(Boost.Rarity.NONE)) || whitelist.contains(boost))
                 .filter(boost -> !blacklist.contains(boost))
                 .filter(boost -> cap.getBoostsOfType(boost.getType()).size() < boost.getType().getMax())
+                .filter(boost -> boost.canApply(livingEntity))
                 .map(boost -> new Pair<>(boost, getRarity(boost, rarityOverrides).getWeight()))
                 .collect(Collectors.toList());
         return GeneralUtils.getRandomEntry(filtered, random);

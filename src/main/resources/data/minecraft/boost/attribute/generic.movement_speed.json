@@ -1,7 +1,8 @@
 {
   "type": "faction_craft:attribute_boost",
   "attribute": "generic.movement_speed",
-  "adjustment": 0.1,
-  "max_adjustment": 1024,
+  "adjustment": 0.10,
+  "max_applications": 6,
+  "operation": 2,
   "rarity": "common"
 }

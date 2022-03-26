@@ -2,6 +2,6 @@
   "type": "faction_craft:attribute_boost",
   "attribute": "generic.armor",
   "adjustment": 1.0,
-  "max_adjustment": 30,
+  "max_applications": 5,
   "rarity": "common"
 }
