@@ -42,7 +42,7 @@ public abstract class BellTileEntityMixin extends BlockEntity {
         for(LivingEntity livingentity : nearbyEntities) {
             if(livingentity instanceof Mob mob) {
                 Raider raiderCapability = RaiderHelper.getRaiderCapability(mob);
-                if (livingentity.isAlive() && blockPos.closerThan(livingentity.position(), 32.0D) && raiderCapability != null && raiderCapability.hasActiveRaid()) {
+                if (livingentity.isAlive() && blockPos.closerToCenterThan(livingentity.position(), 32.0D) && raiderCapability != null && raiderCapability.hasActiveRaid()) {
                     cir.setReturnValue(true);
                     break;
                 }
@@ -65,7 +65,7 @@ public abstract class BellTileEntityMixin extends BlockEntity {
     private static void factioncraft_isRaiderWithinRange(BlockPos blockPos, LivingEntity livingEntity, CallbackInfoReturnable<Boolean> cir) {
         if(livingEntity instanceof Mob mob) {
             Raider raiderCapability = RaiderHelper.getRaiderCapability(mob);
-            cir.setReturnValue(livingEntity.isAlive()&& blockPos.closerThan(livingEntity.position(), 48.0D) && raiderCapability != null && raiderCapability.hasActiveRaid());
+            cir.setReturnValue(livingEntity.isAlive()&& blockPos.closerToCenterThan(livingEntity.position(), 48.0D) && raiderCapability != null && raiderCapability.hasActiveRaid());
         }
     }
 

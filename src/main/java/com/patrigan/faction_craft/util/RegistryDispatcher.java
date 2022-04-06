@@ -8,11 +8,9 @@ import com.mojang.serialization.Codec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistryEntry;
-import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.IForgeRegistryEntry;
-import net.minecraftforge.registries.RegistryBuilder;
+import net.minecraftforge.registries.*;
+
+import static com.patrigan.faction_craft.FactionCraft.MODID;
 
 public class RegistryDispatcher<DTYPE extends IForgeRegistryEntry<DTYPE>, DISPATCHABLES>
 {
@@ -33,21 +31,22 @@ public class RegistryDispatcher<DTYPE extends IForgeRegistryEntry<DTYPE>, DISPAT
     {
         Class<DTYPE> genargifiedClass = (Class<DTYPE>) registryClass;
         RegistryWrapper<DTYPE> wrapper = new RegistryWrapper<>();
-        Codec<DTYPE> dispatcherCodec = ResourceLocation.CODEC.xmap(
-                id -> wrapper.get().getValue(id),
-                DTYPE::getRegistryName);
-        Codec<DISPATCHABLES> dispatchedCodec = dispatcherCodec.dispatch(dispatchable->dispatchable.getDispatcher(), dispatcher->dispatcher.getSubCodec());
-        Consumer<RegistryEvent.NewRegistry> newRegistryListener = event ->
+        Consumer<NewRegistryEvent> newRegistryListener = event ->
         {
             RegistryBuilder<DTYPE> builder = new RegistryBuilder<DTYPE>()
                     .setName(registryID)
                     .setType(genargifiedClass);
             extraSettings.accept(builder);
-            IForgeRegistry<DTYPE> registry = builder.create();
-            wrapper.setRegistry(registry);
+            Supplier<IForgeRegistry<DTYPE>> iForgeRegistrySupplier = event.create(builder);
+            wrapper.setRegistrySupplier(iForgeRegistrySupplier);
         };
 
         modBus.addListener(newRegistryListener);
+        Codec<DTYPE> dispatcherCodec = ResourceLocation.CODEC.xmap(
+                id -> wrapper.get().getValue(id),
+                DTYPE::getRegistryName);
+        Codec<DISPATCHABLES> dispatchedCodec = dispatcherCodec.dispatch(dispatchable->dispatchable.getDispatcher(), dispatcher->dispatcher.getSubCodec());
+
 
         return new RegistryDispatcher<>(wrapper, genargifiedClass, dispatcherCodec, dispatchedCodec);
     }
@@ -142,11 +141,12 @@ public class RegistryDispatcher<DTYPE extends IForgeRegistryEntry<DTYPE>, DISPAT
     private static class RegistryWrapper<T extends IForgeRegistryEntry<T>> implements Supplier<IForgeRegistry<T>>
     {
         private IForgeRegistry<T> registry = null;
+        private Supplier<IForgeRegistry<T>> registrySupplier;
 
         @Override
         public IForgeRegistry<T> get()
         {
-            return this.registry;
+            return this.registrySupplier.get();
         }
 
         public void setRegistry(IForgeRegistry<T> value)
@@ -154,5 +154,8 @@ public class RegistryDispatcher<DTYPE extends IForgeRegistryEntry<DTYPE>, DISPAT
             this.registry = value;
         }
 
+        public void setRegistrySupplier(Supplier<IForgeRegistry<T>> iForgeRegistrySupplier) {
+            this.registrySupplier = iForgeRegistrySupplier;
+        }
     }
 }

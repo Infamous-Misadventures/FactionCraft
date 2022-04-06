@@ -73,7 +73,7 @@ public class RaiderMoveThroughVillageGoal extends Goal {
         if (this.raider.getNavigation().isDone()) {
             return false;
         } else {
-            return this.raider.getTarget() == null && !this.poiPos.closerThan(this.raider.position(), this.raider.getBbWidth() + (float)this.distanceToPoi) && !this.stuck;
+            return this.raider.getTarget() == null && !this.poiPos.closerToCenterThan(this.raider.position(), this.raider.getBbWidth() + (float)this.distanceToPoi) && !this.stuck;
         }
     }
 
@@ -81,7 +81,7 @@ public class RaiderMoveThroughVillageGoal extends Goal {
      * Reset the task's internal state. Called when this task is interrupted by another one
      */
     public void stop() {
-        if (this.poiPos.closerThan(this.raider.position(), this.distanceToPoi)) {
+        if (this.poiPos.closerToCenterThan(this.raider.position(), this.distanceToPoi)) {
             this.visited.add(this.poiPos);
         }
 

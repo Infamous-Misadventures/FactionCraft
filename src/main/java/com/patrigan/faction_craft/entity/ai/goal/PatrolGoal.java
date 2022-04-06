@@ -66,7 +66,7 @@ public class PatrolGoal<T extends Mob> extends Goal {
             List<Mob> list = this.findPatrolCompanions();
             if (cap.isPatrolling() && list.isEmpty()) {
                 cap.setPatrolling(false);
-            } else if (flag && cap.getPatrolTarget().closerThan(this.mob.position(), 10.0D)) {
+            } else if (flag && cap.getPatrolTarget().closerToCenterThan(this.mob.position(), 10.0D)) {
                 cap.findPatrolTarget();
             } else {
                 Vec3 vector3d = Vec3.atBottomCenterOf(cap.getPatrolTarget());

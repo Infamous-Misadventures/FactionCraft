@@ -9,6 +9,7 @@ import com.patrigan.faction_craft.faction.Factions;
 import com.patrigan.faction_craft.faction.entity.FactionEntityType;
 import com.patrigan.faction_craft.util.GeneralUtils;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.EntityType;
@@ -63,8 +64,8 @@ public class PatrolSpawner implements CustomSpawner {
                         if (!pLevel.hasChunksAt(blockpos$mutable.getX() - 10, blockpos$mutable.getY() - 10, blockpos$mutable.getZ() - 10, blockpos$mutable.getX() + 10, blockpos$mutable.getY() + 10, blockpos$mutable.getZ() + 10)) {
                            return 0;
                         } else {
-                           Biome biome = pLevel.getBiome(blockpos$mutable);
-                           Biome.BiomeCategory biome$category = biome.getBiomeCategory();
+                           Holder<Biome> biomeHolder = pLevel.getBiome(blockpos$mutable);
+                           Biome.BiomeCategory biome$category = Biome.getBiomeCategory(biomeHolder);
                            if (biome$category == Biome.BiomeCategory.MUSHROOM) {
                               return 0;
                            } else {

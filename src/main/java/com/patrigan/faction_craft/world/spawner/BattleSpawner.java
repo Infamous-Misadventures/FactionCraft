@@ -7,6 +7,7 @@ import com.patrigan.faction_craft.faction.Faction;
 import com.patrigan.faction_craft.faction.Factions;
 import com.patrigan.faction_craft.raid.target.FactionBattleRaidTarget;
 import com.patrigan.faction_craft.util.GeneralUtils;
+import net.minecraft.core.Holder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.biome.Biome;
@@ -53,8 +54,8 @@ public class BattleSpawner implements CustomSpawner {
                         if (!pLevel.hasChunksAt(blockpos$mutable.getX() - 10, blockpos$mutable.getY() - 10, blockpos$mutable.getZ() - 10, blockpos$mutable.getX() + 10, blockpos$mutable.getY() + 10, blockpos$mutable.getZ() + 10)) {
                            return 0;
                         } else {
-                           Biome biome = pLevel.getBiome(blockpos$mutable);
-                           Biome.BiomeCategory biome$category = biome.getBiomeCategory();
+                           Holder<Biome> biomeHolder = pLevel.getBiome(blockpos$mutable);
+                           Biome.BiomeCategory biome$category = Biome.getBiomeCategory(biomeHolder);
                            if (biome$category == Biome.BiomeCategory.MUSHROOM) {
                               return 0;
                            } else {
