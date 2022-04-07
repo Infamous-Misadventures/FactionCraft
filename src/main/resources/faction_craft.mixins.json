@@ -8,7 +8,8 @@
     "BellTileEntityMixin",
     "BrainAccessor",
     "GoalSelectorAccessor",
-    "ServerLevelAccessor"
+    "ServerLevelAccessor",
+    "FireBlockMixin"
   ],
   "client": [
   ],

@@ -14,10 +14,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.patrigan.faction_craft.FactionCraft.MODID;
 import static com.patrigan.faction_craft.faction.entity.FactionEntityType.FactionRank.MOUNT;
 
 public class Faction {
-    public static final Faction DEFAULT = new Faction(new ResourceLocation("faction/default"), false, new CompoundTag(), FactionRaidConfig.DEFAULT, FactionBoostConfig.DEFAULT, FactionRelations.DEFAULT, Collections.emptyList());
+    public static final Faction DEFAULT = new Faction(new ResourceLocation("faction/default"), false, new CompoundTag(), FactionRaidConfig.DEFAULT, FactionBoostConfig.DEFAULT, FactionRelations.DEFAULT, Collections.emptyList(), new ResourceLocation(MODID, "default"));
 
     public static final Codec<Faction> CODEC = RecordCodecBuilder.create(builder ->
             builder.group(
@@ -27,7 +28,8 @@ public class Faction {
                     FactionRaidConfig.CODEC.optionalFieldOf("raid_config", FactionRaidConfig.DEFAULT).forGetter(Faction::getRaidConfig),
                     FactionBoostConfig.CODEC.optionalFieldOf("boosts", FactionBoostConfig.DEFAULT).forGetter(Faction::getBoostConfig),
                     FactionRelations.CODEC.optionalFieldOf("relations", FactionRelations.DEFAULT).forGetter(Faction::getRelations),
-                    FactionEntityType.CODEC.listOf().fieldOf("entities").forGetter(Faction::getEntityTypes)
+                    FactionEntityType.CODEC.listOf().fieldOf("entities").forGetter(Faction::getEntityTypes),
+                    ResourceLocation.CODEC.optionalFieldOf("activation_advancement", new ResourceLocation(MODID, "default")).forGetter(Faction::getActivationAdvancement)
             ).apply(builder, Faction::new));
 
     private final ResourceLocation name;
@@ -37,8 +39,9 @@ public class Faction {
     private final FactionBoostConfig boostConfig;
     private final FactionRelations relations;
     private final List<FactionEntityType> entityTypes;
+    private final ResourceLocation activationAdvancement;
 
-    public Faction(ResourceLocation name, boolean replace, CompoundTag banner, FactionRaidConfig raidConfig, FactionBoostConfig boostConfig, FactionRelations relations, List<FactionEntityType> entityTypes) {
+    public Faction(ResourceLocation name, boolean replace, CompoundTag banner, FactionRaidConfig raidConfig, FactionBoostConfig boostConfig, FactionRelations relations, List<FactionEntityType> entityTypes, ResourceLocation activationAdvancement) {
         this.name = name;
         this.replace = replace;
         this.banner = banner;
@@ -46,6 +49,7 @@ public class Faction {
         this.boostConfig = boostConfig;
         this.relations = relations;
         this.entityTypes = entityTypes;
+        this.activationAdvancement = activationAdvancement;
     }
 
     public ResourceLocation getName() {
@@ -76,14 +80,18 @@ public class Faction {
         return entityTypes;
     }
 
+    public ResourceLocation getActivationAdvancement() {
+        return activationAdvancement;
+    }
+
     public List<Pair<FactionEntityType, Integer>> getWeightMap(){
-        return entityTypes.stream().map(factionEntityType -> new Pair<>(factionEntityType, factionEntityType.getWeight())).collect(Collectors.toList());
+        return entityTypes.stream().map(factionEntityType -> new Pair<>(factionEntityType, factionEntityType.getWeight())).toList();
     }
     public List<Pair<FactionEntityType, Integer>> getWeightMapForWave(int wave){
-        return entityTypes.stream().filter(factionEntityType -> factionEntityType.getMinimumWave() <= wave && !factionEntityType.hasRank(MOUNT)).map(factionEntityType -> new Pair<>(factionEntityType, factionEntityType.getWeight())).collect(Collectors.toList());
+        return entityTypes.stream().filter(factionEntityType -> factionEntityType.canSpawnInWave(wave) && !factionEntityType.hasRank(MOUNT)).map(factionEntityType -> new Pair<>(factionEntityType, factionEntityType.getWeight())).toList();
     }
     public List<Pair<FactionEntityType, Integer>> getWeightMapForRank(FactionEntityType.FactionRank rank){
-        return entityTypes.stream().filter(factionEntityType -> factionEntityType.hasRank(rank)).map(factionEntityType -> new Pair<>(factionEntityType, factionEntityType.getWeight())).collect(Collectors.toList());
+        return entityTypes.stream().filter(factionEntityType -> factionEntityType.hasRank(rank)).map(factionEntityType -> new Pair<>(factionEntityType, factionEntityType.getWeight())).toList();
     }
 
     public ItemStack getBannerInstance() {

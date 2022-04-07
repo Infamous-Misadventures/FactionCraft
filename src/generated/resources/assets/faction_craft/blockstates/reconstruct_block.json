@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "faction_craft:block/reconstruct_block"
+    }
+  }
+}

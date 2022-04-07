@@ -6,6 +6,7 @@ import com.patrigan.faction_craft.capabilities.factionentity.FactionEntityHelper
 import com.patrigan.faction_craft.event.CalculateStrengthEvent;
 import com.patrigan.faction_craft.faction.Faction;
 import com.patrigan.faction_craft.raid.Raid;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.entity.EntityType;
@@ -15,6 +16,7 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.NaturalSpawner;
 
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.patrigan.faction_craft.config.FactionCraftConfig.*;
@@ -72,10 +74,12 @@ public class FactionBattleRaidTarget implements RaidTarget {
 
     @Override
     public boolean checkLossCondition(Raid raid, ServerLevel level) {
-        if(raid.getGroupsSpawned() == 0){
+        if(raid.getGroupsSpawned() <= getStartingWave()){
             return false;
         }
-        return raid.getRaidersInWave(raid.getGroupsSpawned()).stream().filter(mob -> FactionEntityHelper.getFactionEntityCapabilityLazy(mob).isPresent()).map(mob -> FactionEntityHelper.getFactionEntityCapability(mob).getFaction()).collect(Collectors.toSet()).size()<=1;
+        Set<Mob> raidersInWave = raid.getRaidersInWave(raid.getGroupsSpawned());
+        if(raidersInWave == null) return true;
+        return raidersInWave.stream().filter(mob -> FactionEntityHelper.getFactionEntityCapabilityLazy(mob).isPresent()).map(mobEntity -> FactionEntityHelper.getFactionEntityCapability(mobEntity).getFaction()).collect(Collectors.toSet()).size()<=1;
     }
 
     @Override
@@ -90,6 +94,11 @@ public class FactionBattleRaidTarget implements RaidTarget {
     @Override
     public Type getRaidType() {
         return raidType;
+    }
+
+    @Override
+    public int getStartingWave() {
+        return BATTLE_STARTING_WAVE.get();
     }
 
     @Override

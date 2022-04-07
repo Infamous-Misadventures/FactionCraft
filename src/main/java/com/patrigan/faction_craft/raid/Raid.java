@@ -49,6 +49,7 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.patrigan.faction_craft.capabilities.raidmanager.RaidManagerHelper.getRaidManagerCapability;
 import static com.patrigan.faction_craft.config.FactionCraftConfig.*;
@@ -56,7 +57,7 @@ import static com.patrigan.faction_craft.util.GeneralUtils.getRandomEntry;
 
 public class Raid {
     private final int id;
-    private final List<Faction> factions;
+    private List<Faction> factions;
     private final ServerLevel level;
     private final RaidTarget raidTarget;
     private int badOmenLevel;
@@ -90,6 +91,7 @@ public class Raid {
         this.level = level;
         this.raidTarget = raidTarget;
         this.numGroups = this.getNumGroups(level.getDifficulty(), raidTarget);
+        this.groupsSpawned = raidTarget.getStartingWave();
         this.active = true;
         this.raidEvent.setName(getRaidEventName(raidTarget));
         this.raidEvent.setProgress(0.0F);
@@ -148,7 +150,9 @@ public class Raid {
     }
 
     public void addFactions(Collection<Faction> factions){
-        this.factions.addAll(factions);
+        this.factions = Stream.of(this.factions, factions)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
     }
     public void addFaction(Faction faction){
         this.factions.add(faction);
@@ -596,17 +600,22 @@ public class Raid {
     }
 
     public int getNumGroups(Difficulty difficulty, RaidTarget raidTarget) {
-        int additionalWaves = raidTarget.getAdditionalWaves();
+        int numberOfWaves = 0;
         switch(difficulty) {
             case EASY:
-                return NUMBER_WAVES_EASY.get() + additionalWaves;
+                numberOfWaves = NUMBER_WAVES_EASY.get();
+                break;
             case NORMAL:
-                return NUMBER_WAVES_NORMAL.get() + additionalWaves;
+                numberOfWaves = NUMBER_WAVES_NORMAL.get();
+                break;
             case HARD:
-                return NUMBER_WAVES_HARD.get() + additionalWaves;
+                numberOfWaves = NUMBER_WAVES_HARD.get();
+                break;
             default:
-                return 0;
+                numberOfWaves = 0;
         }
+        numberOfWaves = numberOfWaves + raidTarget.getAdditionalWaves();
+        return Math.min(numberOfWaves, MAX_NUMBER_WAVES.get());
     }
 
     private boolean hasMoreWaves() {
@@ -614,7 +623,7 @@ public class Raid {
     }
 
     private boolean isFinalWave() {
-        return this.getGroupsSpawned() == this.numGroups;
+        return this.getGroupsSpawned() >= this.numGroups;
     }
 
     public int getGroupsSpawned() {
@@ -657,6 +666,10 @@ public class Raid {
     public void stop() {
         this.active = false;
         this.raidEvent.removeAllPlayers();
+        Set<Mob> raidersInWave = getRaidersInWave(getGroupsSpawned());
+        if(raidersInWave != null && !this.isLoss()){
+            new HashSet<>(raidersInWave).forEach(LivingEntity::kill);
+        }
         this.status = Status.STOPPED;
     }
 
@@ -707,6 +720,13 @@ public class Raid {
 
     private Component getRaidEventNameVictory(RaidTarget raidTarget) {
         return raidTarget.getRaidType() == RaidTarget.Type.BATTLE ? new TranslatableComponent("event.faction_craft.battle.over") : this.factions.get(0).getRaidConfig().getRaidBarVictoryComponent();
+    }
+
+    public void endWave() {
+        Set<Mob> raidersInWave = getRaidersInWave(getGroupsSpawned());
+        if(raidersInWave != null){
+            new HashSet<Mob>(raidersInWave).forEach(LivingEntity::kill);
+        }
     }
 
     private enum Status {

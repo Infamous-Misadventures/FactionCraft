@@ -12,6 +12,7 @@ public class DataGenerators {
     public static void gatherData(GatherDataEvent event) {
         DataGenerator generator = event.getGenerator();
         if (event.includeClient()) {
+            generator.addProvider(new ModBlockStateProvider(generator, event.getExistingFileHelper()));
             generator.addProvider(new ModLanguageProvider(generator, "en_us"));
         }
         if (event.includeServer()) {

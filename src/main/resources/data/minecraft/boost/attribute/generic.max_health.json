@@ -1,6 +1,7 @@
 {
   "type": "faction_craft:attribute_boost",
   "attribute": "generic.max_health",
-  "adjustment": 1.0,
+  "adjustment": 2.0,
+  "max_applications": 10,
   "rarity": "common"
 }

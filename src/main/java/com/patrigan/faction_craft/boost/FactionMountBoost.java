@@ -65,7 +65,7 @@ public class FactionMountBoost extends Boost {
                 List<Pair<FactionEntityType, Integer>> weightMap = cap.getFaction().getWeightMapForRank(FactionEntityType.FactionRank.MOUNT).stream().filter(pair -> pair.getFirst().getEntityType().equals(entityTypeLocation)).collect(Collectors.toList());
                 Raider raiderCap = RaiderHelper.getRaiderCapability(mob);
                 if (raiderCap != null && raiderCap.hasActiveRaid()) {
-                    weightMap = weightMap.stream().filter(pair -> pair.getFirst().getMinimumWave() <= raiderCap.getWave()).collect(Collectors.toList());
+                    weightMap = weightMap.stream().filter(pair -> pair.getFirst().canSpawnInWave(raiderCap.getWave())).collect(Collectors.toList());
                 }
                 if(weightMap.isEmpty()){
                     return 0;
@@ -94,7 +94,7 @@ public class FactionMountBoost extends Boost {
             List<Pair<FactionEntityType, Integer>> weightMap = cap.getFaction().getWeightMapForRank(FactionEntityType.FactionRank.MOUNT).stream().filter(pair -> pair.getFirst().getEntityType().equals(entityTypeLocation)).collect(Collectors.toList());
             Raider raiderCap = RaiderHelper.getRaiderCapability(mob);
             if (raiderCap != null && raiderCap.hasActiveRaid()) {
-                weightMap = weightMap.stream().filter(pair -> pair.getFirst().getMinimumWave() <= raiderCap.getWave()).collect(Collectors.toList());
+                weightMap = weightMap.stream().filter(pair -> pair.getFirst().canSpawnInWave(raiderCap.getWave())).collect(Collectors.toList());
             }
             return !weightMap.isEmpty();
         }

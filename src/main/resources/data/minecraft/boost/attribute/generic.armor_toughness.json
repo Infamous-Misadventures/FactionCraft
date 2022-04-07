@@ -1,6 +1,7 @@
 {
   "type": "faction_craft:attribute_boost",
   "attribute": "generic.armor_toughness",
-  "adjustment": 1.0,
+  "adjustment": 0.3,
+  "max_applications": 10,
   "rarity": "very_rare"
 }

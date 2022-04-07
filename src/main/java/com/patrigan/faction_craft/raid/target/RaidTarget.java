@@ -26,6 +26,8 @@ public interface RaidTarget {
 
     Type getRaidType();
 
+    int getStartingWave();
+
     enum Type implements IExtensibleEnum {
         VILLAGE("village"),
         PLAYER("player"),

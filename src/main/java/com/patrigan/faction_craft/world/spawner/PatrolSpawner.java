@@ -69,7 +69,7 @@ public class PatrolSpawner implements CustomSpawner {
                            if (biome$category == Biome.BiomeCategory.MUSHROOM) {
                               return 0;
                            } else {
-                              Faction faction = Factions.getRandomFaction(random);
+                              Faction faction = Factions.getRandomFaction(pLevel, random);
                               return spawnPatrol(pLevel, random, faction, blockpos$mutable);
                            }
                         }

@@ -98,6 +98,11 @@ public class VillageRaidTarget implements RaidTarget {
         return raidType;
     }
 
+    @Override
+    public int getStartingWave() {
+        return 0;
+    }
+
     private void moveRaidCenterToNearbyVillageSection(ServerLevel level) {
         Stream<SectionPos> stream = SectionPos.cube(SectionPos.of(blockPos), 2);
         stream.filter(level::isVillage).map(SectionPos::center).min(Comparator.comparingDouble((p_223025_1_) -> {
