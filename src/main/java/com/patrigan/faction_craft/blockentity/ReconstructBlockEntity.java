@@ -47,7 +47,7 @@ public class ReconstructBlockEntity extends TileEntity implements ITickableTileE
         if(timer == -1000){
             timer = FactionCraftConfig.RECONSTRUCT_TICK_DELAY.get() + this.getLevel().getRandom().nextInt(FactionCraftConfig.RECONSTRUCT_VARIABLE_TICK_DELAY.get());
         }
-        if(raid != null && raid.isVictory()) {
+        if(raid != null && (raid.isVictory() || raid.isStopped())) {
             timer--;
         }
         if(raid != null && raid.isLoss()){
