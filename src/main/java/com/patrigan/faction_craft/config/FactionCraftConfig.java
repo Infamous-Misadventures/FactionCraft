@@ -64,7 +64,7 @@ public class FactionCraftConfig {
             DISABLED_FACTIONS = builder
                     .comment("A list of disabled factions. \n" +
                             "Default: The internal skeleton test faction. ")
-                    .defineList("disabledFactions", Arrays.asList(MODID+":skeleton_test", MODID+":slime_test"), o -> o instanceof String && ResourceLocation.isValidResourceLocation((String) o));
+                    .defineList("disabledFactions", Arrays.asList(MODID+":skeleton_test", MODID+":slime_test"), o -> o instanceof String);
             builder.pop();
 
             builder.comment("Standard Raid Calculations").push("standard_raid_calculations");
