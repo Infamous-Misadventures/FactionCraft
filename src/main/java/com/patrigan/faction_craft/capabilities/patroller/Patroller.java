@@ -1,6 +1,8 @@
 package com.patrigan.faction_craft.capabilities.patroller;
 
 
+import com.patrigan.faction_craft.capabilities.factionentity.FactionEntityHelper;
+import com.patrigan.faction_craft.capabilities.factionentity.IFactionEntity;
 import com.patrigan.faction_craft.entity.ai.goal.PatrolGoal;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.ai.goal.Goal;
@@ -71,8 +73,10 @@ public class Patroller implements IPatroller {
 
     @Override
     public boolean canJoinPatrol(MobEntity mob) {
-        //TODO: Can only join when patrol is same faction.
-        return true;
+        IFactionEntity thisCap = FactionEntityHelper.getFactionEntityCapability(this.entity);
+        IFactionEntity otherCap = FactionEntityHelper.getFactionEntityCapability(mob);
+        if(thisCap == null || otherCap == null) return false;
+        return thisCap.getFaction() != null && thisCap.equals(otherCap.getFaction());
     }
 
     @Override

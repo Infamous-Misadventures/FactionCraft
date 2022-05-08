@@ -20,7 +20,7 @@ public class PatrollerHelper {
     {
         LazyOptional<IPatroller> lazyCap = mobEntity.getCapability(PATROLLER_CAPABILITY);
         if (lazyCap.isPresent()) {
-            return lazyCap.orElseThrow(() -> new IllegalStateException("Couldn't get the RaidManager capability from the world!"));
+            return lazyCap.orElseThrow(() -> new IllegalStateException("Couldn't get the Patroller capability from the entity!"));
         }
         return null;
     }

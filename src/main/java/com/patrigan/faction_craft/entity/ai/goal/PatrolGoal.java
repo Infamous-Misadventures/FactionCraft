@@ -87,12 +87,12 @@ public class PatrolGoal<T extends MobEntity> extends Goal {
                 }
             }
         }
-
     }
 
     private List<MobEntity> findPatrolCompanions() {
         return this.mob.level.getEntitiesOfClass(MobEntity.class, this.mob.getBoundingBox().inflate(16.0D), (p_226543_1_) -> {
-            IPatroller cap = PatrollerHelper.getPatrollerCapability(this.mob);
+            IPatroller cap = PatrollerHelper.getPatrollerCapability(p_226543_1_);
+            if(cap == null) return false;
             return cap.canJoinPatrol(this.mob) && !p_226543_1_.is(this.mob);
         });
     }
