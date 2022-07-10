@@ -51,6 +51,7 @@ public class FactionCraftConfig {
     public static ForgeConfigSpec.ConfigValue<Double> BATTLE_SPAWN_CHANCE_ON_SPAWN_ATTEMPT;
     public static ForgeConfigSpec.ConfigValue<Integer> BATTLE_STARTING_WAVE;
 
+    public static ForgeConfigSpec.ConfigValue<Boolean> ENABLE_RECONSTRUCT_BLOCKS;
     public static ForgeConfigSpec.ConfigValue<Boolean> RECONSTRUCT_ON_LOSS;
     public static ForgeConfigSpec.ConfigValue<Integer> RECONSTRUCT_TICK_DELAY;
     public static ForgeConfigSpec.ConfigValue<Integer> RECONSTRUCT_VARIABLE_TICK_DELAY;
@@ -221,6 +222,10 @@ public class FactionCraftConfig {
             builder.pop();
 
             builder.comment("Reconstruct Block Config").push("reconstruct_block_config");
+            ENABLE_RECONSTRUCT_BLOCKS = builder
+                    .comment("Enables Reconstruct Blocks \n" +
+                            "Default True")
+                    .define("enableReconstructBlocks", true);
             RECONSTRUCT_ON_LOSS = builder
                     .comment("Reconstructs on loss \n" +
                             "Default false")

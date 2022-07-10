@@ -14,6 +14,8 @@ import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.world.Difficulty;
 import net.minecraftforge.common.util.Constants;
 
+import static com.patrigan.faction_craft.config.FactionCraftConfig.ENABLE_RECONSTRUCT_BLOCKS;
+
 public class ReconstructBlockEntity extends TileEntity implements ITickableTileEntity {
 
     private BlockState replacedBlockState = null;
@@ -37,6 +39,10 @@ public class ReconstructBlockEntity extends TileEntity implements ITickableTileE
     @Override
     public void tick() {
         if(this.level.isClientSide()) return;
+        if(!ENABLE_RECONSTRUCT_BLOCKS.get()) {
+            revertBlock();
+            return;
+        }
         if(raid == null && raidId != 0) {
             IRaidManager raidManager = RaidManagerHelper.getRaidManagerCapability(this.getLevel());
             if (raidManager != null) {
@@ -58,8 +64,12 @@ public class ReconstructBlockEntity extends TileEntity implements ITickableTileE
             }
         }
         if(timer <= 0 || raid == null || this.getLevel().getDifficulty().equals(Difficulty.PEACEFUL)){
-            this.getLevel().setBlock(this.worldPosition, replacedBlockState, Constants.BlockFlags.BLOCK_UPDATE | Constants.BlockFlags.UPDATE_NEIGHBORS);
+            revertBlock();
         }
+    }
+
+    private void revertBlock() {
+        this.getLevel().setBlock(this.worldPosition, replacedBlockState, Constants.BlockFlags.BLOCK_UPDATE | Constants.BlockFlags.UPDATE_NEIGHBORS);
     }
 
     @Override

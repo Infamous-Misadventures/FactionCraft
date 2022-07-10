@@ -15,6 +15,7 @@ import javax.annotation.Nullable;
 
 import static com.patrigan.faction_craft.block.ModBlocks.RECONSTRUCT_BLOCK;
 import static com.patrigan.faction_craft.blockentity.ModBlockEntityTypes.RECONSTRUCT_BLOCK_ENTITY;
+import static com.patrigan.faction_craft.config.FactionCraftConfig.ENABLE_RECONSTRUCT_BLOCKS;
 
 public class ReconstructBlock extends Block {
 
@@ -45,6 +46,7 @@ public class ReconstructBlock extends Block {
 
     public static void setReconstructBlock(World world, BlockPos blockPos, BlockState blockState, Raid raid) {
         if(blockState.isAir()) return;
+        if(!ENABLE_RECONSTRUCT_BLOCKS.get()) return;
         if(blockState.is(RECONSTRUCT_BLOCK.get())) return;
         world.setBlock(blockPos, RECONSTRUCT_BLOCK.get().defaultBlockState(), Constants.BlockFlags.BLOCK_UPDATE | Constants.BlockFlags.UPDATE_NEIGHBORS);
         TileEntity tileEntity = world.getBlockEntity(blockPos);
