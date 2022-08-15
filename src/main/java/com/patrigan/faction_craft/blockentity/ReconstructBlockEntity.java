@@ -43,20 +43,19 @@ public class ReconstructBlockEntity extends TileEntity implements ITickableTileE
             revertBlock();
             return;
         }
-        if(raid == null && raidId != 0) {
-            IRaidManager raidManager = RaidManagerHelper.getRaidManagerCapability(this.getLevel());
-            if (raidManager != null) {
-                this.raid = raidManager.getRaids().get(raidId);
-            }
+        loadRaid();
+        if(raid == null){
+            revertBlock();
+            return;
         }
         if(this.getLevel() == null || this.getLevel().isClientSide()) return;
         if(timer == -1000){
             timer = FactionCraftConfig.RECONSTRUCT_TICK_DELAY.get() + this.getLevel().getRandom().nextInt(FactionCraftConfig.RECONSTRUCT_VARIABLE_TICK_DELAY.get());
         }
-        if(raid != null && (raid.isVictory() || raid.isStopped())) {
+        if((raid.isVictory() || raid.isStopped())) {
             timer--;
         }
-        if(raid != null && raid.isLoss()){
+        if(raid.isLoss()){
             if(FactionCraftConfig.RECONSTRUCT_ON_LOSS.get()){
                 timer--;
             }else{
@@ -68,8 +67,21 @@ public class ReconstructBlockEntity extends TileEntity implements ITickableTileE
         }
     }
 
+    private void loadRaid() {
+        if(raid == null && raidId != 0) {
+            IRaidManager raidManager = RaidManagerHelper.getRaidManagerCapability(this.getLevel());
+            if (raidManager != null) {
+                this.raid = raidManager.getRaids().get(raidId);
+            }
+        }
+    }
+
     private void revertBlock() {
-        this.getLevel().setBlock(this.worldPosition, replacedBlockState, Constants.BlockFlags.BLOCK_UPDATE | Constants.BlockFlags.UPDATE_NEIGHBORS);
+        if(this.replacedBlockState != null) {
+            this.getLevel().setBlock(this.worldPosition, replacedBlockState, Constants.BlockFlags.BLOCK_UPDATE | Constants.BlockFlags.UPDATE_NEIGHBORS);
+        }else{
+            this.getLevel().removeBlock(this.worldPosition, false);
+        }
     }
 
     @Override
@@ -93,7 +105,6 @@ public class ReconstructBlockEntity extends TileEntity implements ITickableTileE
     public CompoundNBT save(CompoundNBT pCompound) {
         pCompound = super.save(pCompound);
         if(replacedBlockState != null){
-//            this.blockState.
             pCompound.putInt("BlockState", Block.getId(replacedBlockState));
         }
         if(raid != null){
