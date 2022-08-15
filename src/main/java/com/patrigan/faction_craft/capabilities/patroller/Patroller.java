@@ -1,6 +1,8 @@
 package com.patrigan.faction_craft.capabilities.patroller;
 
 
+import com.patrigan.faction_craft.capabilities.factionentity.FactionEntityHelper;
+import com.patrigan.faction_craft.capabilities.factionentity.FactionEntity;
 import com.patrigan.faction_craft.entity.ai.goal.PatrolGoal;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -59,8 +61,10 @@ public class Patroller implements INBTSerializable<CompoundTag> {
     }
 
     public boolean canJoinPatrol(Mob mob) {
-        //TODO: Can only join when patrol is same faction.
-        return true;
+        FactionEntity thisCap = FactionEntityHelper.getFactionEntityCapability(this.entity);
+        FactionEntity otherCap = FactionEntityHelper.getFactionEntityCapability(mob);
+        if(thisCap == null || otherCap == null) return false;
+        return thisCap.getFaction() != null && thisCap.equals(otherCap.getFaction());
     }
 
     public CompoundTag save(CompoundTag compoundNbt) {

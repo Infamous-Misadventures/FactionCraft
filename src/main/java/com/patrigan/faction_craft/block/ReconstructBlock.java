@@ -15,6 +15,7 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import static com.patrigan.faction_craft.block.ModBlocks.RECONSTRUCT_BLOCK;
 import static com.patrigan.faction_craft.blockentity.ModBlockEntityTypes.RECONSTRUCT_BLOCK_ENTITY;
+import static com.patrigan.faction_craft.config.FactionCraftConfig.ENABLE_RECONSTRUCT_BLOCKS;
 
 public class ReconstructBlock extends Block implements EntityBlock {
 
@@ -43,6 +44,7 @@ public class ReconstructBlock extends Block implements EntityBlock {
     }
 
     public static void setReconstructBlock(Level level, BlockPos blockPos, BlockState blockState, Raid raid) {
+        if(!ENABLE_RECONSTRUCT_BLOCKS.get()) return;
         if(blockState.isAir()) return;
         if(blockState.is(RECONSTRUCT_BLOCK.get())) return;
         level.setBlock(blockPos, RECONSTRUCT_BLOCK.get().defaultBlockState(), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);

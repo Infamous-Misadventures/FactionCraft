@@ -14,6 +14,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import static com.patrigan.faction_craft.config.FactionCraftConfig.ENABLE_RECONSTRUCT_BLOCKS;
 
 public class ReconstructBlockEntity extends BlockEntity {
 
@@ -35,6 +36,10 @@ public class ReconstructBlockEntity extends BlockEntity {
     }
 
     private void doServerTick(ServerLevel level, BlockPos blockPos) {
+        if(!ENABLE_RECONSTRUCT_BLOCKS.get()) {
+            revertBlock(level);
+            return;
+        }
         if(raid == null && raidId != 0) {
             RaidManager raidManager = RaidManagerHelper.getRaidManagerCapability(level);
             if (raidManager != null) {
@@ -55,8 +60,12 @@ public class ReconstructBlockEntity extends BlockEntity {
             }
         }
         if(timer <= 0 || raid == null || level.getDifficulty().equals(Difficulty.PEACEFUL)){
-            level.setBlock(this.worldPosition, replacedBlockState, Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
+            revertBlock(level);
         }
+    }
+
+    private void revertBlock(ServerLevel level) {
+        level.setBlock(this.worldPosition, replacedBlockState, Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
     }
 
     public BlockState getReplacedBlockState() {

@@ -92,7 +92,8 @@ public class PatrolGoal<T extends Mob> extends Goal {
 
     private List<Mob> findPatrolCompanions() {
         return this.mob.level.getEntitiesOfClass(Mob.class, this.mob.getBoundingBox().inflate(16.0D), (p_226543_1_) -> {
-            Patroller cap = PatrollerHelper.getPatrollerCapability(this.mob);
+            Patroller cap = PatrollerHelper.getPatrollerCapability(p_226543_1_);
+            if(cap == null) return false;
             return cap.canJoinPatrol(this.mob) && !p_226543_1_.is(this.mob);
         });
     }
