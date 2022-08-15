@@ -40,11 +40,10 @@ public class ReconstructBlockEntity extends BlockEntity {
             revertBlock(level);
             return;
         }
-        if(raid == null && raidId != 0) {
-            RaidManager raidManager = RaidManagerHelper.getRaidManagerCapability(level);
-            if (raidManager != null) {
-                this.raid = raidManager.getRaids().get(raidId);
-            }
+        loadRaid(level);
+        if(raid == null){
+            revertBlock(level);
+            return;
         }
         if(timer == -1000){
             timer = FactionCraftConfig.RECONSTRUCT_TICK_DELAY.get() + level.getRandom().nextInt(FactionCraftConfig.RECONSTRUCT_VARIABLE_TICK_DELAY.get());
@@ -64,8 +63,21 @@ public class ReconstructBlockEntity extends BlockEntity {
         }
     }
 
+    private void loadRaid(ServerLevel level) {
+        if(raid == null && raidId != 0) {
+            RaidManager raidManager = RaidManagerHelper.getRaidManagerCapability(level);
+            if (raidManager != null) {
+                this.raid = raidManager.getRaids().get(raidId);
+            }
+        }
+    }
+
     private void revertBlock(ServerLevel level) {
-        level.setBlock(this.worldPosition, replacedBlockState, Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
+        if(this.replacedBlockState != null) {
+            level.setBlock(this.worldPosition, replacedBlockState, Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
+        }else{
+            level.removeBlock(this.worldPosition, false);
+        }
     }
 
     public BlockState getReplacedBlockState() {
