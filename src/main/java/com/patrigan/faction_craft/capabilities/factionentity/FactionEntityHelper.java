@@ -22,6 +22,6 @@ public class FactionEntityHelper {
         if (lazyCap.isPresent()) {
             return lazyCap.orElseThrow(() -> new IllegalStateException("Couldn't get the RaidManager capability from the world!"));
         }
-        return null;
+        return new FactionEntity(mobEntity);
     }
 }
