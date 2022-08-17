@@ -4,7 +4,8 @@ import com.patrigan.faction_craft.capabilities.patroller.IPatroller;
 import com.patrigan.faction_craft.capabilities.patroller.PatrollerHelper;
 import com.patrigan.faction_craft.capabilities.raider.IRaider;
 import com.patrigan.faction_craft.capabilities.raider.RaiderHelper;
-import com.patrigan.faction_craft.entity.ai.goal.NearestFactionEnemyTargetGoal;
+import com.patrigan.faction_craft.entity.ai.target.NearestFactionEnemyTargetGoal;
+import com.patrigan.faction_craft.entity.ai.target.FactionAllyHurtTargetGoal;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MobEntity;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
@@ -22,6 +23,7 @@ public class EntityEvents {
         if(event.getEntity() instanceof MobEntity){
             IRaider raiderCap = RaiderHelper.getRaiderCapability((MobEntity) event.getEntity());
             IPatroller patrollerCap = PatrollerHelper.getPatrollerCapability((MobEntity) event.getEntity());
+            if(raiderCap == null || patrollerCap == null) return;
             if(raiderCap.hasActiveRaid() || patrollerCap.isPatrolling()){
                 event.setCanceled(true);
                 event.setConversionTimer(0);
@@ -34,7 +36,8 @@ public class EntityEvents {
         Entity entity = event.getEntity();
         if(entity instanceof MobEntity){
             MobEntity mob = (MobEntity) entity;
-            mob.targetSelector.addGoal(2, new NearestFactionEnemyTargetGoal<>(mob, 10, true, false));
+            mob.targetSelector.addGoal(2, new NearestFactionEnemyTargetGoal(mob, 10, true, false));
+            mob.targetSelector.addGoal(2, new FactionAllyHurtTargetGoal(mob, true, false));
         }
     }
 }
