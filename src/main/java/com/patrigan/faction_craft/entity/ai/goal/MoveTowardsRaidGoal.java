@@ -32,7 +32,7 @@ public class MoveTowardsRaidGoal<T extends Mob> extends Goal {
             return false;
         }
         Raider raiderCapability = RaiderHelper.getRaiderCapability(this.mob);
-        return this.mob instanceof PathfinderMob
+        return raiderCapability != null && this.mob instanceof PathfinderMob
                 && this.mob.getTarget() == null
                 && !this.mob.isVehicle() && raiderCapability.hasActiveRaid()
                 && !raiderCapability.getRaid().isOver()
