@@ -44,7 +44,7 @@ public class MoveTowardsRaidGoal<T extends Mob> extends Goal {
      */
     public boolean canContinueToUse() {
         Raider raiderCapability = RaiderHelper.getRaiderCapability(this.mob);
-        return raiderCapability.hasActiveRaid() && this.mob.getTarget() == null && !raiderCapability.getRaid().isOver() && this.mob.level instanceof ServerLevel && !((ServerLevel)this.mob.level).isVillage(this.mob.blockPosition());
+        return raiderCapability != null && raiderCapability.hasActiveRaid() && this.mob.getTarget() == null && !raiderCapability.getRaid().isOver() && this.mob.level instanceof ServerLevel && !((ServerLevel)this.mob.level).isVillage(this.mob.blockPosition());
     }
 
     /**
