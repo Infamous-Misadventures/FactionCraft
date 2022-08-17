@@ -64,9 +64,7 @@ public class PatrolGoal<T extends Mob> extends Goal {
         PathNavigation pathnavigator = this.mob.getNavigation();
         if (pathnavigator.isDone()) {
             List<Mob> list = this.findPatrolCompanions();
-            if (cap.isPatrolling() && list.isEmpty()) {
-                cap.setPatrolling(false);
-            } else if (flag && cap.getPatrolTarget().closerToCenterThan(this.mob.position(), 10.0D)) {
+            if (flag && cap.getPatrolTarget().closerToCenterThan(this.mob.position(), 10.0D)) {
                 cap.findPatrolTarget();
             } else {
                 Vec3 vector3d = Vec3.atBottomCenterOf(cap.getPatrolTarget());
@@ -91,7 +89,7 @@ public class PatrolGoal<T extends Mob> extends Goal {
     }
 
     private List<Mob> findPatrolCompanions() {
-        return this.mob.level.getEntitiesOfClass(Mob.class, this.mob.getBoundingBox().inflate(16.0D), (p_226543_1_) -> {
+        return this.mob.level.getEntitiesOfClass(Mob.class, this.mob.getBoundingBox().inflate(32.0D), (p_226543_1_) -> {
             Patroller cap = PatrollerHelper.getPatrollerCapability(p_226543_1_);
             if(cap == null) return false;
             return cap.canJoinPatrol(this.mob) && !p_226543_1_.is(this.mob);

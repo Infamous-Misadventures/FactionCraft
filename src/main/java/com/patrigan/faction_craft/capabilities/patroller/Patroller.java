@@ -64,7 +64,7 @@ public class Patroller implements INBTSerializable<CompoundTag> {
         FactionEntity thisCap = FactionEntityHelper.getFactionEntityCapability(this.entity);
         FactionEntity otherCap = FactionEntityHelper.getFactionEntityCapability(mob);
         if(thisCap == null || otherCap == null) return false;
-        return thisCap.getFaction() != null && thisCap.equals(otherCap.getFaction());
+        return thisCap.getFaction() != null && thisCap.getFaction().equals(otherCap.getFaction());
     }
 
     public CompoundTag save(CompoundTag compoundNbt) {
