@@ -1,4 +1,4 @@
-package com.patrigan.faction_craft.entity.ai.goal;
+package com.patrigan.faction_craft.entity.ai.target;
 
 import com.patrigan.faction_craft.capabilities.factionentity.FactionEntityHelper;
 import com.patrigan.faction_craft.capabilities.factionentity.FactionEntity;
@@ -13,7 +13,7 @@ import java.util.EnumSet;
 
 import net.minecraft.world.entity.ai.goal.Goal.Flag;
 
-public class NearestFactionEnemyTargetGoal<T extends LivingEntity> extends TargetGoal {
+public class NearestFactionEnemyTargetGoal extends TargetGoal {
    protected final int randomInterval;
    protected LivingEntity target;
    /** This filter is applied to the Entity search. Only matching entities will be targeted. */
