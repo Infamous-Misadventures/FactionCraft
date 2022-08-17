@@ -76,7 +76,7 @@ public class Patroller implements IPatroller {
         IFactionEntity thisCap = FactionEntityHelper.getFactionEntityCapability(this.entity);
         IFactionEntity otherCap = FactionEntityHelper.getFactionEntityCapability(mob);
         if(thisCap == null || otherCap == null) return false;
-        return thisCap.getFaction() != null && thisCap.equals(otherCap.getFaction());
+        return thisCap.getFaction() != null && thisCap.getFaction().equals(otherCap.getFaction());
     }
 
     @Override

@@ -64,9 +64,7 @@ public class PatrolGoal<T extends MobEntity> extends Goal {
         PathNavigator pathnavigator = this.mob.getNavigation();
         if (pathnavigator.isDone()) {
             List<MobEntity> list = this.findPatrolCompanions();
-            if (cap.isPatrolling() && list.isEmpty()) {
-                cap.setPatrolling(false);
-            } else if (flag && cap.getPatrolTarget().closerThan(this.mob.position(), 10.0D)) {
+            if (flag && cap.getPatrolTarget().closerThan(this.mob.position(), 10.0D)) {
                 cap.findPatrolTarget();
             } else {
                 Vector3d vector3d = Vector3d.atBottomCenterOf(cap.getPatrolTarget());
