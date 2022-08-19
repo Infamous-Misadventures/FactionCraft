@@ -11,6 +11,7 @@ import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.util.DefaultRandomPos;
 import net.minecraft.world.entity.ai.village.poi.PoiManager;
 import net.minecraft.world.entity.ai.village.poi.PoiType;
+import net.minecraft.world.entity.ai.village.poi.PoiTypes;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.util.LazyOptional;
 
@@ -53,12 +54,10 @@ public class RaiderMoveThroughVillageGoal extends Goal {
     }
 
     private boolean hasSuitablePoi() {
-        ServerLevel serverworld = (ServerLevel)this.raider.level;
+        ServerLevel serverlevel = (ServerLevel)this.raider.level;
         BlockPos blockpos = this.raider.blockPosition();
-        Optional<BlockPos> optional = serverworld.getPoiManager().getRandom((p_220859_0_) -> {
-            return p_220859_0_ == PoiType.HOME;
-        }, this::hasNotVisited, PoiManager.Occupancy.ANY, blockpos, 48, this.raider.getRandom());
-        if (!optional.isPresent()) {
+        Optional<BlockPos> optional = serverlevel.getPoiManager().getRandom(poiType -> poiType.is(PoiTypes.HOME), this::hasNotVisited, PoiManager.Occupancy.ANY, blockpos, 48, this.raider.getRandom());
+        if (optional.isEmpty()) {
             return false;
         } else {
             this.poiPos = optional.get().immutable();

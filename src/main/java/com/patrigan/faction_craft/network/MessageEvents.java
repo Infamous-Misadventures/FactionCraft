@@ -14,7 +14,7 @@ public class MessageEvents {
 
     @SubscribeEvent
     public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
-        Player player = event.getPlayer();
+        Player player = event.getEntity();
 //        if (player instanceof ServerPlayerEntity)
 //            getEnchantableCapabilityLazy(player).ifPresent(cap -> {
 //                NetworkHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) player), new MobEnchantmentMessage(player.getId(), cap.getEnchantments()));
@@ -23,7 +23,7 @@ public class MessageEvents {
 
     @SubscribeEvent
     public static void onPlayerStartTracking(PlayerEvent.StartTracking event){
-        Player player = event.getPlayer();
+        Player player = event.getEntity();
         Entity target = event.getTarget();
 //        if (player instanceof ServerPlayerEntity)
 //            getEnchantableCapabilityLazy(target).ifPresent(cap -> {

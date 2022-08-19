@@ -11,8 +11,8 @@ import com.patrigan.faction_craft.faction.Faction;
 import com.patrigan.faction_craft.faction.Factions;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.network.chat.TranslatableComponent;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -21,7 +21,7 @@ import java.util.concurrent.CompletableFuture;
 public class FactionArgument implements ArgumentType<Faction> {
     private static final Collection<String> EXAMPLES = Arrays.asList("minecraft:vanilla");
     public static final DynamicCommandExceptionType ERROR_UNKNOWN_FACTION = new DynamicCommandExceptionType((p_208663_0_) -> {
-        return new TranslatableComponent("commands.argument.factionNotFound", p_208663_0_);
+        return Component.translatable ("commands.argument.factionNotFound", p_208663_0_);
     });
 
     public static FactionArgument factions() {

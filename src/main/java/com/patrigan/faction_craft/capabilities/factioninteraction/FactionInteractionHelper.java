@@ -21,7 +21,7 @@ public class FactionInteractionHelper {
     {
         LazyOptional<FactionInteraction> lazyCap = player.getCapability(FACTION_INTERACTION_CAPABILITY);
         if (lazyCap.isPresent()) {
-            return lazyCap.orElseThrow(() -> new IllegalStateException("Couldn't get the FactionInteraction capability from the world!"));
+            return lazyCap.orElseThrow(() -> new IllegalStateException("Couldn't get the FactionInteraction capability from the level!"));
         }
         return null;
     }

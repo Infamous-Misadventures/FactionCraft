@@ -17,12 +17,12 @@ import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 
 public class FactionRaidCommand {
-    private static final SimpleCommandExceptionType ERROR_START_FAILED = new SimpleCommandExceptionType(new TranslatableComponent("commands.raid.failed"));
+    private static final SimpleCommandExceptionType ERROR_START_FAILED = new SimpleCommandExceptionType(Component.translatable("commands.raid.failed"));
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         LiteralArgumentBuilder<CommandSourceStack> factionRaidCommand
@@ -117,7 +117,7 @@ public class FactionRaidCommand {
         if (raid == null) {
             throw ERROR_START_FAILED.create();
         } else {
-            source.sendSuccess(new TranslatableComponent("commands.raid.success", targetArgument), true);
+            source.sendSuccess(Component.translatable ("commands.raid.success", targetArgument), true);
         }
         return 1;
     }
@@ -129,7 +129,7 @@ public class FactionRaidCommand {
         if (raid == null) {
             throw ERROR_START_FAILED.create();
         } else {
-            source.sendSuccess(new TranslatableComponent("commands.raid.success", blockPos.toString()), true);
+            source.sendSuccess(Component.translatable ("commands.raid.success", blockPos.toString()), true);
         }
         return 1;
     }
@@ -141,7 +141,7 @@ public class FactionRaidCommand {
         if (raid == null) {
             throw ERROR_START_FAILED.create();
         } else {
-            source.sendSuccess(new TranslatableComponent("commands.raid.success", blockPos.toString()), true);
+            source.sendSuccess(Component.translatable ("commands.raid.success", blockPos.toString()), true);
         }
         return 1;
     }

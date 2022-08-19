@@ -1,161 +1,90 @@
+/*
+
+The MIT License (MIT)
+
+Copyright (c) 2022 Joseph Bettendorff a.k.a. "Commoble"
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+ */
 package com.patrigan.faction_craft.util;
 
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import com.mojang.serialization.Codec;
 
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.registries.*;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.IForgeRegistry;
+import net.minecraftforge.registries.RegistryBuilder;
 
-import static com.patrigan.faction_craft.FactionCraft.MODID;
-
-public class RegistryDispatcher<DTYPE extends IForgeRegistryEntry<DTYPE>, DISPATCHABLES>
+/**
+ * Helper for creating a deferred register and dispatch codec for a custom registry of serializer types.
+ * This allows you to register serializers for type-dispatched data, e.g. consider the following json:
+ * <pre>
+ * {
+ *   "type": "yourmod:sometype"
+ *   "data": 5
+ * }
+ * </pre>
+ * Here, "yourmod:sometype" refers to a registered codec that defines how to read the rest of the json object.
+ * @param <T> Data type -- the things that get parsed from jsons
+ * @param dispatcherCodec The codec for the serializer type.
+ * @param dispatchedCodec The codec for the data type (this is what you would use for reading/writing json data)
+ * @param registry The primary DeferredRegister for the serializer registry. Should only be used by the mod that created the registry.
+ * @param registryGetter Supplier for the backing serializer registry
+ */
+public record RegistryDispatcher<T>(Codec<Codec<? extends T>> dispatcherCodec, Codec<T> dispatchedCodec, DeferredRegister<Codec<? extends T>> registry, Supplier<IForgeRegistry<Codec<? extends T>>> registryGetter)
 {
     /**
-     * Call in your mod constructor (or any time before the RegistryEvent.NewRegistry event fires, really)
-     * @param modBus Your mod's mod bus from FMLJavaModLoadingContext.get().getModEventBus();
-     * @param registryClass the .class object for this registry (deferred registers will use this class to find the correct registry)
-     *		The type of this is genargified with an unchecked cast, so don't use the wrong class object here
-     * @param registryID the id of this registry, e.g. "yourmod:cheeses"
-     * @param extraSettings Access to the registry builder to apply extra settings like .disableSave() and .disableSync() if needed
-     * 		This consumer is called after .setName() and .setType() are called but before .create()
+     * Helper method for creating and registering a DeferredRegister for a registry of serializers.
+     * @param <T> Data type -- the things that get parsed from jsons
+     * @param modBus mod bus obtained via FMLJavaModLoadingContext.get().getModEventBus()
+     * @param registryId The ID of your registry. Names should be singular to follow mojang's naming convention, e.g. "block", "bird"
+     * @param typeLookup A function to get the registered serializer for a given T (e.g. RuleTest::getType)
+     * @param extraSettings Additional registry configuration if necessary.
+     * @return Dispatch codec and a DeferredRegister for a new custom registry of serializers;
+     * the deferred register will have been subscribed, and a forge registry will be created for it.
      */
-    public static <DTYPE extends Dispatcher<DTYPE, ? extends DISPATCHABLES>, DISPATCHABLES extends Dispatchable<DTYPE>> RegistryDispatcher<DTYPE, DISPATCHABLES> makeDispatchForgeRegistry(
+    public static <T> RegistryDispatcher<T> makeDispatchForgeRegistry(
             final IEventBus modBus,
-            final Class<?> registryClass,
-            final ResourceLocation registryID,
-            final Consumer<RegistryBuilder<DTYPE>> extraSettings)
+            final ResourceLocation registryId,
+            final Function<T,? extends Codec<? extends T>> typeLookup,
+            final Consumer<RegistryBuilder<Codec<? extends T>>> extraSettings)
     {
-        Class<DTYPE> genargifiedClass = (Class<DTYPE>) registryClass;
-        RegistryWrapper<DTYPE> wrapper = new RegistryWrapper<>();
-        Consumer<NewRegistryEvent> newRegistryListener = event ->
+        DeferredRegister<Codec<? extends T>> deferredRegister = DeferredRegister.create(registryId, registryId.getNamespace());
+        Supplier<RegistryBuilder<Codec<? extends T>>> builderFactory = () ->
         {
-            RegistryBuilder<DTYPE> builder = new RegistryBuilder<DTYPE>()
-                    .setName(registryID)
-                    .setType(genargifiedClass);
+            RegistryBuilder<Codec<? extends T>> builder = new RegistryBuilder<>();
             extraSettings.accept(builder);
-            Supplier<IForgeRegistry<DTYPE>> iForgeRegistrySupplier = event.create(builder);
-            wrapper.setRegistrySupplier(iForgeRegistrySupplier);
+            return builder;
         };
+        Supplier<IForgeRegistry<Codec<? extends T>>> registryGetter = deferredRegister.makeRegistry(builderFactory);
+        Codec<Codec<? extends T>> dispatcherCodec = ResourceLocation.CODEC.xmap(
+                id -> registryGetter.get().getValue(id),
+                codec -> registryGetter.get().getKey(codec));
+        Codec<T> dispatchedCodec = dispatcherCodec.dispatch(typeLookup, Function.identity());
+        deferredRegister.register(modBus);
 
-        modBus.addListener(newRegistryListener);
-        Codec<DTYPE> dispatcherCodec = ResourceLocation.CODEC.xmap(
-                id -> wrapper.get().getValue(id),
-                DTYPE::getRegistryName);
-        Codec<DISPATCHABLES> dispatchedCodec = dispatcherCodec.dispatch(dispatchable->dispatchable.getDispatcher(), dispatcher->dispatcher.getSubCodec());
-
-
-        return new RegistryDispatcher<>(wrapper, genargifiedClass, dispatcherCodec, dispatchedCodec);
-    }
-
-    private final Supplier<IForgeRegistry<DTYPE>> registryGetter;
-    private final Class<DTYPE> registryClass;
-    private final Codec<DTYPE> dispatcherCodec;
-    private final Codec<DISPATCHABLES> dispatchedCodec;
-
-    public RegistryDispatcher(Supplier<IForgeRegistry<DTYPE>> registryGetter, Class<DTYPE> registryClass, Codec<DTYPE> dispatcherCodec, Codec<DISPATCHABLES> dispatchedCodec)
-    {
-        this.registryGetter = registryGetter;
-        this.registryClass = registryClass;
-        this.dispatcherCodec = dispatcherCodec;
-        this.dispatchedCodec = dispatchedCodec;
-    }
-
-    /**
-     * Gets the forge registry for the dispatchers. The forge registry is created and initialized in the NewRegistry event;
-     * if getForgeRegistry is called before this, it will return null (so it's not safe to use this to make DeferredRegisters, generally)
-     * @return The forge registry for the dispatchers, or null if the forge registry hasn't been initialized in the NewRegistry event yet
-     */
-    public IForgeRegistry<DTYPE> getForgeRegistry()
-    { return this.registryGetter.get(); }
-
-    /**
-     * Gets the class used by the forge registry
-     * @return the class used by the forge registry
-     */
-    public Class<DTYPE> getRegistryClass()
-    { return this.registryClass; }
-
-    /**
-     * Gets the codec for the DTYPE class
-     * This could be used for serializing ids of dispatcher types but it's generally less useful than the dispatched codec
-     * @return the DTYPE class's codec
-     */
-    public Codec<DTYPE> getDispatcherCodec()
-    { return this.dispatcherCodec; }
-
-    /**
-     * Gets the codec for the DISPATCHABLES class
-     * You can use this codec to read a json containing the dispatcher type + extra data
-     * @return the DISPATCHABLES class's codec
-     */
-    public Codec<DISPATCHABLES> getDispatchedCodec()
-    { return this.dispatchedCodec; }
-
-    /**
-     * Creates a Deferred Register for the forge registry for the dispatchers (does not subscribe it to the mod bus)
-     * @param modid Your modid
-     * @return An unsubscribed Deferred Register
-     */
-    public DeferredRegister<DTYPE> makeDeferredRegister(String modid)
-    { return DeferredRegister.create(this.getRegistryClass(), modid); }
-
-    /**
-     * Class for the dispatchers/serializers
-     * Extend this to make your class useable with makeDispatchRegistry
-     */
-    public static abstract class Dispatcher<DTYPE extends IForgeRegistryEntry<DTYPE>, P> extends ForgeRegistryEntry<DTYPE>
-    {
-        private final Codec<P> subCodec;
-        public Codec<P> getSubCodec() { return this.subCodec; }
-
-        public Dispatcher(Codec<P> subCodec)
-        {
-            this.subCodec = subCodec;
-        }
-    }
-
-    /**
-     * Base class for the dispatched objects
-     * Instances of subclasses of this can be deserialized from jsons, etc
-     */
-    public static abstract class Dispatchable<DTYPE>
-    {
-        private final Supplier<? extends DTYPE> dispatcherGetter;
-        public DTYPE getDispatcher() { return this.dispatcherGetter.get(); }
-
-        public Dispatchable(Supplier<? extends DTYPE> dispatcherGetter)
-        {
-            this.dispatcherGetter = dispatcherGetter;
-        }
-    }
-
-    /**
-     * Registry wrapper for forge registries
-     * The usual pattern is to wait until the registry event before creating them
-     * This lets us static final init a field for the registry
-     */
-    private static class RegistryWrapper<T extends IForgeRegistryEntry<T>> implements Supplier<IForgeRegistry<T>>
-    {
-        private IForgeRegistry<T> registry = null;
-        private Supplier<IForgeRegistry<T>> registrySupplier;
-
-        @Override
-        public IForgeRegistry<T> get()
-        {
-            return this.registrySupplier.get();
-        }
-
-        public void setRegistry(IForgeRegistry<T> value)
-        {
-            this.registry = value;
-        }
-
-        public void setRegistrySupplier(Supplier<IForgeRegistry<T>> iForgeRegistrySupplier) {
-            this.registrySupplier = iForgeRegistrySupplier;
-        }
+        return new RegistryDispatcher<>(dispatcherCodec, dispatchedCodec, deferredRegister, registryGetter);
     }
 }

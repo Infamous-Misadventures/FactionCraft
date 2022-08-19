@@ -6,18 +6,18 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.patrigan.faction_craft.commands.arguments.FactionArgument;
 import com.patrigan.faction_craft.faction.Faction;
-import com.patrigan.faction_craft.world.spawner.PatrolSpawner;
+import com.patrigan.faction_craft.level.spawner.PatrolSpawner;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 
 public class FactionPatrolCommand {
-    private static final SimpleCommandExceptionType ERROR_START_FAILED = new SimpleCommandExceptionType(new TranslatableComponent("commands.patrol.failed"));
+    private static final SimpleCommandExceptionType ERROR_START_FAILED = new SimpleCommandExceptionType(Component.translatable ("commands.patrol.failed"));
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         LiteralArgumentBuilder<CommandSourceStack> factionRaidCommand
@@ -48,7 +48,7 @@ public class FactionPatrolCommand {
         if (spawns < 0) {
             throw ERROR_START_FAILED.create();
         } else {
-            source.sendSuccess(new TranslatableComponent("commands.patrol.success", spawns, blockPos), true);
+            source.sendSuccess(Component.translatable ("commands.patrol.success", spawns, blockPos), true);
         }
         return 1;
     }

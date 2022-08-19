@@ -4,7 +4,7 @@ import com.google.common.collect.Maps;
 import com.patrigan.faction_craft.capabilities.factioninteraction.FactionInteraction;
 import com.patrigan.faction_craft.capabilities.factioninteraction.FactionInteractionHelper;
 import com.patrigan.faction_craft.config.FactionCraftConfig;
-import com.patrigan.faction_craft.effect.Effects;
+import com.patrigan.faction_craft.effect.ModMobEffects;
 import com.patrigan.faction_craft.faction.Faction;
 import com.patrigan.faction_craft.raid.Raid;
 import com.patrigan.faction_craft.raid.target.RaidTarget;
@@ -130,7 +130,7 @@ public class RaidManager implements INBTSerializable<CompoundTag> {
 
     private void clearBadOmen(FactionInteraction cap, ServerPlayer player, Raid raid, boolean contributed) {
         cap.clearBadOmenFactions();
-        player.removeEffect(Effects.FACTION_BAD_OMEN);
+        player.removeEffect(ModMobEffects.FACTION_BAD_OMEN.get());
         player.connection.send(new ClientboundEntityEventPacket(player, (byte)43));
         if (contributed && !raid.hasFirstWaveSpawned()) {
             player.awardStat(Stats.RAID_TRIGGER);

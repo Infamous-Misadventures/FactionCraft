@@ -25,7 +25,7 @@ public class WearArmorBoost extends Boost {
     private final Rarity rarity;
 
     public WearArmorBoost(List<ItemStack> itemStacks, int strengthAdjustment, BoostType boostType, Rarity rarity) {
-        super(WEAR_ARMOR);
+        super();
         this.itemStacks = itemStacks;
         this.strengthAdjustment = strengthAdjustment;
         this.boostType = boostType;
@@ -37,6 +37,11 @@ public class WearArmorBoost extends Boost {
     }
     public int getStrengthAdjustment() {
         return strengthAdjustment;
+    }
+
+    @Override
+    public Codec<? extends Boost> getCodec() {
+        return CODEC;
     }
 
     @Override

@@ -4,7 +4,7 @@ import com.patrigan.faction_craft.capabilities.raidmanager.RaidManager;
 import com.patrigan.faction_craft.capabilities.raidmanager.RaidManagerHelper;
 import com.patrigan.faction_craft.raid.Raid;
 import net.minecraft.core.BlockPos;
-import net.minecraftforge.event.world.ExplosionEvent;
+import net.minecraftforge.event.level.ExplosionEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -19,13 +19,13 @@ public class BlockEvents {
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onExplosionDetonateEvent(ExplosionEvent.Detonate event){
-        if(event.getWorld().isClientSide()) return;
-        RaidManager raidManager = RaidManagerHelper.getRaidManagerCapability(event.getWorld());
+        if(event.getLevel().isClientSide()) return;
+        RaidManager raidManager = RaidManagerHelper.getRaidManagerCapability(event.getLevel());
         Raid raid = raidManager.getRaidAt(new BlockPos(event.getExplosion().getPosition()));
         if(raid != null && !raid.isOver()) {
             List<BlockPos> blockPosList = event.getAffectedBlocks();
             blockPosList.forEach(blockPos -> {
-                setReconstructBlock(event.getWorld(), blockPos, event.getWorld().getBlockState(blockPos), raid);
+                setReconstructBlock(event.getLevel(), blockPos, event.getLevel().getBlockState(blockPos), raid);
             });
             event.getAffectedBlocks().clear();
         }

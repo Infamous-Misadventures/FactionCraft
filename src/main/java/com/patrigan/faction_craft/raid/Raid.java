@@ -22,8 +22,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.network.protocol.game.ClientboundSoundPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerBossEvent;
@@ -41,7 +39,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
-import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.Vec3;
 
@@ -62,7 +59,7 @@ public class Raid {
     private final RaidTarget raidTarget;
     private int badOmenLevel;
 
-    private final ServerBossEvent raidEvent = new ServerBossEvent(new TextComponent(""), BossEvent.BossBarColor.RED, BossEvent.BossBarOverlay.NOTCHED_10);
+    private final ServerBossEvent raidEvent = new ServerBossEvent(Component.literal(""), BossEvent.BossBarColor.RED, BossEvent.BossBarOverlay.NOTCHED_10);
     private float totalHealth;
 
     private final int numGroups;
@@ -207,7 +204,7 @@ public class Raid {
                     this.updateRaiders();
                     if (i > 0) {
                         if (i <= 2) {
-                            this.raidEvent.setName(getRaidEventName(raidTarget).copy().append(" - ").append(new TranslatableComponent("event.minecraft.raid.raiders_remaining", i)));
+                            this.raidEvent.setName(getRaidEventName(raidTarget).copy().append(" - ").append(Component.translatable("event.minecraft.raid.raiders_remaining", i)));
                         } else {
                             this.raidEvent.setName(getRaidEventName(raidTarget));
                         }
@@ -302,7 +299,7 @@ public class Raid {
             double d0 = vector3d.x + (double)(13.0F / f1) * (vector3d1.x - vector3d.x);
             double d1 = vector3d.z + (double)(13.0F / f1) * (vector3d1.z - vector3d.z);
             if (f1 <= 64.0F || collection.contains(serverplayerentity)) {
-                serverplayerentity.connection.send(new ClientboundSoundPacket(soundEvent, SoundSource.NEUTRAL, d0, serverplayerentity.getY(), d1, 64.0F, 1.0F));
+                serverplayerentity.connection.send(new ClientboundSoundPacket(soundEvent, SoundSource.NEUTRAL, d0, serverplayerentity.getY(), d1, 64.0F, 1.0F, serverplayerentity.getRandom().nextLong()));
             }
         }
     }
@@ -399,7 +396,7 @@ public class Raid {
         // Apply Boosts
         FactionBoostHelper.applyBoosts(targetStrength-waveStrength, entities, faction, this.level);
 
-        List<Entity> newEntities = entities.stream().flatMap(mobEntity -> mobEntity.getRootVehicle().getSelfAndPassengers()).filter(entity -> !entities.contains(entity)).collect(Collectors.toList());
+        List<Entity> newEntities = entities.stream().flatMap(mobEntity -> mobEntity.getRootVehicle().getSelfAndPassengers()).filter(entity -> !entities.contains(entity)).toList();
         newEntities.forEach(entity -> {
             if(entity instanceof Mob) {
                 Mob mobEntity = (Mob) entity;
@@ -413,7 +410,7 @@ public class Raid {
             }
         });
 
-        List<Mob> captainEntities = entities.stream().filter(mobEntity -> FactionEntityHelper.getFactionEntityCapability(mobEntity).getFactionEntityType().canBeBannerHolder()).collect(Collectors.toList());
+        List<Mob> captainEntities = entities.stream().filter(mobEntity -> FactionEntityHelper.getFactionEntityCapability(mobEntity).getFactionEntityType().canBeBannerHolder()).toList();
         Mob randomItem = GeneralUtils.getRandomItem(captainEntities, level.getRandom());
         if(randomItem != null) {
             faction.makeBannerHolder(randomItem);
@@ -711,15 +708,15 @@ public class Raid {
     }
 
     private Component getRaidEventName(RaidTarget raidTarget) {
-        return raidTarget.getRaidType() == RaidTarget.Type.BATTLE ? new TranslatableComponent("event.faction_craft.battle") : this.factions.get(0).getRaidConfig().getRaidBarNameComponent();
+        return raidTarget.getRaidType() == RaidTarget.Type.BATTLE ? Component.translatable ("event.faction_craft.battle") : this.factions.get(0).getRaidConfig().getRaidBarNameComponent();
     }
 
     private Component getRaidEventNameDefeat(RaidTarget raidTarget) {
-        return raidTarget.getRaidType() == RaidTarget.Type.BATTLE ? new TranslatableComponent("event.faction_craft.battle.over") : this.factions.get(0).getRaidConfig().getRaidBarDefeatComponent();
+        return raidTarget.getRaidType() == RaidTarget.Type.BATTLE ? Component.translatable ("event.faction_craft.battle.over") : this.factions.get(0).getRaidConfig().getRaidBarDefeatComponent();
     }
 
     private Component getRaidEventNameVictory(RaidTarget raidTarget) {
-        return raidTarget.getRaidType() == RaidTarget.Type.BATTLE ? new TranslatableComponent("event.faction_craft.battle.over") : this.factions.get(0).getRaidConfig().getRaidBarVictoryComponent();
+        return raidTarget.getRaidType() == RaidTarget.Type.BATTLE ? Component.translatable ("event.faction_craft.battle.over") : this.factions.get(0).getRaidConfig().getRaidBarVictoryComponent();
     }
 
     public void endWave() {

@@ -18,7 +18,7 @@ public class RaiderEvents {
 
     @SubscribeEvent
     public static void onLivingHurtEvent(LivingHurtEvent event){
-        LivingEntity livingEntity = event.getEntityLiving();
+        LivingEntity livingEntity = event.getEntity();
         if(!livingEntity.level.isClientSide() && livingEntity instanceof Mob) {
             RaiderHelper.getRaiderCapabilityLazy((Mob) livingEntity).ifPresent(cap -> {
                 if (cap.hasActiveRaid()) {
@@ -29,7 +29,7 @@ public class RaiderEvents {
     }
     @SubscribeEvent
     public static void onLivingDeathEvent(LivingDeathEvent event){
-        LivingEntity livingEntity = event.getEntityLiving();
+        LivingEntity livingEntity = event.getEntity();
         if(!livingEntity.level.isClientSide() && livingEntity instanceof Mob) {
             Mob mobEntity = (Mob) livingEntity;
             RaiderHelper.getRaiderCapabilityLazy(mobEntity).ifPresent(cap -> {
@@ -63,7 +63,7 @@ public class RaiderEvents {
 
     @SubscribeEvent
     public static void onAllowDespawn(LivingSpawnEvent.AllowDespawn event){
-        LivingEntity livingEntity = event.getEntityLiving();
+        LivingEntity livingEntity = event.getEntity();
         if(!livingEntity.level.isClientSide() && livingEntity instanceof Mob) {
             Mob mobEntity = (Mob) livingEntity;
             RaiderHelper.getRaiderCapabilityLazy(mobEntity).ifPresent(cap -> {

@@ -1,4 +1,4 @@
-package com.patrigan.faction_craft.world.spawner;
+package com.patrigan.faction_craft.level.spawner;
 
 import com.patrigan.faction_craft.capabilities.raidmanager.RaidManager;
 import com.patrigan.faction_craft.capabilities.raidmanager.RaidManagerHelper;
@@ -8,6 +8,8 @@ import com.patrigan.faction_craft.faction.Factions;
 import com.patrigan.faction_craft.raid.target.FactionBattleRaidTarget;
 import com.patrigan.faction_craft.util.GeneralUtils;
 import net.minecraft.core.Holder;
+import net.minecraft.tags.BiomeTags;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.biome.Biome;
@@ -28,7 +30,7 @@ public class BattleSpawner implements CustomSpawner {
       } else if (FactionCraftConfig.DISABLE_FACTION_PATROLS.get()) {
          return 0;
       } else {
-         Random random = pLevel.random;
+         RandomSource random = pLevel.random;
          --this.nextTick;
          if (this.nextTick > 0) {
             return 0;
@@ -54,9 +56,8 @@ public class BattleSpawner implements CustomSpawner {
                         if (!pLevel.hasChunksAt(blockpos$mutable.getX() - 10, blockpos$mutable.getY() - 10, blockpos$mutable.getZ() - 10, blockpos$mutable.getX() + 10, blockpos$mutable.getY() + 10, blockpos$mutable.getZ() + 10)) {
                            return 0;
                         } else {
-                           Holder<Biome> biomeHolder = pLevel.getBiome(blockpos$mutable);
-                           Biome.BiomeCategory biome$category = Biome.getBiomeCategory(biomeHolder);
-                           if (biome$category == Biome.BiomeCategory.MUSHROOM) {
+                           Holder<Biome> holder = pLevel.getBiome(blockpos$mutable);
+                           if (holder.is(BiomeTags.WITHOUT_PATROL_SPAWNS)) {
                               return 0;
                            } else {
                               return spawnFactionBattle(pLevel, random, blockpos$mutable);
@@ -72,7 +73,7 @@ public class BattleSpawner implements CustomSpawner {
       }
    }
 
-   public static int spawnFactionBattle(ServerLevel pLevel, Random random, BlockPos blockpos) {
+   public static int spawnFactionBattle(ServerLevel pLevel, RandomSource random, BlockPos blockpos) {
       Faction faction1 = Factions.getRandomFactionWithEnemies(pLevel, random);
       List<Faction> enemies = faction1.getRelations().getEnemies().stream().filter(resourceLocation -> !FactionCraftConfig.DISABLED_FACTIONS.get().contains(resourceLocation.toString())).map(Factions::getFaction).filter(faction -> faction.getRelations().getEnemies().contains(faction1.getName())).collect(Collectors.toList());
       if(enemies.isEmpty()) {

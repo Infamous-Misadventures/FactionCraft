@@ -7,8 +7,8 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.FleeSunGoal;
 import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.entity.ai.goal.WrappedGoal;
 import net.minecraft.world.entity.ai.goal.RestrictSunGoal;
+import net.minecraft.world.entity.ai.goal.WrappedGoal;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
@@ -28,7 +28,7 @@ public class DaylightProtectionBoost extends Boost {
     private final int strengthAdjustment;
 
     public DaylightProtectionBoost(ItemStack headpiece, int strengthAdjustment) {
-        super(DAYLIGHT_PROTECTION);
+        super();
         this.headpiece = headpiece;
         this.strengthAdjustment = strengthAdjustment;
     }
@@ -39,6 +39,11 @@ public class DaylightProtectionBoost extends Boost {
 
     public int getStrengthAdjustment() {
         return strengthAdjustment;
+    }
+
+    @Override
+    public Codec<? extends Boost> getCodec() {
+        return CODEC;
     }
 
     @Override

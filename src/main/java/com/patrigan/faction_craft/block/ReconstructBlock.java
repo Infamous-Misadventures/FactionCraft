@@ -29,7 +29,7 @@ public class ReconstructBlock extends Block implements EntityBlock {
     }
 
     @Override
-    public int getFlammability(BlockState state, BlockGetter world, BlockPos pos, Direction face) {
+    public int getFlammability(BlockState state, BlockGetter level, BlockPos pos, Direction face) {
         return 0;
     }
 
@@ -39,7 +39,7 @@ public class ReconstructBlock extends Block implements EntityBlock {
     }
 
     @Override
-    public int getFireSpreadSpeed(BlockState state, BlockGetter world, BlockPos pos, Direction face) {
+    public int getFireSpreadSpeed(BlockState state, BlockGetter level, BlockPos pos, Direction face) {
         return 0;
     }
 

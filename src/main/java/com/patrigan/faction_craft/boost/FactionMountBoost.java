@@ -31,13 +31,18 @@ public class FactionMountBoost extends Boost {
     private final Rarity rarity;
 
     public FactionMountBoost(ResourceLocation entityTypeLocation, Rarity rarity) {
-        super(FACTION_MOUNT);
+        super();
         this.entityTypeLocation = entityTypeLocation;
         this.rarity = rarity;
     }
 
     public ResourceLocation getEntityTypeLocation() {
         return entityTypeLocation;
+    }
+
+    @Override
+    public Codec<? extends Boost> getCodec() {
+        return CODEC;
     }
 
     @Override

@@ -3,17 +3,17 @@ package com.patrigan.faction_craft.entity.ai.goal;
 
 import com.patrigan.faction_craft.capabilities.patroller.Patroller;
 import com.patrigan.faction_craft.capabilities.patroller.PatrollerHelper;
+import net.minecraft.core.BlockPos;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.util.LazyOptional;
 
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Random;
 
 public class PatrolGoal<T extends Mob> extends Goal {
     private final T mob;
@@ -39,7 +39,7 @@ public class PatrolGoal<T extends Mob> extends Goal {
         if(!lazyCap.isPresent()){
             return false;
         }
-        Patroller cap = lazyCap.orElseThrow(() -> new IllegalStateException("Couldn't get the RaidManager capability from the world!"));
+        Patroller cap = lazyCap.orElseThrow(() -> new IllegalStateException("Couldn't get the RaidManager capability from the level!"));
         return cap.isPatrolling() && this.mob.getTarget() == null && !this.mob.isVehicle() && cap.hasPatrolTarget() && !flag;
     }
 
@@ -97,7 +97,7 @@ public class PatrolGoal<T extends Mob> extends Goal {
     }
 
     private boolean moveRandomly() {
-        Random random = this.mob.getRandom();
+        RandomSource random = this.mob.getRandom();
         BlockPos blockpos = this.mob.level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, this.mob.blockPosition().offset(-8 + random.nextInt(16), 0, -8 + random.nextInt(16)));
         return this.mob.getNavigation().moveTo(blockpos.getX(), blockpos.getY(), blockpos.getZ(), this.speedModifier);
     }

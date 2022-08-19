@@ -39,7 +39,7 @@ public class WearHandsBoost extends Boost {
     private final Rarity rarity;
 
     public WearHandsBoost(ItemStack item, int strengthAdjustment, BoostType boostType, Rarity rarity) {
-        super(WEAR_HANDS);
+        super();
         this.item = item;
         this.strengthAdjustment = strengthAdjustment;
         this.boostType = boostType;
@@ -52,6 +52,11 @@ public class WearHandsBoost extends Boost {
 
     public int getStrengthAdjustment() {
         return strengthAdjustment;
+    }
+
+    @Override
+    public Codec<? extends Boost> getCodec() {
+        return CODEC;
     }
 
     @Override

@@ -10,7 +10,7 @@ import static com.patrigan.faction_craft.block.ModBlocks.RECONSTRUCT_BLOCK;
 
 public class ModBlockEntityTypes {
 
-    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITIES, MODID);
+    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, MODID);
 
 
     public static final RegistryObject<BlockEntityType<ReconstructBlockEntity>> RECONSTRUCT_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register("reconstruct_block_entity",

@@ -21,7 +21,7 @@ public class FactionEntityHelper {
     {
         LazyOptional<FactionEntity> lazyCap = mobEntity.getCapability(FACTION_ENTITY_CAPABILITY);
         if (lazyCap.isPresent()) {
-            return lazyCap.orElseThrow(() -> new IllegalStateException("Couldn't get the Faction Entity capability from the world!"));
+            return lazyCap.orElseThrow(() -> new IllegalStateException("Couldn't get the Faction Entity capability from the level!"));
         }
         return new FactionEntity(mobEntity);
     }

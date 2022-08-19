@@ -2,10 +2,9 @@ package com.patrigan.faction_craft.faction;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 
 public class FactionRaidConfig {
     public static final float DEFAULT_MOBS_FRACTION = 0.7F;
@@ -39,9 +38,9 @@ public class FactionRaidConfig {
         this.name = name;
         this.victoryAlt = victoryAlt;
         this.defeatAlt = defeatAlt;
-        this.victoryComponent = new TranslatableComponent(victoryAlt);
-        this.defeatComponent = new TranslatableComponent(defeatAlt);
-        this.raidBarNameComponent = new TranslatableComponent(name);
+        this.victoryComponent = Component.translatable (victoryAlt);
+        this.defeatComponent = Component.translatable (defeatAlt);
+        this.raidBarNameComponent = Component.translatable (name);
         this.raidBarVictoryComponent = raidBarNameComponent.copy().append(" - ").append(victoryComponent);
         this.raidBarDefeatComponent = raidBarNameComponent.copy().append(" - ").append(defeatComponent);
         this.mobsFraction = mobsFraction;

@@ -1,20 +1,31 @@
 package com.patrigan.faction_craft.boost;
 
-import net.minecraftforge.registries.DeferredRegister;
+import com.mojang.serialization.Codec;
+import com.patrigan.faction_craft.util.RegistryDispatcher;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.RegistryObject;
 
-import static com.patrigan.faction_craft.FactionCraft.BOOST_DISPATCHER;
 import static com.patrigan.faction_craft.FactionCraft.MODID;
 
+@Mod.EventBusSubscriber(modid=MODID, bus= Mod.EventBusSubscriber.Bus.MOD)
 public class BoostProviders {
-    public static final DeferredRegister<Boost.Serializer<?>> BOOST_PROVIDERS = BOOST_DISPATCHER.makeDeferredRegister(MODID);
+    public static RegistryDispatcher<Boost> BOOST_DISPATCHER = RegistryDispatcher.makeDispatchForgeRegistry(
+            FMLJavaModLoadingContext.get().getModEventBus(),
+            new ResourceLocation(MODID, "boost"),
+            Boost::getCodec,
+            builder -> builder
+                    .disableSaving()
+                    .disableSync()
+    );
 
-    public static final RegistryObject<Boost.Serializer<NoBoost>> NO_BOOST = BOOST_PROVIDERS.register("no_boost", () -> new Boost.Serializer<>(NoBoost.CODEC));
-    public static final RegistryObject<Boost.Serializer<AttributeBoost>> ATTRIBUTE = BOOST_PROVIDERS.register("attribute_boost", () -> new Boost.Serializer<>(AttributeBoost.CODEC));
-    public static final RegistryObject<Boost.Serializer<WearArmorBoost>> WEAR_ARMOR = BOOST_PROVIDERS.register("wear_armor_boost", () -> new Boost.Serializer<>(WearArmorBoost.CODEC));
-    public static final RegistryObject<Boost.Serializer<WearHandsBoost>> WEAR_HANDS = BOOST_PROVIDERS.register("wear_hands_boost", () -> new Boost.Serializer<>(WearHandsBoost.CODEC));
-    public static final RegistryObject<Boost.Serializer<DaylightProtectionBoost>> DAYLIGHT_PROTECTION = BOOST_PROVIDERS.register("daylight_protection_boost", () -> new Boost.Serializer<>(DaylightProtectionBoost.CODEC));
-    public static final RegistryObject<Boost.Serializer<MountBoost>> MOUNT = BOOST_PROVIDERS.register("mount_boost", () -> new Boost.Serializer<>(MountBoost.CODEC));
-    public static final RegistryObject<Boost.Serializer<FactionMountBoost>> FACTION_MOUNT = BOOST_PROVIDERS.register("faction_mount_boost", () -> new Boost.Serializer<>(FactionMountBoost.CODEC));
-    public static final RegistryObject<Boost.Serializer<MeleeAttackBoost>> MELEE_ATTACK = BOOST_PROVIDERS.register("melee_attack_boost", () -> new Boost.Serializer<>(MeleeAttackBoost.CODEC));
+    public static final RegistryObject<Codec<NoBoost>> NO_BOOST = BOOST_DISPATCHER.registry().register("no_boost", () -> NoBoost.CODEC);
+    public static final RegistryObject<Codec<AttributeBoost>> ATTRIBUTE = BOOST_DISPATCHER.registry().register("attribute_boost", () -> AttributeBoost.CODEC);
+    public static final RegistryObject<Codec<WearArmorBoost>> WEAR_ARMOR = BOOST_DISPATCHER.registry().register("wear_armor_boost", () -> WearArmorBoost.CODEC);
+    public static final RegistryObject<Codec<WearHandsBoost>> WEAR_HANDS = BOOST_DISPATCHER.registry().register("wear_hands_boost", () -> WearHandsBoost.CODEC);
+    public static final RegistryObject<Codec<DaylightProtectionBoost>> DAYLIGHT_PROTECTION = BOOST_DISPATCHER.registry().register("daylight_protection_boost", () -> DaylightProtectionBoost.CODEC);
+    public static final RegistryObject<Codec<MountBoost>> MOUNT = BOOST_DISPATCHER.registry().register("mount_boost", () -> MountBoost.CODEC);
+    public static final RegistryObject<Codec<FactionMountBoost>> FACTION_MOUNT = BOOST_DISPATCHER.registry().register("faction_mount_boost", () -> FactionMountBoost.CODEC);
+    public static final RegistryObject<Codec<MeleeAttackBoost>> MELEE_ATTACK = BOOST_DISPATCHER.registry().register("melee_attack_boost", () -> MeleeAttackBoost.CODEC);
 }

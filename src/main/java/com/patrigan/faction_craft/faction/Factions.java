@@ -10,6 +10,7 @@ import net.minecraft.advancements.Advancement;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -23,7 +24,7 @@ import static com.patrigan.faction_craft.config.FactionCraftConfig.DISABLED_FACT
 @Mod.EventBusSubscriber(modid = FactionCraft.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class Factions {
 
-    private static final MergeableCodecDataManager<Faction, Faction> FACTION_DATA = new MergeableCodecDataManager<>("faction", FactionCraft.LOGGER, Faction.CODEC, Factions::factionMerger);
+    private static final MergeableCodecDataManager<Faction, Faction> FACTION_DATA = new MergeableCodecDataManager<>("faction", Faction.CODEC, Factions::factionMerger);
 
     public static Faction factionMerger(List<Faction> raws){
         ResourceLocation name = null;
@@ -90,7 +91,7 @@ public class Factions {
     }
 
     private static Map<ResourceLocation, Faction> getFactionData(){
-        return FACTION_DATA.data.entrySet().stream().filter(entry -> !DISABLED_FACTIONS.get().contains(entry.getKey().toString())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        return FACTION_DATA.getData().entrySet().stream().filter(entry -> !DISABLED_FACTIONS.get().contains(entry.getKey().toString())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     private static Collection<Faction> getActiveFactions(ServerLevel level){
@@ -104,7 +105,7 @@ public class Factions {
     }
 
     public static Faction getDefaultFaction(){
-        return FACTION_DATA.data.get(new ResourceLocation("illager"));
+        return FACTION_DATA.getData().get(new ResourceLocation("illager"));
     }
 
     @SubscribeEvent
@@ -113,10 +114,10 @@ public class Factions {
         event.addListener(FACTION_DATA);
     }
 
-    public static Faction getRandomFaction(ServerLevel level, Random random) {
+    public static Faction getRandomFaction(ServerLevel level, RandomSource random) {
         return GeneralUtils.getRandomItem(new ArrayList<>(getActiveFactions(level)), random);
     }
-    public static Faction getRandomFactionWithEnemies(ServerLevel level, Random random) {
+    public static Faction getRandomFactionWithEnemies(ServerLevel level, RandomSource random) {
         return GeneralUtils.getRandomItem(getActiveFactions(level).stream().filter(faction -> !faction.getRelations().getEnemies().isEmpty()).collect(Collectors.toList()), random);
     }
 }

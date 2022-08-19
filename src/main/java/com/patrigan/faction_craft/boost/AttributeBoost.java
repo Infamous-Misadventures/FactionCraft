@@ -36,7 +36,7 @@ public class AttributeBoost extends Boost {
     private final Rarity rarity;
 
     public AttributeBoost(ResourceLocation attributeLocation, double adjustment, double maxApplications, int strengthAdjustment, AttributeModifier.Operation operation, Rarity rarity) {
-        super(ATTRIBUTE);
+        super();
         this.attributeLocation = attributeLocation;
         this.attribute = ATTRIBUTES.getValue(attributeLocation);
         this.adjustment = adjustment;
@@ -68,6 +68,11 @@ public class AttributeBoost extends Boost {
 
     public AttributeModifier.Operation getOperation() {
         return operation;
+    }
+
+    @Override
+    public Codec<? extends Boost> getCodec() {
+        return CODEC;
     }
 
     @Override

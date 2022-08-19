@@ -12,7 +12,7 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.Difficulty;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraftforge.event.entity.living.PotionEvent;
+import net.minecraftforge.event.entity.living.MobEffectEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -24,34 +24,36 @@ public class FactionBadOmenEffect extends MobEffect {
         super(pCategory, pColor);
     }
 
-    /**
-     * checks if Potion effect is ready to be applied this tick.
-     */
-    public boolean isDurationEffectTick(int pDuration, int pAmplifier) {
-        return true;
-    }
-
-    public void applyEffectTick(LivingEntity pLivingEntity, int pAmplifier) {
-        if (pLivingEntity instanceof ServerPlayer && !pLivingEntity.isSpectator()) {
-            ServerPlayer player = (ServerPlayer)pLivingEntity;
-            ServerLevel serverworld = player.getLevel();
-            if (serverworld.getDifficulty() == Difficulty.PEACEFUL) {
-                return;
-            }
-
-            if (serverworld.isVillage(pLivingEntity.blockPosition())) {
-                RaidManager raidManagerCapability = RaidManagerHelper.getRaidManagerCapability(serverworld);
-                raidManagerCapability.createBadOmenRaid(new VillageRaidTarget(player.blockPosition(), serverworld), player);
+    @SubscribeEvent
+    public static void onPotionRemoveEvent(MobEffectEvent.Remove event) {
+        if (event.getEffect() instanceof FactionBadOmenEffect && !event.getEntity().level.isClientSide()
+                && event.getEntity() instanceof Player player) {
+            FactionInteraction cap = FactionInteractionHelper.getFactionInteractionCapability(player);
+            if (cap != null) {
+                cap.clearBadOmenFactions();
             }
         }
     }
 
-    @SubscribeEvent
-    public static void onPotionRemoveEvent(PotionEvent.PotionRemoveEvent event){
-        if(event.getPotion() instanceof FactionBadOmenEffect && !event.getEntityLiving().level.isClientSide()) {
-            if(event.getEntityLiving() instanceof Player){
-                FactionInteraction cap = FactionInteractionHelper.getFactionInteractionCapability((Player) event.getEntityLiving());
-                cap.clearBadOmenFactions();
+    /**
+     * checks if Potion effect is ready to be applied this tick.
+     */
+    @Override
+    public boolean isDurationEffectTick(int pDuration, int pAmplifier) {
+        return true;
+    }
+
+    @Override
+    public void applyEffectTick(LivingEntity pLivingEntity, int pAmplifier) {
+        if (pLivingEntity instanceof ServerPlayer player && !pLivingEntity.isSpectator()) {
+            ServerLevel serverlevel = player.getLevel();
+            if (serverlevel.getDifficulty() == Difficulty.PEACEFUL) {
+                return;
+            }
+
+            if (serverlevel.isVillage(pLivingEntity.blockPosition())) {
+                RaidManager raidManagerCapability = RaidManagerHelper.getRaidManagerCapability(serverlevel);
+                raidManagerCapability.createBadOmenRaid(new VillageRaidTarget(player.blockPosition(), serverlevel), player);
             }
         }
     }

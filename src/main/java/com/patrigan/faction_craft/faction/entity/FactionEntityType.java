@@ -17,7 +17,8 @@ import net.minecraft.world.entity.MobSpawnType;
 import java.util.Arrays;
 import java.util.List;
 
-import static net.minecraftforge.registries.ForgeRegistries.ENTITIES;
+import static net.minecraftforge.registries.ForgeRegistries.ENTITY_TYPES;
+
 
 public class FactionEntityType {
     public static final Codec<FactionEntityType> CODEC = RecordCodecBuilder.create(builder ->
@@ -136,9 +137,9 @@ public class FactionEntityType {
     }
 
 
-    //See and use SummonCommand approach for tag and add to the world
+    //See and use SummonCommand approach for tag and add to the level
     public Entity createEntity(ServerLevel level, Faction faction, BlockPos spawnBlockPos, boolean bannerHolder, MobSpawnType spawnReason) {
-        EntityType<?> entityType = ENTITIES.getValue(this.getEntityType());
+        EntityType<?> entityType = ENTITY_TYPES.getValue(this.getEntityType());
         Entity entity = null;
         if (!this.getTag().isEmpty()) {
             CompoundTag compoundnbt = this.getTag().copy();

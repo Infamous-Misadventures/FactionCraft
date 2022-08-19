@@ -14,13 +14,10 @@ import net.minecraftforge.common.IExtensibleEnum;
 import java.util.Map;
 import java.util.function.Supplier;
 
-public abstract class Boost extends RegistryDispatcher.Dispatchable<Boost.Serializer<?>> {
-    public static final Codec<Boost> CODEC = FactionCraft.BOOST_DISPATCHER.getDispatchedCodec();
+public abstract class Boost {
+    public static final Codec<Boost> CODEC = BoostProviders.BOOST_DISPATCHER.dispatchedCodec();
 
-    public Boost(Supplier<? extends Serializer<?>> dispatcherGetter) {
-        super(dispatcherGetter);
-    }
-
+    public abstract Codec<? extends Boost> getCodec();
     public abstract BoostType getType();
     public abstract Rarity getRarity();
 
@@ -36,7 +33,7 @@ public abstract class Boost extends RegistryDispatcher.Dispatchable<Boost.Serial
     }
 
     public CompoundTag save(CompoundTag compoundNBT) {
-        ResourceLocation resourceLocation = Boosts.BOOSTS.data.entrySet().stream().filter(entry -> entry.getValue().equals(this)).findFirst().map(Map.Entry::getKey).orElse(new ResourceLocation("empty"));
+        ResourceLocation resourceLocation = Boosts.BOOSTS.getData().entrySet().stream().filter(entry -> entry.getValue().equals(this)).findFirst().map(Map.Entry::getKey).orElse(new ResourceLocation("empty"));
         compoundNBT.putString("name", resourceLocation.toString());
         return compoundNBT;
     }
@@ -44,14 +41,6 @@ public abstract class Boost extends RegistryDispatcher.Dispatchable<Boost.Serial
     public static Boost load(CompoundTag compoundNBT) {
         ResourceLocation name = new ResourceLocation(compoundNBT.getString("name"));
         return Boosts.getBoost(name);
-    }
-
-    public static class Serializer<P extends Boost> extends RegistryDispatcher.Dispatcher<Serializer<?>, P>
-    {
-        public Serializer(Codec<P> subCodec)
-        {
-            super(subCodec);
-        }
     }
 
     public enum BoostType implements IExtensibleEnum {

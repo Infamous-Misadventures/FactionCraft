@@ -1,4 +1,4 @@
-package com.patrigan.faction_craft.world.spawner;
+package com.patrigan.faction_craft.level.spawner;
 
 import com.mojang.datafixers.util.Pair;
 import com.patrigan.faction_craft.capabilities.patroller.Patroller;
@@ -11,6 +11,8 @@ import com.patrigan.faction_craft.util.GeneralUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.BiomeTags;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
@@ -24,10 +26,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
 
 import java.util.List;
-import java.util.Random;
 import java.util.stream.Collectors;
 
-import static net.minecraftforge.registries.ForgeRegistries.ENTITIES;
+import static net.minecraftforge.registries.ForgeRegistries.ENTITY_TYPES;
 
 public class PatrolSpawner implements CustomSpawner {
    private int nextTick;
@@ -38,7 +39,7 @@ public class PatrolSpawner implements CustomSpawner {
       } else if (FactionCraftConfig.DISABLE_FACTION_PATROLS.get()) {
          return 0;
       } else {
-         Random random = pLevel.random;
+         RandomSource random = pLevel.random;
          --this.nextTick;
          if (this.nextTick > 0) {
             return 0;
@@ -64,9 +65,8 @@ public class PatrolSpawner implements CustomSpawner {
                         if (!pLevel.hasChunksAt(blockpos$mutable.getX() - 10, blockpos$mutable.getY() - 10, blockpos$mutable.getZ() - 10, blockpos$mutable.getX() + 10, blockpos$mutable.getY() + 10, blockpos$mutable.getZ() + 10)) {
                            return 0;
                         } else {
-                           Holder<Biome> biomeHolder = pLevel.getBiome(blockpos$mutable);
-                           Biome.BiomeCategory biome$category = Biome.getBiomeCategory(biomeHolder);
-                           if (biome$category == Biome.BiomeCategory.MUSHROOM) {
+                           Holder<Biome> holder = pLevel.getBiome(blockpos$mutable);
+                           if (holder.is(BiomeTags.WITHOUT_PATROL_SPAWNS)) {
                               return 0;
                            } else {
                               Faction faction = Factions.getRandomFaction(pLevel, random);
@@ -83,7 +83,7 @@ public class PatrolSpawner implements CustomSpawner {
       }
    }
 
-   public static int spawnPatrol(ServerLevel pLevel, Random random, Faction faction, BlockPos blockpos) {
+   public static int spawnPatrol(ServerLevel pLevel, RandomSource random, Faction faction, BlockPos blockpos) {
       BlockPos.MutableBlockPos mutableBlockPos = blockpos.mutable();
       int i1 = 0;
       int j1 = (int)Math.ceil(pLevel.getCurrentDifficultyAt(mutableBlockPos).getEffectiveDifficulty()) + 1;
@@ -106,12 +106,12 @@ public class PatrolSpawner implements CustomSpawner {
       return i1;
    }
 
-   private static boolean spawnPatrolMember(ServerLevel pLevel, BlockPos pPos, Random pRandom, boolean pLeader, Faction faction) {
+   private static boolean spawnPatrolMember(ServerLevel pLevel, BlockPos pPos, RandomSource pRandom, boolean pLeader, Faction faction) {
       BlockState blockstate = pLevel.getBlockState(pPos);
       List<Pair<FactionEntityType, Integer>> weightMap = faction.getWeightMap();
       List<Pair<FactionEntityType, Integer>> filtered = weightMap.stream().filter(pair -> (pLeader && pair.getFirst().canBeBannerHolder()) || (!pLeader && pair.getFirst().getRank().equals(FactionEntityType.FactionRank.SOLDIER))).collect(Collectors.toList());
       FactionEntityType factionEntityType = GeneralUtils.getRandomEntry(filtered, pRandom);
-      EntityType<? extends Mob> entityType = (EntityType<? extends Mob>) ENTITIES.getValue(factionEntityType.getEntityType());
+      EntityType<? extends Mob> entityType = (EntityType<? extends Mob>) ENTITY_TYPES.getValue(factionEntityType.getEntityType());
       if (!NaturalSpawner.isValidEmptySpawnBlock(pLevel, pPos, blockstate, blockstate.getFluidState(), entityType)) {
          return false;
       } else if (!(pLevel.getBrightness(LightLayer.BLOCK, pPos) <= 8 && pLevel.getDifficulty() != Difficulty.PEACEFUL && Mob.checkMobSpawnRules(entityType, pLevel, MobSpawnType.PATROL, pPos, pRandom))) {

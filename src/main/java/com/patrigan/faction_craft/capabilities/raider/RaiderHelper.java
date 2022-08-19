@@ -21,7 +21,7 @@ public class RaiderHelper {
     {
         LazyOptional<Raider> lazyCap = mobEntity.getCapability(RAIDER_CAPABILITY);
         if (lazyCap.isPresent()) {
-            return lazyCap.orElseThrow(() -> new IllegalStateException("Couldn't get the RaidManager capability from the world!"));
+            return lazyCap.orElseThrow(() -> new IllegalStateException("Couldn't get the RaidManager capability from the level!"));
         }
         return null;
     }

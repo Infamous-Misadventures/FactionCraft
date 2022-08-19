@@ -12,17 +12,17 @@ import com.patrigan.faction_craft.raid.Raid;
 import com.patrigan.faction_craft.raid.target.FactionBattleRaidTarget;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
 import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 
 import java.util.Arrays;
 
 public class FactionBattleCommand {
-    private static final SimpleCommandExceptionType ERROR_START_FAILED = new SimpleCommandExceptionType(new TranslatableComponent("commands.battle.failed"));
+    private static final SimpleCommandExceptionType ERROR_START_FAILED = new SimpleCommandExceptionType(Component.translatable ("commands.battle.failed"));
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         LiteralArgumentBuilder<CommandSourceStack> factionRaidCommand
@@ -55,7 +55,7 @@ public class FactionBattleCommand {
         if (raid == null) {
             throw ERROR_START_FAILED.create();
         } else {
-            source.sendSuccess(new TranslatableComponent("commands.battle.success", faction1.getName(), faction2.getName(), blockPos), true);
+            source.sendSuccess(Component.translatable ("commands.battle.success", faction1.getName(), faction2.getName(), blockPos), true);
         }
         return 1;
     }

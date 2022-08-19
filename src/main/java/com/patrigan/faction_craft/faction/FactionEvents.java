@@ -15,9 +15,9 @@ public class FactionEvents {
 
     @SubscribeEvent
     public static void onLivingHurtEvent(LivingAttackEvent event){
-        LivingEntity livingEntity = event.getEntityLiving();
-        if(!livingEntity.level.isClientSide() && event.getEntityLiving() instanceof Mob && event.getSource().getEntity() instanceof Mob) {
-            FactionEntity targetCap = FactionEntityHelper.getFactionEntityCapability((Mob) event.getEntityLiving());
+        LivingEntity livingEntity = event.getEntity();
+        if(!livingEntity.level.isClientSide() && event.getEntity() instanceof Mob && event.getSource().getEntity() instanceof Mob) {
+            FactionEntity targetCap = FactionEntityHelper.getFactionEntityCapability((Mob) event.getEntity());
             FactionEntity sourceCap = FactionEntityHelper.getFactionEntityCapability((Mob) event.getSource().getEntity());
             if(targetCap != null && sourceCap != null && targetCap.getFaction() != null && sourceCap.getFaction() != null) {
                 if (targetCap.getFaction() == sourceCap.getFaction() || sourceCap.getFaction().getRelations().getAllies().contains(targetCap.getFaction().getName())) {

@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import com.patrigan.faction_craft.capabilities.raidmanager.RaidManager;
 import com.patrigan.faction_craft.capabilities.raidmanager.RaidManagerHelper;
 import com.patrigan.faction_craft.raid.Raid;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.ai.behavior.MoveToSkySeeingSpot;
 import net.minecraft.world.entity.ai.behavior.Behavior;
 import net.minecraft.world.entity.npc.Villager;
@@ -48,7 +49,7 @@ public class CelebrateRaidVictoryTask extends Behavior<Villager> {
    }
 
    protected void tick(ServerLevel pLevel, Villager pOwner, long pGameTime) {
-      Random random = pOwner.getRandom();
+      RandomSource random = pOwner.getRandom();
       if (random.nextInt(100) == 0) {
          pOwner.playCelebrateSound();
       }

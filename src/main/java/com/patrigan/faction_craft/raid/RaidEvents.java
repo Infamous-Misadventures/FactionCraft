@@ -12,8 +12,8 @@ import static com.patrigan.faction_craft.capabilities.raidmanager.RaidManagerHel
 public class RaidEvents {
 
     @SubscribeEvent
-    public static void onWorldTickEvent(TickEvent.WorldTickEvent event){
-        RaidManager raidManagerCapability = getRaidManagerCapability(event.world);
+    public static void onLevelTickEvent(TickEvent.LevelTickEvent event){
+        RaidManager raidManagerCapability = getRaidManagerCapability(event.level);
         if(event.phase == TickEvent.Phase.END) {
             raidManagerCapability.tick();
         }

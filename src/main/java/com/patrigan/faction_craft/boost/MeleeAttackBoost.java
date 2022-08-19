@@ -26,12 +26,17 @@ public class MeleeAttackBoost extends Boost {
     private final int strengthAdjustment;
 
     public MeleeAttackBoost(int strengthAdjustment) {
-        super(WEAR_HANDS);
+        super();
         this.strengthAdjustment = strengthAdjustment;
     }
 
     public int getStrengthAdjustment() {
         return strengthAdjustment;
+    }
+
+    @Override
+    public Codec<? extends Boost> getCodec() {
+        return CODEC;
     }
 
     @Override

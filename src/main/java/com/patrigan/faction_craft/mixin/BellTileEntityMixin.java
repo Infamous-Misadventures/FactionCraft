@@ -51,7 +51,7 @@ public abstract class BellTileEntityMixin extends BlockEntity {
     }
 
 
-    @Inject(method = "makeRaidersGlow(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Ljava/util/List;)V",
+    @Inject(method = "Lnet/minecraft/world/level/block/entity/BellBlockEntity;makeRaidersGlow(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Ljava/util/List;)V",
             at = @At(value = "TAIL"))
     private static void factioncraft_makeRaidersGlow(Level level, BlockPos blockPos, List<LivingEntity> nearbyEntities, CallbackInfo ci) {
         if (!level.isClientSide) {
@@ -59,7 +59,7 @@ public abstract class BellTileEntityMixin extends BlockEntity {
         }
     }
 
-    @Inject(method = "isRaiderWithinRange(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/entity/LivingEntity;)Z",
+    @Inject(method = "Lnet/minecraft/world/level/block/entity/BellBlockEntity;isRaiderWithinRange(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/entity/LivingEntity;)Z",
             at = @At(value = "RETURN"),
             cancellable = true)
     private static void factioncraft_isRaiderWithinRange(BlockPos blockPos, LivingEntity livingEntity, CallbackInfoReturnable<Boolean> cir) {

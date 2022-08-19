@@ -11,7 +11,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.server.level.ServerLevel;
 
 import static com.patrigan.faction_craft.boost.BoostProviders.MOUNT;
-import static net.minecraftforge.registries.ForgeRegistries.ENTITIES;
+import static net.minecraftforge.registries.ForgeRegistries.ENTITY_TYPES;
 
 public class MountBoost extends Boost {
     public static final Codec<MountBoost> CODEC = RecordCodecBuilder.create(instance -> instance.group(
@@ -25,7 +25,7 @@ public class MountBoost extends Boost {
     private final Rarity rarity;
 
     public MountBoost(ResourceLocation entityTypeLocation, int strengthAdjustment, Rarity rarity) {
-        super(MOUNT);
+        super();
         this.entityTypeLocation = entityTypeLocation;
         this.strengthAdjustment = strengthAdjustment;
         this.rarity = rarity;
@@ -37,6 +37,11 @@ public class MountBoost extends Boost {
 
     public int getStrengthAdjustment() {
         return strengthAdjustment;
+    }
+
+    @Override
+    public Codec<? extends Boost> getCodec() {
+        return CODEC;
     }
 
     @Override
@@ -56,7 +61,7 @@ public class MountBoost extends Boost {
         }
         if(livingEntity.level instanceof ServerLevel) {
             ServerLevel level = (ServerLevel) livingEntity.level;
-            Entity mount = ENTITIES.getValue(entityTypeLocation).create(level);
+            Entity mount = ENTITY_TYPES.getValue(entityTypeLocation).create(level);
             if (mount != null) {
                 Vec3 pos = livingEntity.position();
                 mount.setPos(pos.x, pos.y, pos.z);
