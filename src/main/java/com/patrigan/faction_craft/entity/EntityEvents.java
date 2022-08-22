@@ -37,7 +37,7 @@ public class EntityEvents {
         if(entity instanceof Mob){
             Mob mob = (Mob) entity;
             mob.targetSelector.addGoal(2, new NearestFactionEnemyTargetGoal(mob, 10, true, false));
-            mob.targetSelector.addGoal(2, new FactionAllyHurtTargetGoal(mob, true, false));
+            mob.targetSelector.addGoal(2, new FactionAllyHurtTargetGoal(mob, 10, true, false));
         }
     }
 }
