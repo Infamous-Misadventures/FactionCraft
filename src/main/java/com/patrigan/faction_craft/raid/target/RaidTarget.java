@@ -28,6 +28,8 @@ public interface RaidTarget {
 
     int getStartingWave();
 
+    float getSpawnDistance();
+
     enum Type implements IExtensibleEnum {
         VILLAGE("village"),
         PLAYER("player"),

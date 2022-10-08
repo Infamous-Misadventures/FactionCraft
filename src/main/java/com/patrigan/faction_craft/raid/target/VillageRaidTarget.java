@@ -103,6 +103,11 @@ public class VillageRaidTarget implements RaidTarget {
         return 0;
     }
 
+    @Override
+    public float getSpawnDistance() {
+        return 32.0F;
+    }
+
     private void moveRaidCenterToNearbyVillageSection(ServerWorld level) {
         Stream<SectionPos> stream = SectionPos.cube(SectionPos.of(blockPos), 2);
         stream.filter(level::isVillage).map(SectionPos::center).min(Comparator.comparingDouble((p_223025_1_) -> {

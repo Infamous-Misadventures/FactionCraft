@@ -3,13 +3,11 @@ package com.patrigan.faction_craft.raid;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.mojang.datafixers.util.Pair;
-import com.patrigan.faction_craft.capabilities.factionentity.FactionEntity;
 import com.patrigan.faction_craft.capabilities.factionentity.FactionEntityHelper;
 import com.patrigan.faction_craft.capabilities.factionentity.IFactionEntity;
 import com.patrigan.faction_craft.capabilities.raider.IRaider;
 import com.patrigan.faction_craft.capabilities.raider.RaiderHelper;
 import com.patrigan.faction_craft.capabilities.raidmanager.IRaidManager;
-import com.patrigan.faction_craft.config.FactionCraftConfig;
 import com.patrigan.faction_craft.event.FactionRaidEvent;
 import com.patrigan.faction_craft.faction.Faction;
 import com.patrigan.faction_craft.faction.FactionBoostHelper;
@@ -46,7 +44,6 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.gen.Heightmap;
 import net.minecraft.world.server.ServerBossInfo;
 import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -54,7 +51,6 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.patrigan.faction_craft.capabilities.raider.RaiderProvider.RAIDER_CAPABILITY;
 import static com.patrigan.faction_craft.capabilities.raidmanager.RaidManagerHelper.getRaidManagerCapability;
 import static com.patrigan.faction_craft.config.FactionCraftConfig.*;
 import static com.patrigan.faction_craft.util.GeneralUtils.getRandomEntry;
@@ -587,8 +583,8 @@ public class Raid {
 
         for(int i1 = 0; i1 < maxInnerAttempts; ++i1) {
             float f = this.level.random.nextFloat() * ((float)Math.PI * 2F);
-            int j = this.raidTarget.getTargetBlockPos().getX() + MathHelper.floor(MathHelper.cos(f) * 32.0F * (float)i) + this.level.random.nextInt(5);
-            int l = this.raidTarget.getTargetBlockPos().getZ() + MathHelper.floor(MathHelper.sin(f) * 32.0F * (float)i) + this.level.random.nextInt(5);
+            int j = this.raidTarget.getTargetBlockPos().getX() + MathHelper.floor(MathHelper.cos(f) * raidTarget.getSpawnDistance() * (float)i) + this.level.random.nextInt(5);
+            int l = this.raidTarget.getTargetBlockPos().getZ() + MathHelper.floor(MathHelper.sin(f) * raidTarget.getSpawnDistance() * (float)i) + this.level.random.nextInt(5);
             int k = this.level.getHeight(Heightmap.Type.WORLD_SURFACE, j, l);
             blockpos$mutable.set(j, k, l);
             if (isValidSpawnPos(blockpos$mutable) && raidTarget.isValidSpawnPos(outerAttempt, blockpos$mutable, this.level)) {

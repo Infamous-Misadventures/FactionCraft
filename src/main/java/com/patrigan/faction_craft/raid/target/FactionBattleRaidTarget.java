@@ -102,6 +102,11 @@ public class FactionBattleRaidTarget implements RaidTarget {
     }
 
     @Override
+    public float getSpawnDistance() {
+        return 8.0F;
+    }
+
+    @Override
     public CompoundNBT save(CompoundNBT compoundNbt){
         compoundNbt.putString("Type", this.raidType.getName());
         compoundNbt.putInt("X", targetBlockPos.getX());

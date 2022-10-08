@@ -86,6 +86,11 @@ public class PlayerRaidTarget implements RaidTarget {
     }
 
     @Override
+    public float getSpawnDistance() {
+        return 32.0F;
+    }
+
+    @Override
     public CompoundNBT save(CompoundNBT compoundNbt){
         compoundNbt.putString("Type", this.raidType.getName());
         compoundNbt.putString("Player", player.getStringUUID());
