@@ -33,17 +33,10 @@ public class FireBlockMixin {
 
     @Inject(method = "Lnet/minecraft/block/FireBlock;tryCatchFire(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;ILjava/util/Random;ILnet/minecraft/util/Direction;)V",
             remap = false,
-            at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/world/World;getBlockState(Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/block/BlockState;", ordinal = 1, remap = true), locals = LocalCapture.CAPTURE_FAILSOFT)
-    public void factioncraft_tryCatchFire_beforeSet(World pLevel, BlockPos pPos, int pChance, Random pRandom, int arg4, Direction face, CallbackInfo ci, int i, BlockState blockstate) {
-        blockStateToReplace = blockstate;
-    }
-
-    @Inject(method = "Lnet/minecraft/block/FireBlock;tryCatchFire(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;ILjava/util/Random;ILnet/minecraft/util/Direction;)V",
-            remap = false,
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/block/BlockState;catchFire(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/Direction;Lnet/minecraft/entity/LivingEntity;)V", remap = false))
-    public void factioncraft_tryCatchFire_afterSet(World world, BlockPos pPos, int pChance, Random pRandom, int pAge, Direction face, CallbackInfo ci){
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/block/BlockState;catchFire(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/Direction;Lnet/minecraft/entity/LivingEntity;)V", remap = false), locals = LocalCapture.CAPTURE_FAILHARD)
+    public void factioncraft_tryCatchFire_afterSet(World pLevel, BlockPos pPos, int pChance, Random pRandom, int pAge, Direction face, CallbackInfo ci, int i, BlockState blockstate){
         if(raid != null && !raid.isOver()){
-            setReconstructBlock(world, pPos, blockStateToReplace, raid);
+            setReconstructBlock(pLevel, pPos, blockstate, raid);
         }
     }
 
