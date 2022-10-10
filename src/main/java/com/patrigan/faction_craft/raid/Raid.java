@@ -376,7 +376,7 @@ public class Raid {
         int mobsFraction = (int) Math.floor(targetStrength * faction.getRaidConfig().getMobsFraction());
 
         int waveStrength = 0;
-        Map<FactionEntityType, Integer> waveFactionEntities = determineMobs(mobsFraction, waveNumber, faction);
+        Map<FactionEntityType, Integer> waveFactionEntities = determineFactionEntityTypes(mobsFraction, waveNumber, faction);
         List<Mob> entities = new ArrayList<>();
         // Collect Entities
         for (Map.Entry<FactionEntityType, Integer> entry : waveFactionEntities.entrySet()) {
@@ -435,14 +435,31 @@ public class Raid {
         });
     }
 
-    private Map<FactionEntityType, Integer> determineMobs(int targetStrength, int waveNumber, Faction faction) {
+    private Map<FactionEntityType, Integer> determineFactionEntityTypes(int targetStrength, int waveNumber, Faction faction) {
         Map<FactionEntityType, Integer> waveFactionEntities = new HashMap<>();
         int selectedStrength = 0;
         List<Pair<FactionEntityType, Integer>> weightMap = faction.getWeightMapForWave(waveNumber);
-        while(selectedStrength < targetStrength) {
+        for(Pair<FactionEntityType, Integer> pair : weightMap) {
+            if(selectedStrength < targetStrength) {
+                FactionEntityType factionEntityType = pair.getFirst();
+                if(factionEntityType.getMinimumSpawned() > 0) {
+                    int strength = factionEntityType.getStrength();
+                    int amount = Math.min((int) Math.ceil((targetStrength - selectedStrength) / strength), factionEntityType.getMinimumSpawned());
+                    selectedStrength += strength*amount;
+                    waveFactionEntities.merge(factionEntityType, amount, Integer::sum);
+                }
+            }
+            if(selectedStrength >= targetStrength) {
+                break;
+            }
+        }
+        while(selectedStrength < targetStrength && weightMap.size() > 0) {
             FactionEntityType randomEntry = getRandomEntry(weightMap, level.random);
             waveFactionEntities.merge(randomEntry, 1, Integer::sum);
             selectedStrength += randomEntry.getStrength();
+            if(waveFactionEntities.get(randomEntry) >= randomEntry.getMaximumSpawned()) {
+                weightMap.removeIf(pair -> pair.getFirst().equals(randomEntry));
+            }
         }
         return waveFactionEntities;
     }
@@ -487,7 +504,6 @@ public class Raid {
 
         if (abstractraiderentity != null) {
             set.remove(abstractraiderentity);
-            set.add(mobEntity);
         }
 
         set.add(mobEntity);
@@ -580,8 +596,8 @@ public class Raid {
 
         for(int i1 = 0; i1 < maxInnerAttempts; ++i1) {
             float f = this.level.random.nextFloat() * ((float)Math.PI * 2F);
-            int j = this.raidTarget.getTargetBlockPos().getX() + Mth.floor(Mth.cos(f) * 32.0F * (float)i) + this.level.random.nextInt(5);
-            int l = this.raidTarget.getTargetBlockPos().getZ() + Mth.floor(Mth.sin(f) * 32.0F * (float)i) + this.level.random.nextInt(5);
+            int j = this.raidTarget.getTargetBlockPos().getX() + Mth.floor(Mth.cos(f) * raidTarget.getSpawnDistance() * (float)i) + this.level.random.nextInt(5);
+            int l = this.raidTarget.getTargetBlockPos().getZ() + Mth.floor(Mth.sin(f) * raidTarget.getSpawnDistance() * (float)i) + this.level.random.nextInt(5);
             int k = this.level.getHeight(Heightmap.Types.WORLD_SURFACE, j, l);
             blockpos$mutable.set(j, k, l);
             if (isValidSpawnPos(blockpos$mutable) && raidTarget.isValidSpawnPos(outerAttempt, blockpos$mutable, this.level)) {

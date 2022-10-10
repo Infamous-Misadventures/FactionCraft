@@ -3,18 +3,17 @@ package com.patrigan.faction_craft.raid.target;
 import com.patrigan.faction_craft.FactionCraft;
 import com.patrigan.faction_craft.event.CalculateStrengthEvent;
 import com.patrigan.faction_craft.raid.Raid;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.entity.SpawnPlacements;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.npc.AbstractVillager;
-import net.minecraft.world.entity.animal.IronGolem;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.ChunkPos;
 import net.minecraft.core.SectionPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.SpawnPlacements;
+import net.minecraft.world.entity.animal.IronGolem;
+import net.minecraft.world.entity.npc.AbstractVillager;
 import net.minecraft.world.level.NaturalSpawner;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.phys.AABB;
 
 import java.util.Comparator;
 import java.util.stream.Stream;
@@ -101,6 +100,11 @@ public class VillageRaidTarget implements RaidTarget {
     @Override
     public int getStartingWave() {
         return 0;
+    }
+
+    @Override
+    public float getSpawnDistance() {
+        return 32.0F;
     }
 
     private void moveRaidCenterToNearbyVillageSection(ServerLevel level) {

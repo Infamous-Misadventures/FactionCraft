@@ -13,8 +13,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import static com.patrigan.faction_craft.block.ReconstructBlock.setReconstructBlock;
 
@@ -30,34 +30,32 @@ public class FireBlockMixin {
         raid = raidManagerCapability.getRaidAt(blockPos);
     }
 
-    @Inject(method = "Lnet/minecraft/world/level/block/FireBlock;tryCatchFire(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;ILnet/minecraft/util/RandomSource;ILnet/minecraft/core/Direction;)V",
+    @ModifyVariable(method = "Lnet/minecraft/world/level/block/FireBlock;tryCatchFire(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;ILnet/minecraft/util/RandomSource;ILnet/minecraft/core/Direction;)V",
             remap = false,
-            at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/world/level/Level;getBlockState(Lnet/minecraft/core/BlockPos;)Lnet/minecraft/world/level/block/state/BlockState;", ordinal = 1, remap = true), locals = LocalCapture.CAPTURE_FAILSOFT)
-    public void factioncraft_tryCatchFire_beforeSet(Level pLevel, BlockPos pPos, int pChance, RandomSource pRandom, int arg4, Direction face, CallbackInfo ci, int i, BlockState blockstate) {
-        blockStateToReplace = blockstate;
-    }
-
-    @Inject(method = "Lnet/minecraft/world/level/block/FireBlock;tryCatchFire(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;ILnet/minecraft/util/RandomSource;ILnet/minecraft/core/Direction;)V",
-            remap = false,
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/state/BlockState;onCaughtFire(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lnet/minecraft/core/Direction;Lnet/minecraft/world/entity/LivingEntity;)V", remap = false))
-    public void factioncraft_tryCatchFire_afterSet(Level world, BlockPos pPos, int pChance, RandomSource pRandom, int pAge, Direction face, CallbackInfo ci){
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/state/BlockState;onCaughtFire(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lnet/minecraft/core/Direction;Lnet/minecraft/world/entity/LivingEntity;)V", remap = false),
+            ordinal = 0)
+    public BlockState factioncraft_tryCatchFire_afterSet(BlockState blockstate, Level pLevel, BlockPos pPos, int pChance, RandomSource pRandom, int arg4, Direction face){
         if(raid != null && !raid.isOver()){
-            setReconstructBlock(world, pPos, blockStateToReplace, raid);
+            setReconstructBlock(pLevel, pPos, blockstate, raid);
         }
+        return blockstate;
     }
 
-    @Inject(method = "Lnet/minecraft/world/level/block/FireBlock;tick(Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/core/BlockPos;Lnet/minecraft/util/RandomSource;)V",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;I)Z", ordinal = 1), locals = LocalCapture.CAPTURE_FAILSOFT)
-    public void factioncraft_tick_beforeSet(BlockState pState, ServerLevel pLevel, BlockPos pPos, RandomSource pRand, CallbackInfo ci, BlockState blockstate, boolean flag, int i, int j, boolean flag1, int k, BlockPos.MutableBlockPos blockpos$mutable, int l, int i1, int j1, int k1, int l1, int i2, int j2) {
+    @ModifyVariable(method = "Lnet/minecraft/world/level/block/FireBlock;tick(Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/core/BlockPos;Lnet/minecraft/util/RandomSource;)V",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;I)Z", ordinal = 1),
+            ordinal = 0)
+    public BlockPos.MutableBlockPos factioncraft_tick_beforeSet(BlockPos.MutableBlockPos blockpos$mutable, BlockState pState, , ServerLevel pLevel, BlockPos pPos, RandomSource pRand) {
         blockStateToReplace = pLevel.getBlockState(blockpos$mutable);
+        return blockpos$mutable;
     }
 
-    @Inject(method = "Lnet/minecraft/world/level/block/FireBlock;tick(Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/core/BlockPos;Lnet/minecraft/util/RandomSource;)V",
-            at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/server/level/ServerLevel;setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;I)Z", ordinal = 1), locals = LocalCapture.CAPTURE_FAILSOFT)
-    public void factioncraft_tick_afterSet(BlockState pState, ServerLevel pLevel, BlockPos pPos, RandomSource pRand, CallbackInfo ci, BlockState blockstate, boolean flag, int i, int j, boolean flag1, int k, BlockPos.MutableBlockPos blockpos$mutable, int l, int i1, int j1, int k1, int l1, int i2, int j2) {
+    @ModifyVariable(method = "Lnet/minecraft/world/level/block/FireBlock;tick(Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/core/BlockPos;Lnet/minecraft/util/RandomSource;)V",
+            at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/server/level/ServerLevel;setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;I)Z", ordinal = 1))
+    public BlockPos.MutableBlockPos factioncraft_tick_afterSet(BlockPos.MutableBlockPos blockpos$mutable, BlockState pState, ServerLevel pLevel, BlockPos pPos, RandomSource pRand) {
         if(raid != null && !raid.isOver()){
-            setReconstructBlock(pLevel, pPos, blockStateToReplace, raid);
+            setReconstructBlock(pLevel, blockpos$mutable, blockStateToReplace, raid);
         }
+        return blockpos$mutable;
     }
 
 }

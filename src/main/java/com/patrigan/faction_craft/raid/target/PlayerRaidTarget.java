@@ -3,15 +3,14 @@ package com.patrigan.faction_craft.raid.target;
 import com.patrigan.faction_craft.FactionCraft;
 import com.patrigan.faction_craft.event.CalculateStrengthEvent;
 import com.patrigan.faction_craft.raid.Raid;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.entity.SpawnPlacements;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.ChunkPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.level.NaturalSpawner;
+import net.minecraft.world.level.block.Blocks;
 
 import static com.patrigan.faction_craft.config.FactionCraftConfig.*;
 import static com.patrigan.faction_craft.raid.target.RaidTarget.Type.PLAYER;
@@ -83,6 +82,11 @@ public class PlayerRaidTarget implements RaidTarget {
     @Override
     public int getStartingWave() {
         return 0;
+    }
+
+    @Override
+    public float getSpawnDistance() {
+        return 32.0F;
     }
 
     @Override
