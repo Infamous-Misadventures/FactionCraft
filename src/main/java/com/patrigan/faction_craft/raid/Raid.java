@@ -507,7 +507,6 @@ public class Raid {
 
         if (abstractraiderentity != null) {
             set.remove(abstractraiderentity);
-            set.add(mobEntity);
         }
 
         set.add(mobEntity);

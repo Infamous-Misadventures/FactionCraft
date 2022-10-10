@@ -117,6 +117,10 @@ public class FactionEntityType {
         return maximumSpawned;
     }
 
+    public boolean canSpawnInWave(int wave){
+        return wave >= minimumWave && wave <= maximumWave;
+    }
+
     public boolean canBeBannerHolder() {
         FactionRank currentRank = this.getRank();
         List<FactionRank> possibleCaptains = Arrays.asList(FactionRank.CAPTAIN, FactionRank.GENERAL, FactionRank.LEADER);
