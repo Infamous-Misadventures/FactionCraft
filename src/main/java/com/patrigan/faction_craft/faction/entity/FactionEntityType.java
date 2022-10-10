@@ -26,8 +26,10 @@ public class FactionEntityType {
                     FactionRank.CODEC.fieldOf("rank").forGetter(data -> data.rank),
                     FactionRank.CODEC.fieldOf("maximum_rank").forGetter(data -> data.maximumRank),
                     EntityBoostConfig.CODEC.optionalFieldOf("boosts", EntityBoostConfig.DEFAULT).forGetter(data -> data.entityBoostConfig),
-                    Codec.INT.fieldOf("minimum_wave").forGetter(data -> data.minimumWave),
-                    Codec.INT.optionalFieldOf("maximum_wave", 10000).forGetter(data -> data.maximumWave)
+                    Codec.INT.optionalFieldOf("minimum_wave", 0).forGetter(data -> data.minimumWave),
+                    Codec.INT.optionalFieldOf("maximum_wave", 10000).forGetter(data -> data.maximumWave),
+                    Codec.INT.optionalFieldOf("minimum_spawned", 0).forGetter(data -> data.minimumSpawned),
+                    Codec.INT.optionalFieldOf("maximum_spawned", 10000).forGetter(data -> data.maximumSpawned)
             ).apply(builder, FactionEntityType::new));
 
     private final ResourceLocation entityType;
@@ -39,8 +41,10 @@ public class FactionEntityType {
     private final EntityBoostConfig entityBoostConfig;
     private final int minimumWave;
     private final int maximumWave;
+    private final int minimumSpawned;
+    private final int maximumSpawned;
 
-    public FactionEntityType(ResourceLocation entityType, CompoundNBT tag, int weight, int strength, FactionRank rank, FactionRank maximumRank, EntityBoostConfig entityBoostConfig, int minimumWave, int maximumWave) {
+    public FactionEntityType(ResourceLocation entityType, CompoundNBT tag, int weight, int strength, FactionRank rank, FactionRank maximumRank, EntityBoostConfig entityBoostConfig, int minimumWave, int maximumWave, int minimumSpawned, int maximumSpawned) {
         this.entityType = entityType;
         this.tag = tag;
         this.weight = weight;
@@ -50,6 +54,8 @@ public class FactionEntityType {
         this.entityBoostConfig = entityBoostConfig;
         this.minimumWave = minimumWave;
         this.maximumWave = maximumWave;
+        this.minimumSpawned = minimumSpawned;
+        this.maximumSpawned = maximumSpawned;
     }
 
     public static FactionEntityType load(CompoundNBT compoundNbt) {
@@ -62,7 +68,9 @@ public class FactionEntityType {
                 FactionRank.byName(compoundNbt.getString("maximumRank"), null),
                 EntityBoostConfig.load(compoundNbt.getCompound("entityBoostConfig")),
                 compoundNbt.getInt("minimumWave"),
-                compoundNbt.getInt("maximumWave"));
+                compoundNbt.getInt("maximumWave"),
+                compoundNbt.getInt("minimumSpawned"),
+                compoundNbt.getInt("maximumSpawned"));
     }
 
     public ResourceLocation getEntityType() {
@@ -99,6 +107,14 @@ public class FactionEntityType {
 
     public int getMaximumWave() {
         return maximumWave;
+    }
+
+    public int getMinimumSpawned() {
+        return minimumSpawned;
+    }
+
+    public int getMaximumSpawned() {
+        return maximumSpawned;
     }
 
     public boolean canBeBannerHolder() {
@@ -184,6 +200,8 @@ public class FactionEntityType {
         compoundNbt.put("entityBoostConfig", entityBoostConfig.save(boostConfigNbt));
         compoundNbt.putInt("minimumWave", minimumWave);
         compoundNbt.putInt("maximumWave", maximumWave);
+        compoundNbt.putInt("minimumSpawned", minimumSpawned);
+        compoundNbt.putInt("maximumSpawned", maximumSpawned);
         return compoundNbt;
     }
 
