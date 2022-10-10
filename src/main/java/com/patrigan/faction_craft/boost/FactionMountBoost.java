@@ -76,7 +76,7 @@ public class FactionMountBoost extends Boost {
                 FactionEntityType randomEntry = GeneralUtils.getRandomEntry(weightMap, mob.getRandom());
                 Entity entity = randomEntry.createEntity(level, cap.getFaction(), livingEntity.blockPosition(), false, MobSpawnType.JOCKEY);
                 if(raiderCap != null && raiderCap.hasActiveRaid() && entity instanceof Mob mountMob){
-                    raiderCap.getRaid().addWaveMob(raiderCap.getWave(), mountMob, false);
+                    raiderCap.getRaid().addWaveMob(raiderCap.getWave(), mountMob, true);
                 }
                 mob.startRiding(entity);
                 return randomEntry.getStrength();
