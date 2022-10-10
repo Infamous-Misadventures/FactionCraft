@@ -18,7 +18,7 @@ public class FactionAllyHurtTargetGoal extends TargetGoal {
     private int revengeTimer;
     /** This filter is applied to the Entity search. Only matching entities will be targeted. */
     protected EntityPredicate targetConditions;
-    private int randomInterval;
+    private final int randomInterval;
 
     public FactionAllyHurtTargetGoal(Mob mobEntity, int randomInterval, boolean mustSee, boolean mustReach) {
         super(mobEntity, mustSee, mustReach);
@@ -64,13 +64,10 @@ public class FactionAllyHurtTargetGoal extends TargetGoal {
     }
 
     private boolean hasSameFaction(LivingEntity livingEntity) {
-        if(livingEntity instanceof Mob){
-            Mob targetMob = (Mob) livingEntity;
+        if(livingEntity instanceof Mob targetMob){
             FactionEntity targetCap = FactionEntityHelper.getFactionEntityCapability(targetMob);
             FactionEntity sourceCap = FactionEntityHelper.getFactionEntityCapability(this.mob);
-            if(sourceCap.getFaction() != null && targetCap.getFaction() != null && sourceCap.getFaction().equals(targetCap.getFaction())){
-                return true;
-            }
+            return sourceCap.getFaction() != null && targetCap.getFaction() != null && sourceCap.getFaction().equals(targetCap.getFaction());
         }
         return false;
     }

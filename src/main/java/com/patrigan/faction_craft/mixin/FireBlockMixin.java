@@ -34,17 +34,10 @@ public class FireBlockMixin {
 
     @Inject(method = "Lnet/minecraft/world/level/block/FireBlock;tryCatchFire(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;ILjava/util/Random;ILnet/minecraft/core/Direction;)V",
             remap = false,
-            at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/world/level/Level;getBlockState(Lnet/minecraft/core/BlockPos;)Lnet/minecraft/world/level/block/state/BlockState;", ordinal = 1, remap = true), locals = LocalCapture.CAPTURE_FAILSOFT)
-    public void factioncraft_tryCatchFire_beforeSet(Level pLevel, BlockPos pPos, int pChance, Random pRandom, int arg4, Direction face, CallbackInfo ci, int i, BlockState blockstate) {
-        blockStateToReplace = blockstate;
-    }
-
-    @Inject(method = "Lnet/minecraft/world/level/block/FireBlock;tryCatchFire(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;ILjava/util/Random;ILnet/minecraft/core/Direction;)V",
-            remap = false,
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/state/BlockState;onCaughtFire(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lnet/minecraft/core/Direction;Lnet/minecraft/world/entity/LivingEntity;)V", remap = false))
-    public void factioncraft_tryCatchFire_afterSet(Level world, BlockPos pPos, int pChance, Random pRandom, int pAge, Direction face, CallbackInfo ci){
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/state/BlockState;onCaughtFire(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lnet/minecraft/core/Direction;Lnet/minecraft/world/entity/LivingEntity;)V", remap = false), locals = LocalCapture.CAPTURE_FAILHARD)
+    public void factioncraft_tryCatchFire_afterSet(Level pLevel, BlockPos pPos, int pChance, Random pRandom, int pAge, Direction face, CallbackInfo ci, int i, BlockState blockstate){
         if(raid != null && !raid.isOver()){
-            setReconstructBlock(world, pPos, blockStateToReplace, raid);
+            setReconstructBlock(pLevel, pPos, blockstate, raid);
         }
     }
 
