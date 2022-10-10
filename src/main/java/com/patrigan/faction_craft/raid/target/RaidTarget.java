@@ -3,8 +3,8 @@ package com.patrigan.faction_craft.raid.target;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.patrigan.faction_craft.raid.Raid;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.common.IExtensibleEnum;
 
@@ -27,6 +27,8 @@ public interface RaidTarget {
     Type getRaidType();
 
     int getStartingWave();
+
+    float getSpawnDistance();
 
     enum Type implements IExtensibleEnum {
         VILLAGE("village"),

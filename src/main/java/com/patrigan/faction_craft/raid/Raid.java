@@ -41,7 +41,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
-import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.Vec3;
 
@@ -583,8 +582,8 @@ public class Raid {
 
         for(int i1 = 0; i1 < maxInnerAttempts; ++i1) {
             float f = this.level.random.nextFloat() * ((float)Math.PI * 2F);
-            int j = this.raidTarget.getTargetBlockPos().getX() + Mth.floor(Mth.cos(f) * 32.0F * (float)i) + this.level.random.nextInt(5);
-            int l = this.raidTarget.getTargetBlockPos().getZ() + Mth.floor(Mth.sin(f) * 32.0F * (float)i) + this.level.random.nextInt(5);
+            int j = this.raidTarget.getTargetBlockPos().getX() + Mth.floor(Mth.cos(f) * raidTarget.getSpawnDistance() * (float)i) + this.level.random.nextInt(5);
+            int l = this.raidTarget.getTargetBlockPos().getZ() + Mth.floor(Mth.sin(f) * raidTarget.getSpawnDistance() * (float)i) + this.level.random.nextInt(5);
             int k = this.level.getHeight(Heightmap.Types.WORLD_SURFACE, j, l);
             blockpos$mutable.set(j, k, l);
             if (isValidSpawnPos(blockpos$mutable) && raidTarget.isValidSpawnPos(outerAttempt, blockpos$mutable, this.level)) {

@@ -1,26 +1,24 @@
 package com.patrigan.faction_craft.raid.target;
 
 import com.patrigan.faction_craft.FactionCraft;
-import com.patrigan.faction_craft.capabilities.factionentity.FactionEntity;
 import com.patrigan.faction_craft.capabilities.factionentity.FactionEntityHelper;
 import com.patrigan.faction_craft.event.CalculateStrengthEvent;
 import com.patrigan.faction_craft.faction.Faction;
 import com.patrigan.faction_craft.raid.Raid;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.entity.SpawnPlacements;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.ChunkPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.level.NaturalSpawner;
+import net.minecraft.world.level.block.Blocks;
 
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.patrigan.faction_craft.config.FactionCraftConfig.*;
-import static com.patrigan.faction_craft.raid.target.RaidTarget.Type.*;
+import static com.patrigan.faction_craft.raid.target.RaidTarget.Type.BATTLE;
 
 public class FactionBattleRaidTarget implements RaidTarget {
 
@@ -99,6 +97,11 @@ public class FactionBattleRaidTarget implements RaidTarget {
     @Override
     public int getStartingWave() {
         return BATTLE_STARTING_WAVE.get();
+    }
+
+    @Override
+    public float getSpawnDistance() {
+        return 8.0F;
     }
 
     @Override
