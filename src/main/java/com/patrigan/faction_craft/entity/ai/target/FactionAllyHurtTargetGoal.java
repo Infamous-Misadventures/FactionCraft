@@ -1,5 +1,6 @@
 package com.patrigan.faction_craft.entity.ai.target;
 
+import com.patrigan.faction_craft.capabilities.factionentity.FactionEntity;
 import com.patrigan.faction_craft.capabilities.factionentity.FactionEntityHelper;
 import com.patrigan.faction_craft.capabilities.factionentity.IFactionEntity;
 import net.minecraft.entity.EntityPredicate;
@@ -17,21 +18,31 @@ public class FactionAllyHurtTargetGoal extends TargetGoal {
     private int revengeTimer;
     /** This filter is applied to the Entity search. Only matching entities will be targeted. */
     protected EntityPredicate targetConditions;
+    private final int randomInterval;
 
-    public FactionAllyHurtTargetGoal(MobEntity mobEntity, boolean mustSee, boolean mustReach) {
+    public FactionAllyHurtTargetGoal(MobEntity mobEntity, int randomInterval, boolean mustSee, boolean mustReach) {
         super(mobEntity, mustSee, mustReach);
+        this.randomInterval = randomInterval;
         this.setFlags(EnumSet.of(Flag.TARGET));
     }
 
     public boolean canUse() {
-        List<MobEntity> allies = findHurtAllies();
-        if(allies.isEmpty()){
+        if (this.mob.getRandom().nextInt(this.randomInterval) != 0) {
             return false;
+        } else {
+            IFactionEntity sourceCap = FactionEntityHelper.getFactionEntityCapability(this.mob);
+            if (sourceCap.getFaction() == null) {
+                return false;
+            }
+            List<MobEntity> allies = findHurtAllies();
+            if (allies.isEmpty()) {
+                return false;
+            }
+            MobEntity hurtAlly = allies.get(this.mob.getRandom().nextInt(allies.size()));
+            this.attacker = hurtAlly.getLastHurtByMob();
+            this.revengeTimer = hurtAlly.getLastHurtByMobTimestamp();
+            return revengeTimer != this.timestamp && this.canAttack(this.attacker, EntityPredicate.DEFAULT);
         }
-        MobEntity hurtAlly = allies.get(this.mob.getRandom().nextInt(allies.size()));
-        this.attacker = hurtAlly.getLastHurtByMob();
-        this.revengeTimer = hurtAlly.getLastHurtByMobTimestamp();
-        return revengeTimer != this.timestamp && this.canAttack(this.attacker, EntityPredicate.DEFAULT);
     }
 
     protected List<MobEntity> findHurtAllies() {
@@ -40,10 +51,9 @@ public class FactionAllyHurtTargetGoal extends TargetGoal {
     }
 
     private boolean isPotentialHurtAlly(MobEntity entity) {
-        if(!hasSameFaction(entity)) return false;
         LivingEntity potentialAttacker = entity.getLastHurtByMob();
         int potentialRevengeTimer = entity.getLastHurtByMobTimestamp();
-        return potentialAttacker != null && potentialAttacker != this.mob && potentialRevengeTimer != this.timestamp && this.canAttack(potentialAttacker, EntityPredicate.DEFAULT);
+        return potentialAttacker != null && potentialAttacker != this.mob && potentialRevengeTimer != this.timestamp && this.canAttack(potentialAttacker, EntityPredicate.DEFAULT) && hasSameFaction(entity);
     }
 
     public void start() {
@@ -58,12 +68,7 @@ public class FactionAllyHurtTargetGoal extends TargetGoal {
             MobEntity targetMob = (MobEntity) livingEntity;
             IFactionEntity targetCap = FactionEntityHelper.getFactionEntityCapability(targetMob);
             IFactionEntity sourceCap = FactionEntityHelper.getFactionEntityCapability(this.mob);
-            if(sourceCap == null || targetCap == null){
-                return false;
-            }
-            if(sourceCap.getFaction() != null && targetCap.getFaction() != null && sourceCap.getFaction().equals(targetCap.getFaction())){
-                return true;
-            }
+            return sourceCap.getFaction() != null && targetCap.getFaction() != null && sourceCap.getFaction().equals(targetCap.getFaction());
         }
         return false;
     }
