@@ -52,15 +52,7 @@
       "strength": 9,
       "rank": "captain",
       "maximum_rank": "leader",
-      "minimum_wave": 4,
-      "boosts": {
-        "rarity_overrides": [
-          {
-            "boost": "faction_craft:mount/faction_ravager",
-            "rarity": "common"
-          }
-        ]
-      }
+      "minimum_wave": 4
     },
     {
       "entity_type": "minecraft:ravager",
