@@ -71,6 +71,9 @@ public class Boosts {
                 .filter(boost -> boost.canApply(livingEntity))
                 .map(boost -> new Pair<>(boost, getRarity(boost, rarityOverrides).getWeight()))
                 .collect(Collectors.toList());
+        if(filtered.size() == 0){
+            return null;
+        }
         return GeneralUtils.getRandomEntry(filtered, random);
     }
 
