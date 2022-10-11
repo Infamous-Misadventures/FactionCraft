@@ -136,7 +136,7 @@ dependencies {
     minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
-    runtimeOnly fg.deobf("curse.maven:spark-361579:3824951")
+    runtimeOnly fg.deobf("curse.maven:spark-361579:4002084")
 }
 
 jar {
