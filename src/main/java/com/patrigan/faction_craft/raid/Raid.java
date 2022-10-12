@@ -136,6 +136,10 @@ public class Raid {
         }
     }
 
+    public ServerLevel getLevel() {
+        return level;
+    }
+
     public int getId() {
         return id;
     }

@@ -17,6 +17,8 @@ import org.spongepowered.asm.mixin.injection.Surrogate;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 import static com.patrigan.faction_craft.block.ReconstructBlock.setReconstructBlock;
@@ -24,13 +26,15 @@ import static com.patrigan.faction_craft.block.ReconstructBlock.setReconstructBl
 @Mixin(FireBlock.class)
 public class FireBlockMixin {
     private static Raid raid = null;
-    private static BlockState blockStateToReplace;
+//    private static BlockState blockStateToReplace;
+    private Map<BlockPos, BlockState> blockStateToReplace = new HashMap<>();
 
     @Inject(method = "Lnet/minecraft/world/level/block/FireBlock;tick(Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/core/BlockPos;Ljava/util/Random;)V",
             at = @At("HEAD"))
     public void factioncraft_tick(BlockState j2, ServerLevel serverWorld, BlockPos blockPos, Random l1, CallbackInfo ci){
         RaidManager raidManagerCapability = RaidManagerHelper.getRaidManagerCapability(serverWorld);
         raid = raidManagerCapability.getRaidAt(blockPos);
+        blockStateToReplace = new HashMap<>();
     }
 
     @ModifyVariable(method = "Lnet/minecraft/world/level/block/FireBlock;tryCatchFire(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;ILjava/util/Random;ILnet/minecraft/core/Direction;)V",
@@ -45,21 +49,21 @@ public class FireBlockMixin {
     }
 
     @ModifyVariable(method = "Lnet/minecraft/world/level/block/FireBlock;tick(Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/core/BlockPos;Ljava/util/Random;)V",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;I)Z", ordinal = 1),
+            at = @At(value = "INVOKE", target = "Ljava/lang/Math;min(II)I", ordinal = 1),
             ordinal = 0)
     public BlockPos.MutableBlockPos factioncraft_tick_beforeSet(BlockPos.MutableBlockPos blockpos$mutable, BlockState pState, ServerLevel pLevel, BlockPos pPos, Random pRand) {
-        blockStateToReplace = pLevel.getBlockState(blockpos$mutable);
+        blockStateToReplace.put(blockpos$mutable.immutable(), pLevel.getBlockState(blockpos$mutable));
         return blockpos$mutable;
     }
 
-    @ModifyVariable(method = "Lnet/minecraft/world/level/block/FireBlock;tick(Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/core/BlockPos;Ljava/util/Random;)V",
-            at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/server/level/ServerLevel;setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;I)Z", ordinal = 1),
-            ordinal = 0)
-    public BlockPos.MutableBlockPos factioncraft_tick_afterSet(BlockPos.MutableBlockPos blockpos$mutable, BlockState pState, ServerLevel pLevel, BlockPos pPos, Random pRand) {
+    @Inject(method = "Lnet/minecraft/world/level/block/FireBlock;tick(Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/core/BlockPos;Ljava/util/Random;)V",
+            at = @At(value = "TAIL"))
+    public void factioncraft_tick_afterSet(BlockState p_53449_, ServerLevel p_53450_, BlockPos p_53451_, Random p_53452_, CallbackInfo ci) {
         if(raid != null && !raid.isOver()){
-            setReconstructBlock(pLevel, blockpos$mutable, blockStateToReplace, raid);
+            for(Map.Entry<BlockPos, BlockState> entry : blockStateToReplace.entrySet()){
+                setReconstructBlock(raid.getLevel(), entry.getKey(), entry.getValue(), raid);
+            }
         }
-        return blockpos$mutable;
     }
 
 }
