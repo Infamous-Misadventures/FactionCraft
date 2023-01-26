@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="1280" height="223" src="https://media.discordapp.net/attachments/847353309383753738/929836726749364244/factioncraft.png">
+  <img width="1280" height="176" src="https://cdn.discordapp.com/attachments/841013653289566218/1068262363897278577/factioncraft_1_2_1280x176.png">
 </p>
 
 FactionCraft is a mod which brings more life to Minecraft, by adding factions. These factions are very customizable through datapacks. This is the Github repository for the mod's source code.
