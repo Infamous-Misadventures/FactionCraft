@@ -8,7 +8,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.eventbus.api.Event;
 
 public class CalculateStrengthEvent extends Event {
-
     RaidTarget.Type type;
     BlockPos blockPos;
     ServerLevel level;
