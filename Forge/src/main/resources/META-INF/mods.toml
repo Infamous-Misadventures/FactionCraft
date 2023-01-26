@@ -1,0 +1,112 @@
+modLoader="javafml"
+loaderVersion="[43,)"
+license="MIT License"
+issueTrackerURL="https://github.com/Patrigan/Faction-Craft/issues"
+
+[[mods]]
+modId="faction_craft"
+version="${file.jarVersion}"
+displayName="Faction Craft"
+displayURL="https://www.curseforge.com/minecraft/mc-mods/faction-craft"
+logoFile="multiloader.png"
+credits="Patrigan"
+authors="Patrigan"
+description='''Library mod for the Dungeons Suite. Brings a lot of tools for modmakers to spice up their combat.'''
+
+[[dependencies.faction_craft]]
+    modId="forge"
+    mandatory=true
+    versionRange="[43,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.faction_craft]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.19.2,1.20)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.faction_craft]]
+    modId="jei"
+    mandatory=false
+    versionRange="[11.2.0.247,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.faction_craft]]
+    modId="justenoughresources"
+    mandatory=false
+    versionRange="[1.2.1.189,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.faction_craft]]
+    modId="jeed"
+    mandatory=false
+    versionRange="[1.18,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.faction_craft]]
+    modId="roughlyenoughitems"
+    mandatory=false
+    versionRange="[9.1.580,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.faction_craft]]
+    modId="roughlyenoughresources"
+    mandatory=false
+    versionRange="[2.5.2,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.faction_craft]]
+    modId="architectury"
+    mandatory=false
+    versionRange="[6.4.62,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.faction_craft]]
+    modId="clothconfig"
+    mandatory=false
+    versionRange="[8.2.88,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.faction_craft]]
+    modId="spark"
+    mandatory=false
+    versionRange="[1.9.40,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.faction_craft]]
+    modId="theoneprobe"
+    mandatory=false
+    versionRange="[1.19-6.2.2,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.faction_craft]]
+    modId="configured"
+    mandatory=false
+    versionRange="[2.0.1,)"
+    ordering="NONE"
+    side="CLIENT"
+
+[[dependencies.faction_craft]]
+    modId="catalogue"
+    mandatory=false
+    versionRange="[1.7.0,)"
+    ordering="NONE"
+    side="CLIENT"
+
+[[dependencies.faction_craft]]
+    modId="appleskin"
+    mandatory=false
+    versionRange="[2.4.2,)"
+    ordering="NONE"
+    side="CLIENT"

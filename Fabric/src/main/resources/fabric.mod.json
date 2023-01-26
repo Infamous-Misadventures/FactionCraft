@@ -1,0 +1,39 @@
+{
+    "schemaVersion": 1,
+    "id": "faction_craft",
+    "version": "${version}",
+  
+    "name": "Faction Craft",
+    "description": "Library mod for the Dungeons Suite. Brings a lot of tools for modmakers to spice up their combat.",
+    "authors": [
+      "Patrigan"
+    ],
+    "contact": {
+      "homepage": "https://www.curseforge.com/minecraft/mc-mods/factioncraft",
+      "sources": "https://github.com/Infamous-Misadventures/FactionCraft"
+    },
+  
+    "license": "MIT License",
+    "icon": "assets/faction_craft/icon.png",
+  
+    "environment": "*",
+    "entrypoints": {
+      "main": [
+        "com.patrigan.faction_craft.FactionCraft"
+      ]
+    },
+    "mixins": [
+      "faction_craft.mixins.json"
+    ],
+  
+    "depends": {
+      "fabricloader": ">=0.14",
+      "fabric": "*",
+      "minecraft": "1.19.x",
+      "java": ">=17"
+    },
+    "suggests": {
+      "another-mod": "*"
+    }
+  }
+  
