@@ -5,6 +5,7 @@ import com.patrigan.faction_craft.blockentity.ModBlockEntityTypes;
 import com.patrigan.faction_craft.boost.Boost;
 import com.patrigan.faction_craft.boost.BoostProviders;
 import com.patrigan.faction_craft.capabilities.ModCapabilities;
+import com.patrigan.faction_craft.compat.GuardVillagerCompat;
 import com.patrigan.faction_craft.config.FactionCraftConfig;
 import com.patrigan.faction_craft.entity.ai.brain.ModActivities;
 import com.patrigan.faction_craft.network.NetworkHandler;
@@ -53,7 +54,13 @@ public class FactionCraft
         ModBlocks.BLOCKS.register(modEventBus);
         ModBlockEntityTypes.BLOCK_ENTITY_TYPES.register(modEventBus);
 
+        registerCompatEvents();
+
         ModCapabilities.setupCapabilities();
+    }
+
+    private void registerCompatEvents() {
+        GuardVillagerCompat.registerEventHandlers();
     }
 
     private void setup(final FMLCommonSetupEvent event){

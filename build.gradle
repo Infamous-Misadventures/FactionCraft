@@ -135,6 +135,7 @@ repositories {
 dependencies {
     minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+    implementation fg.deobf("curse.maven:guardvillagers-360203:3823106")
 
     runtimeOnly fg.deobf("curse.maven:spark-361579:3824951")
 }
