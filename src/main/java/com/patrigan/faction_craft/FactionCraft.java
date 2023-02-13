@@ -4,6 +4,7 @@ import com.patrigan.faction_craft.block.ModBlocks;
 import com.patrigan.faction_craft.blockentity.ModBlockEntityTypes;
 import com.patrigan.faction_craft.capabilities.ModCapabilities;
 import com.patrigan.faction_craft.commands.arguments.ModArgumentTypes;
+import com.patrigan.faction_craft.compat.GuardVillagerCompat;
 import com.patrigan.faction_craft.config.FactionCraftConfig;
 import com.patrigan.faction_craft.effect.ModMobEffects;
 import com.patrigan.faction_craft.entity.ai.brain.ModActivities;
@@ -44,7 +45,13 @@ public class FactionCraft
         ModArgumentTypes.COMMAND_ARGUMENT_TYPES.register(modEventBus);
         ModBlockEntityTypes.BLOCK_ENTITY_TYPES.register(modEventBus);
 
+        registerCompatEvents();
+
         ModCapabilities.setupCapabilities();
+    }
+
+    private void registerCompatEvents() {
+        GuardVillagerCompat.registerEventHandlers();
     }
 
     private void setup(final FMLCommonSetupEvent event){

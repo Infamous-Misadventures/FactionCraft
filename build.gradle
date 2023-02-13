@@ -159,6 +159,9 @@ dependencies {
 
 	implementation fg.deobf("curse.maven:configured-457570:${configured_version}")
 	implementation fg.deobf("curse.maven:catalogue-459701:${catalogue_version}")
+
+    //Compat
+    implementation fg.deobf("curse.maven:guardvillagers-360203:3970122")
 }
 
 jar {

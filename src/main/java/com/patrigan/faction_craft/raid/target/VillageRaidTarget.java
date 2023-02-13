@@ -43,7 +43,6 @@ public class VillageRaidTarget implements RaidTarget {
                 ironGolemEntity -> true).size() * VILLAGE_RAID_IRON_GOLEM_WEIGHT.get();
         CalculateStrengthEvent event = new CalculateStrengthEvent(VILLAGE, blockPos, level, strength, strength);
         net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event);
-        FactionCraft.LOGGER.info("Strength = " + strength);
         return (int) Math.floor(event.getStrength()*VILLAGE_RAID_TARGET_STRENGTH_MULTIPLIER.get());
     }
 

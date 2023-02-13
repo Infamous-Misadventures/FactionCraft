@@ -30,6 +30,7 @@ public class FactionCraftConfig {
     public static ForgeConfigSpec.ConfigValue<Double> VILLAGE_RAID_ADDITIONAL_WAVE_CHANCE;
     public static ForgeConfigSpec.ConfigValue<Integer> VILLAGE_RAID_VILLAGER_WEIGHT;
     public static ForgeConfigSpec.ConfigValue<Integer> VILLAGE_RAID_IRON_GOLEM_WEIGHT;
+    public static ForgeConfigSpec.ConfigValue<Integer> VILLAGE_RAID_GUARD_VILLAGER_WEIGHT;
 
     public static ForgeConfigSpec.ConfigValue<Integer> PLAYER_RAID_TARGET_BASE_STRENGTH;
     public static ForgeConfigSpec.ConfigValue<Double> PLAYER_RAID_TARGET_STRENGTH_MULTIPLIER;
@@ -143,6 +144,10 @@ public class FactionCraftConfig {
                     .comment("The amount that 1 Iron Golem adds to the strength of a village. \n" +
                             "Default 15")
                     .defineInRange("villageRaidIronGolemWeight", 15, 0, 9999);
+            VILLAGE_RAID_GUARD_VILLAGER_WEIGHT = builder
+                    .comment("The amount that 1 Guard Villager adds to the strength of a village. \n" +
+                            "Default 7")
+                    .defineInRange("villageRaidGuardVillagerWeight", 7, 0, 9999);
             builder.pop();
 
             builder.comment("Player Raid Target Calculations").push("player_raid_target_calculations");
