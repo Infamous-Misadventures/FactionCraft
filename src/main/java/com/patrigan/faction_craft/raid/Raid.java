@@ -9,6 +9,7 @@ import com.patrigan.faction_craft.capabilities.raider.Raider;
 import com.patrigan.faction_craft.capabilities.raider.RaiderHelper;
 import com.patrigan.faction_craft.capabilities.raidmanager.RaidManager;
 import com.patrigan.faction_craft.event.FactionRaidEvent;
+import com.patrigan.faction_craft.faction.EntityWeightMapProperties;
 import com.patrigan.faction_craft.faction.Faction;
 import com.patrigan.faction_craft.faction.FactionBoostHelper;
 import com.patrigan.faction_craft.faction.Factions;
@@ -132,6 +133,10 @@ public class Raid {
                 this.heroesOfTheVillage.add(NbtUtils.loadUUID(listnbt.get(i)));
             }
         }
+    }
+
+    public ServerLevel getLevel() {
+        return level;
     }
 
     public int getId() {
@@ -438,7 +443,8 @@ public class Raid {
     private Map<FactionEntityType, Integer> determineFactionEntityTypes(int targetStrength, int waveNumber, Faction faction) {
         Map<FactionEntityType, Integer> waveFactionEntities = new HashMap<>();
         int selectedStrength = 0;
-        List<Pair<FactionEntityType, Integer>> weightMap = faction.getWeightMapForWave(waveNumber);
+        EntityWeightMapProperties entityWeightMapProperties = new EntityWeightMapProperties().setWave(waveNumber);
+        List<Pair<FactionEntityType, Integer>> weightMap = faction.getWeightMap(entityWeightMapProperties);
         for(Pair<FactionEntityType, Integer> pair : weightMap) {
             if(selectedStrength < targetStrength) {
                 FactionEntityType factionEntityType = pair.getFirst();

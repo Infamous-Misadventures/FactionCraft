@@ -87,11 +87,17 @@ public class Faction {
     public List<Pair<FactionEntityType, Integer>> getWeightMap(){
         return entityTypes.stream().map(factionEntityType -> new Pair<>(factionEntityType, factionEntityType.getWeight())).toList();
     }
-    public List<Pair<FactionEntityType, Integer>> getWeightMapForWave(int wave){
-        return entityTypes.stream().filter(factionEntityType -> factionEntityType.canSpawnInWave(wave) && !factionEntityType.hasRank(MOUNT)).map(factionEntityType -> new Pair<>(factionEntityType, factionEntityType.getWeight())).collect(Collectors.toList());
-    }
+
     public List<Pair<FactionEntityType, Integer>> getWeightMapForRank(FactionEntityType.FactionRank rank){
         return entityTypes.stream().filter(factionEntityType -> factionEntityType.hasRank(rank)).map(factionEntityType -> new Pair<>(factionEntityType, factionEntityType.getWeight())).toList();
+    }
+
+    public List<Pair<FactionEntityType, Integer>> getWeightMap(EntityWeightMapProperties properties){
+        return entityTypes.stream().filter(
+                factionEntityType -> factionEntityType.canSpawnInWave(properties.getWave())
+                && factionEntityType.hasRanks(properties.allowedRanks)
+                && factionEntityType.canSpawnForOmen(properties.getOmen()))
+                .map(factionEntityType -> new Pair<>(factionEntityType, factionEntityType.getWeight())).toList();
     }
 
     public ItemStack getBannerInstance() {

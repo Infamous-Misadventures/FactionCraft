@@ -4,6 +4,7 @@ import com.mojang.datafixers.util.Pair;
 import com.patrigan.faction_craft.capabilities.patroller.Patroller;
 import com.patrigan.faction_craft.capabilities.patroller.PatrollerHelper;
 import com.patrigan.faction_craft.config.FactionCraftConfig;
+import com.patrigan.faction_craft.faction.EntityWeightMapProperties;
 import com.patrigan.faction_craft.faction.Faction;
 import com.patrigan.faction_craft.faction.Factions;
 import com.patrigan.faction_craft.faction.entity.FactionEntityType;
@@ -108,9 +109,14 @@ public class PatrolSpawner implements CustomSpawner {
 
    private static boolean spawnPatrolMember(ServerLevel pLevel, BlockPos pPos, RandomSource pRandom, boolean pLeader, Faction faction) {
       BlockState blockstate = pLevel.getBlockState(pPos);
-      List<Pair<FactionEntityType, Integer>> weightMap = faction.getWeightMap();
-      List<Pair<FactionEntityType, Integer>> filtered = weightMap.stream().filter(pair -> (pLeader && pair.getFirst().canBeBannerHolder()) || (!pLeader && pair.getFirst().getRank().equals(FactionEntityType.FactionRank.SOLDIER))).collect(Collectors.toList());
-      FactionEntityType factionEntityType = GeneralUtils.getRandomEntry(filtered, pRandom);
+      EntityWeightMapProperties entityWeightMapProperties = new EntityWeightMapProperties();
+      if(pLeader) {
+         entityWeightMapProperties.addAllowedRank(FactionEntityType.FactionRank.CAPTAIN);
+      } else {
+         entityWeightMapProperties.addAllowedRank(FactionEntityType.FactionRank.SOLDIER);
+      }
+      List<Pair<FactionEntityType, Integer>> weightMap = faction.getWeightMap(entityWeightMapProperties);
+      FactionEntityType factionEntityType = GeneralUtils.getRandomEntry(weightMap, pRandom);
       EntityType<? extends Mob> entityType = (EntityType<? extends Mob>) ENTITY_TYPES.getValue(factionEntityType.getEntityType());
       if (!NaturalSpawner.isValidEmptySpawnBlock(pLevel, pPos, blockstate, blockstate.getFluidState(), entityType)) {
          return false;

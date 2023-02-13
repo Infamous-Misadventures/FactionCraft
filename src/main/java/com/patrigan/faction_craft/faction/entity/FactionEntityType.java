@@ -14,6 +14,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -33,7 +34,9 @@ public class FactionEntityType {
                     Codec.INT.fieldOf("minimum_wave").forGetter(data -> data.minimumWave),
                     Codec.INT.optionalFieldOf("maximum_wave", 10000).forGetter(data -> data.maximumWave),
                     Codec.INT.optionalFieldOf("minimum_spawned", 0).forGetter(data -> data.minimumSpawned),
-                    Codec.INT.optionalFieldOf("maximum_spawned", 10000).forGetter(data -> data.maximumSpawned)
+                    Codec.INT.optionalFieldOf("maximum_spawned", 10000).forGetter(data -> data.maximumSpawned),
+                    Codec.INT.optionalFieldOf("minimum_omen", 0).forGetter(data -> data.minimumOmen),
+                    Codec.INT.optionalFieldOf("maximum_omen", 10000).forGetter(data -> data.maximumOmen)
             ).apply(builder, FactionEntityType::new));
 
     private final ResourceLocation entityType;
@@ -47,8 +50,10 @@ public class FactionEntityType {
     private final int maximumWave;
     private final int minimumSpawned;
     private final int maximumSpawned;
+    private final int minimumOmen;
+    private final int maximumOmen;
 
-    public FactionEntityType(ResourceLocation entityType, CompoundTag tag, int weight, int strength, FactionRank rank, FactionRank maximumRank, EntityBoostConfig entityBoostConfig, int minimumWave, int maximumWave, int minimumSpawned, int maximumSpawned) {
+    public FactionEntityType(ResourceLocation entityType, CompoundTag tag, int weight, int strength, FactionRank rank, FactionRank maximumRank, EntityBoostConfig entityBoostConfig, int minimumWave, int maximumWave, int minimumSpawned, int maximumSpawned, int minimumOmen, int maximumOmen) {
         this.entityType = entityType;
         this.tag = tag;
         this.weight = weight;
@@ -60,6 +65,8 @@ public class FactionEntityType {
         this.maximumWave = maximumWave;
         this.minimumSpawned = minimumSpawned;
         this.maximumSpawned = maximumSpawned;
+        this.minimumOmen = minimumOmen;
+        this.maximumOmen = maximumOmen;
     }
 
     public static FactionEntityType load(CompoundTag compoundNbt) {
@@ -74,7 +81,9 @@ public class FactionEntityType {
                 compoundNbt.getInt("minimumWave"),
                 compoundNbt.getInt("maximumWave"),
                 compoundNbt.getInt("minimumSpawned"),
-                compoundNbt.getInt("maximumSpawned"));
+                compoundNbt.getInt("maximumSpawned"),
+                compoundNbt.getInt("minimumOmen"),
+                compoundNbt.getInt("maximumOmen"));
     }
 
     public ResourceLocation getEntityType() {
@@ -121,8 +130,33 @@ public class FactionEntityType {
         return maximumSpawned;
     }
 
+    public int getMinimumOmen() {
+        return minimumSpawned;
+    }
+
+    public int getMaximumOmen() {
+        return maximumSpawned;
+    }
+
     public boolean canSpawnInWave(int wave){
-        return wave >= minimumWave && wave <= maximumWave;
+        return wave >= getMinimumWave() && wave <= getMaximumWave();
+    }
+
+    public boolean canSpawnForOmen(int omen){
+        return omen >= getMinimumOmen() && omen <= getMaximumOmen();
+    }
+
+    public List<FactionRank> getRanks() {
+        List<FactionRank> ranks = new ArrayList<>();
+        FactionRank currentRank = rank;
+        while (currentRank != null) {
+            ranks.add(currentRank);
+            if (currentRank.equals(getMaximumRank())) {
+                break;
+            }
+            currentRank = currentRank.promote();
+        }
+        return ranks;
     }
 
     public boolean canBeBannerHolder() {
@@ -152,6 +186,10 @@ public class FactionEntityType {
         return false;
     }
 
+    public boolean hasRanks(List<FactionRank> requiredRanks) {
+        List<FactionRank> possibleRanks = getRanks();
+        return requiredRanks.stream().anyMatch(possibleRanks::contains);
+    }
 
     //See and use SummonCommand approach for tag and add to the level
     public Entity createEntity(ServerLevel level, Faction faction, BlockPos spawnBlockPos, boolean bannerHolder, MobSpawnType spawnReason) {
@@ -210,6 +248,8 @@ public class FactionEntityType {
         compoundNbt.putInt("maximumWave", maximumWave);
         compoundNbt.putInt("minimumSpawned", minimumSpawned);
         compoundNbt.putInt("maximumSpawned", maximumSpawned);
+        compoundNbt.putInt("minimumOmen", minimumOmen);
+        compoundNbt.putInt("maximumOmen", maximumOmen);
         return compoundNbt;
     }
 
