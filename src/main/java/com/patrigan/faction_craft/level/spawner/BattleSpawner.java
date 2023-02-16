@@ -4,7 +4,7 @@ import com.patrigan.faction_craft.capabilities.raidmanager.RaidManager;
 import com.patrigan.faction_craft.capabilities.raidmanager.RaidManagerHelper;
 import com.patrigan.faction_craft.config.FactionCraftConfig;
 import com.patrigan.faction_craft.faction.Faction;
-import com.patrigan.faction_craft.faction.Factions;
+import com.patrigan.faction_craft.registry.Factions;
 import com.patrigan.faction_craft.raid.target.FactionBattleRaidTarget;
 import com.patrigan.faction_craft.util.GeneralUtils;
 import net.minecraft.core.Holder;
@@ -18,7 +18,6 @@ import net.minecraft.world.level.CustomSpawner;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 import java.util.stream.Collectors;
 
 public class BattleSpawner implements CustomSpawner {

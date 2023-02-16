@@ -1,9 +1,13 @@
-package com.patrigan.faction_craft.faction;
+package com.patrigan.faction_craft.registry;
 
 import com.mojang.datafixers.util.Pair;
 import com.patrigan.faction_craft.FactionCraft;
 import com.patrigan.faction_craft.boost.Boost;
 import com.patrigan.faction_craft.data.util.MergeableCodecDataManager;
+import com.patrigan.faction_craft.faction.Faction;
+import com.patrigan.faction_craft.faction.FactionBoostConfig;
+import com.patrigan.faction_craft.faction.FactionRaidConfig;
+import com.patrigan.faction_craft.faction.FactionRelations;
 import com.patrigan.faction_craft.faction.entity.FactionEntityType;
 import com.patrigan.faction_craft.util.GeneralUtils;
 import net.minecraft.advancements.Advancement;
@@ -19,14 +23,15 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.patrigan.faction_craft.FactionCraft.LOGGER;
 import static com.patrigan.faction_craft.config.FactionCraftConfig.DISABLED_FACTIONS;
+import static com.patrigan.faction_craft.registry.FactionEntityTypes.FACTION_ENTITY_TYPE_DATA;
 
-@Mod.EventBusSubscriber(modid = FactionCraft.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class Factions {
 
-    private static final MergeableCodecDataManager<Faction, Faction> FACTION_DATA = new MergeableCodecDataManager<>("faction", Faction.CODEC, Factions::factionMerger);
+    public static final MergeableCodecDataManager<Faction, Faction> FACTION_DATA = new MergeableCodecDataManager<>("faction", Faction.CODEC, Factions::factionMerger);
 
-    public static Faction factionMerger(List<Faction> raws){
+    public static Faction factionMerger(List<Faction> raws, ResourceLocation id){
         ResourceLocation name = null;
         CompoundTag banner = null;
         FactionRaidConfig factionRaidConfig = null;
@@ -74,6 +79,9 @@ public class Factions {
             }
             entities.addAll(raw.getEntityTypes());
         }
+        if(!entities.isEmpty()){
+            LOGGER.info("Entity types within the faction file is deprecated. They should now be in separate files in the faction/entity_types folder. For faction: " + id);
+        }
         return new Faction(name,false, banner, factionRaidConfig, boostConfig, factionRelations, new ArrayList<>(entities), activationAdvancement);
     }
 
@@ -108,16 +116,14 @@ public class Factions {
         return FACTION_DATA.getData().get(new ResourceLocation("illager"));
     }
 
-    @SubscribeEvent
-    public static void onAddReloadListeners(AddReloadListenerEvent event)
-    {
-        event.addListener(FACTION_DATA);
-    }
-
     public static Faction getRandomFaction(ServerLevel level, RandomSource random) {
         return GeneralUtils.getRandomItem(new ArrayList<>(getActiveFactions(level)), random);
     }
+
     public static Faction getRandomFactionWithEnemies(ServerLevel level, RandomSource random) {
         return GeneralUtils.getRandomItem(getActiveFactions(level).stream().filter(faction -> !faction.getRelations().getEnemies().isEmpty()).collect(Collectors.toList()), random);
+    }
+    public static ResourceLocation getKey(Faction faction){
+        return FACTION_DATA.getData().entrySet().stream().filter(entry -> entry.getValue().equals(faction)).map(Map.Entry::getKey).findFirst().orElse(null);
     }
 }

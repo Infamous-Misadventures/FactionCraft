@@ -43,7 +43,7 @@ public class GuardVillagerCompat {
 
     public static void onCalculateStrengthEvent(CalculateStrengthEvent event) {
         if(!isLoaded()) return;
-        int strengthAdjustment = event.getLevel().getEntitiesOfClass(GUARD.get().getBaseClass(),
+        int strengthAdjustment = event.getLevel().getEntities(GUARD.get(),
                 new AABB(event.getBlockPos()).inflate(100),
                 entity -> true).size() * VILLAGE_RAID_GUARD_VILLAGER_WEIGHT.get();
         event.setStrength(event.getStrength() + strengthAdjustment);

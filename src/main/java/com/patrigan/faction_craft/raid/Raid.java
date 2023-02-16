@@ -12,7 +12,7 @@ import com.patrigan.faction_craft.event.FactionRaidEvent;
 import com.patrigan.faction_craft.faction.EntityWeightMapProperties;
 import com.patrigan.faction_craft.faction.Faction;
 import com.patrigan.faction_craft.faction.FactionBoostHelper;
-import com.patrigan.faction_craft.faction.Factions;
+import com.patrigan.faction_craft.registry.Factions;
 import com.patrigan.faction_craft.faction.entity.FactionEntityType;
 import com.patrigan.faction_craft.raid.target.RaidTarget;
 import com.patrigan.faction_craft.raid.target.RaidTargetHelper;
@@ -464,7 +464,7 @@ public class Raid {
             waveFactionEntities.merge(randomEntry, 1, Integer::sum);
             selectedStrength += randomEntry.getStrength();
             if(waveFactionEntities.get(randomEntry) >= randomEntry.getMaximumSpawned()) {
-                weightMap.removeIf(pair -> pair.getFirst().equals(randomEntry));
+                weightMap = weightMap.stream().filter(pair -> !pair.getFirst().equals(randomEntry)).toList();
             }
         }
         return waveFactionEntities;

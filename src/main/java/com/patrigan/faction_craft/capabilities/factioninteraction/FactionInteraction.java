@@ -2,7 +2,7 @@ package com.patrigan.faction_craft.capabilities.factioninteraction;
 
 
 import com.patrigan.faction_craft.faction.Faction;
-import com.patrigan.faction_craft.faction.Factions;
+import com.patrigan.faction_craft.registry.Factions;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.resources.ResourceLocation;

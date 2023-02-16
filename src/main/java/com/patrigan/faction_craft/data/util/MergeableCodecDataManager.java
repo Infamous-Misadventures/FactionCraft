@@ -47,6 +47,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.Reader;
 import java.util.*;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -72,7 +73,7 @@ public class MergeableCodecDataManager<RAW, FINE> extends SimplePreparableReload
 
     private final String folderName;
     private final Codec<RAW> codec;
-    private final Function<List<RAW>, FINE> merger;
+    private final BiFunction<List<RAW>, ResourceLocation, FINE> merger;
 
     /**
      * Initialize a data manager with the given folder name, codec, and merger
@@ -87,7 +88,7 @@ public class MergeableCodecDataManager<RAW, FINE> extends SimplePreparableReload
      * As an example, consider vanilla's Tags: mods or datapacks can define tags with the same modid:name id,
      * and then all tag jsons defined with the same ID are merged additively into a single set of items, etc
      */
-    public MergeableCodecDataManager(final String folderName, Codec<RAW> codec, final Function<List<RAW>, FINE> merger)
+    public MergeableCodecDataManager(final String folderName, Codec<RAW> codec, final BiFunction<List<RAW>, ResourceLocation, FINE> merger)
     {
         this.folderName = folderName;
         this.codec = codec;
@@ -133,7 +134,7 @@ public class MergeableCodecDataManager<RAW, FINE> extends SimplePreparableReload
                     LOGGER.error(String.format(Locale.ENGLISH, "Error reading resource %s in folder %s from pack %s: ", id, this.folderName, resource.sourcePackId()), e);
                 }
             }
-            map.put(id, merger.apply(raws));
+            map.put(id, merger.apply(raws, id));
         }
 
         LOGGER.info("Data loader for {} loaded {} finalized objects", this.folderName, this.data.size());

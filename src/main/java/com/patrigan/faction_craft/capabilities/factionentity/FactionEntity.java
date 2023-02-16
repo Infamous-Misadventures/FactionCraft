@@ -2,14 +2,13 @@ package com.patrigan.faction_craft.capabilities.factionentity;
 
 
 import com.patrigan.faction_craft.faction.Faction;
-import com.patrigan.faction_craft.faction.Factions;
+import com.patrigan.faction_craft.registry.Factions;
 import com.patrigan.faction_craft.faction.entity.FactionEntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.util.INBTSerializable;
 
-import static com.patrigan.faction_craft.capabilities.ModCapabilities.APPLIED_BOOSTS_CAPABILITY;
 import static com.patrigan.faction_craft.capabilities.ModCapabilities.FACTION_ENTITY_CAPABILITY;
 
 public class FactionEntity implements INBTSerializable<CompoundTag> {

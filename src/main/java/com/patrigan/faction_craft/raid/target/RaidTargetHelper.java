@@ -1,7 +1,6 @@
 package com.patrigan.faction_craft.raid.target;
 
-import com.patrigan.faction_craft.faction.Factions;
-import net.minecraft.client.Minecraft;
+import com.patrigan.faction_craft.registry.Factions;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.BlockPos;

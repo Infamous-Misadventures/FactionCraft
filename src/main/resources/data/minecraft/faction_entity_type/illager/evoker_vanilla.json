@@ -1,0 +1,16 @@
+{
+  "entity_type": "minecraft:evoker",
+  "weight": 40,
+  "strength": 10,
+  "rank": "captain",
+  "maximum_rank": "leader",
+  "minimum_wave": 5,
+  "boosts": {
+    "rarity_overrides": [
+      {
+        "boost": "faction_craft:mount/faction_ravager",
+        "rarity": "common"
+      }
+    ]
+  }
+}

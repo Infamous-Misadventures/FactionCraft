@@ -1,0 +1,9 @@
+{
+  "entity_type": "minecraft:ravager",
+  "weight": 15,
+  "strength": 5,
+  "rank": "mount",
+  "maximum_rank": "mount",
+  "minimum_wave": 4,
+  "maximum_spawned": 1
+}

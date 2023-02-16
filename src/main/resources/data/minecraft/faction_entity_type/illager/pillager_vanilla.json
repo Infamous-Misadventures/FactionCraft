@@ -1,0 +1,16 @@
+{
+  "entity_type": "minecraft:pillager",
+  "weight": 100,
+  "strength": 6,
+  "rank": "soldier",
+  "maximum_rank": "general",
+  "minimum_wave": 1,
+  "boosts": {
+    "rarity_overrides": [
+      {
+        "boost": "faction_craft:mount/faction_ravager",
+        "rarity": "common"
+      }
+    ]
+  }
+}
