@@ -14,7 +14,7 @@ public class RaidEvents {
     @SubscribeEvent
     public static void onLevelTickEvent(TickEvent.LevelTickEvent event){
         RaidManager raidManagerCapability = getRaidManagerCapability(event.level);
-        if(event.phase == TickEvent.Phase.END) {
+        if(event.phase == TickEvent.Phase.END && event.side.isServer()){
             raidManagerCapability.tick();
         }
     }
