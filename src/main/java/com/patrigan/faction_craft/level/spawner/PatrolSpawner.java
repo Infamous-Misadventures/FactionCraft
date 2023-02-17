@@ -124,8 +124,6 @@ public class PatrolSpawner implements CustomSpawner {
       } else {
          Mob entity = (Mob) factionEntityType.createEntity(pLevel, faction, pPos, pLeader, MobSpawnType.PATROL);
          if (entity != null) {
-            factionEntityType.getBoostConfig().getMandatoryBoosts().forEach(boost -> boost.apply(entity));
-            faction.getBoostConfig().getMandatoryBoosts().forEach(boost -> boost.apply(entity));
             Patroller patrollerCap = PatrollerHelper.getPatrollerCapability(entity);
             if (pLeader) {
                patrollerCap.setPatrolLeader(true);

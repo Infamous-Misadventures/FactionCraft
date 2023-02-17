@@ -389,8 +389,7 @@ public class Raid {
             Integer amount = entry.getValue();
             for (int i = 0; i <amount; i++) {
                 Entity entity = factionEntityType.createEntity(level, faction, spawnBlockPos, false, MobSpawnType.PATROL);
-                if(entity instanceof Mob) {
-                    Mob mobEntity = (Mob) entity;
+                if(entity instanceof Mob mobEntity) {
                     //Add to Raid
                     addToRaid(spawnBlockPos, waveNumber, faction, entities, factionEntityType, mobEntity);
                     waveStrength += factionEntityType.getStrength();
@@ -409,8 +408,6 @@ public class Raid {
                 if(entityCapability.getFaction() != null && entityCapability.getFactionEntityType() != null) {
                     this.joinRaid(waveNumber, mobEntity, spawnBlockPos, false);
                     entities.add(mobEntity);
-                    entityCapability.getFaction().getBoostConfig().getMandatoryBoosts().forEach(boost -> boost.apply(mobEntity));
-                    entityCapability.getFactionEntityType().getBoostConfig().getMandatoryBoosts().forEach(boost -> boost.apply(mobEntity));
                 }
             }
         });
@@ -433,8 +430,6 @@ public class Raid {
                     if(factionEntityCapability != null && faction.equals(factionEntityCapability.getFaction())) {
                         this.joinRaid(waveNumber, mobEntity, spawnBlockPos, false);
                         entities.add(mobEntity);
-                        faction.getBoostConfig().getMandatoryBoosts().forEach(boost -> boost.apply(mobEntity));
-                        factionEntityType.getBoostConfig().getMandatoryBoosts().forEach(boost -> boost.apply(mobEntity));
                     }
                 }
         });
@@ -493,7 +488,7 @@ public class Raid {
 
     public void joinRaid(int pWave, Mob mobEntity, BlockPos spawnBlockPos, boolean spawned) {
         this.addWaveMob(pWave, mobEntity, true);
-        RaiderHelper.getRaiderCapabilityLazy(mobEntity).ifPresent(Raider -> Raider.addToRaid(pWave, this));
+        RaiderHelper.getRaiderCapability(mobEntity).addToRaid(pWave, this);
     }
 
     public void addWaveMob(int wave, Mob mobEntity, boolean fresh) {
@@ -529,7 +524,7 @@ public class Raid {
                     this.totalHealth -= mobEntity.getHealth();
                 }
 
-                RaiderHelper.getRaiderCapabilityLazy(mobEntity).ifPresent(Raider ->Raider.setRaid(null));
+                RaiderHelper.getRaiderCapability(mobEntity).setRaid(null);
                 this.updateBossbar();
             }
         }

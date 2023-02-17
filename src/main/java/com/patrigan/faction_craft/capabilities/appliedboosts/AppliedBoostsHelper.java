@@ -18,10 +18,6 @@ public class AppliedBoostsHelper {
 
     public static AppliedBoosts getAppliedBoostsCapability(LivingEntity livingEntity)
     {
-        LazyOptional<AppliedBoosts> lazyCap = livingEntity.getCapability(APPLIED_BOOSTS_CAPABILITY);
-        if (lazyCap.isPresent()) {
-            return lazyCap.orElseThrow(() -> new IllegalStateException("Couldn't get the Applied Boosts capability from the entity!"));
-        }
-        return null;
+        return livingEntity.getCapability(APPLIED_BOOSTS_CAPABILITY).orElse(new AppliedBoosts());
     }
 }

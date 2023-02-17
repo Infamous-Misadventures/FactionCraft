@@ -22,7 +22,7 @@ public abstract class Boost {
     public abstract Rarity getRarity();
 
     public int apply(LivingEntity livingEntity){
-        AppliedBoostsHelper.getAppliedBoostsCapabilityLazy(livingEntity).ifPresent(cap -> cap.addAppliedBoost(this));
+        AppliedBoostsHelper.getAppliedBoostsCapability(livingEntity).addAppliedBoost(this);
         return 0;
     }
 

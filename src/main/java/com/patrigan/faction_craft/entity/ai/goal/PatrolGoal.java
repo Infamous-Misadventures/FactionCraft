@@ -35,11 +35,7 @@ public class PatrolGoal<T extends Mob> extends Goal {
      */
     public boolean canUse() {
         boolean flag = this.mob.level.getGameTime() < this.cooldownUntil;
-        LazyOptional<Patroller> lazyCap = PatrollerHelper.getPatrollerCapabilityLazy(this.mob);
-        if(!lazyCap.isPresent()){
-            return false;
-        }
-        Patroller cap = lazyCap.orElseThrow(() -> new IllegalStateException("Couldn't get the RaidManager capability from the level!"));
+        Patroller cap = PatrollerHelper.getPatrollerCapability(this.mob);
         return cap.isPatrolling() && this.mob.getTarget() == null && !this.mob.isVehicle() && cap.hasPatrolTarget() && !flag;
     }
 

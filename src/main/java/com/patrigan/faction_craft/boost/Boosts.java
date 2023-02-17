@@ -63,11 +63,7 @@ public class Boosts {
         if(BOOSTS.getData().size() == 0){
             return null;
         }
-        LazyOptional<AppliedBoosts> lazyCap = AppliedBoostsHelper.getAppliedBoostsCapabilityLazy(livingEntity);
-        if(!lazyCap.isPresent()){
-            return null;
-        }
-        AppliedBoosts cap = lazyCap.resolve().get();
+        AppliedBoosts cap = AppliedBoostsHelper.getAppliedBoostsCapability(livingEntity);
         List<Pair<Boost, Integer>> filtered = BOOSTS.getData().values().stream()
                 .filter(boost -> (whitelist.isEmpty() && !getRarity(boost, rarityOverrides).equals(Boost.Rarity.NONE)) || whitelist.contains(boost))
                 .filter(boost -> !blacklist.contains(boost))

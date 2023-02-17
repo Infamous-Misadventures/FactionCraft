@@ -3,6 +3,7 @@ package com.patrigan.faction_craft.faction.entity;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.patrigan.faction_craft.capabilities.factionentity.FactionEntity;
 import com.patrigan.faction_craft.capabilities.factionentity.FactionEntityHelper;
 import com.patrigan.faction_craft.faction.Faction;
 import net.minecraft.core.BlockPos;
@@ -224,13 +225,13 @@ public class FactionEntityType {
         }
         entity.getRootVehicle().getSelfAndPassengers()
             .forEach(stackedEntity -> {
-                if (stackedEntity instanceof Mob)
-                    FactionEntityHelper.getFactionEntityCapabilityLazy((Mob) stackedEntity)
-                        .ifPresent(cap -> {
-                            cap.setFaction(faction);
-                            cap.setFactionEntityType(this);
-                        });
-            });
+                if (stackedEntity instanceof Mob mob) {
+                    FactionEntity cap = FactionEntityHelper.getFactionEntityCapability(mob);
+                    cap.setFaction(faction);
+                    cap.setFactionEntityType(this);
+                    cap.getFaction().getBoostConfig().getMandatoryBoosts().forEach(boost -> boost.apply(mob));
+                    cap.getFactionEntityType().getBoostConfig().getMandatoryBoosts().forEach(boost -> boost.apply(mob));
+            }});
 
         level.addFreshEntityWithPassengers(entity.getRootVehicle());
         return entity;

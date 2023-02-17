@@ -13,6 +13,9 @@ public class ModArgumentTypes {
     public static final DeferredRegister<ArgumentTypeInfo<?, ?>> COMMAND_ARGUMENT_TYPES = DeferredRegister.create(ForgeRegistries.COMMAND_ARGUMENT_TYPES, MODID);
 
 
-    public static final RegistryObject<SingletonArgumentInfo<FactionArgument>> RESEARCH = COMMAND_ARGUMENT_TYPES.register("research",
+    public static final RegistryObject<SingletonArgumentInfo<FactionArgument>> FACTION = COMMAND_ARGUMENT_TYPES.register("faction",
             () -> ArgumentTypeInfos.registerByClass(FactionArgument.class, SingletonArgumentInfo.contextFree(FactionArgument::new)));
+
+    public static final RegistryObject<SingletonArgumentInfo<FactionEntitySummonArgument>> FACTION_ENTITY_TYPE = COMMAND_ARGUMENT_TYPES.register("faction_entity_type",
+            () -> ArgumentTypeInfos.registerByClass(FactionEntitySummonArgument.class, SingletonArgumentInfo.contextFree(FactionEntitySummonArgument::new)));
 }

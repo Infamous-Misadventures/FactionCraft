@@ -98,11 +98,7 @@ public class AttributeBoost extends Boost {
 
     @Override
     public boolean canApply(LivingEntity livingEntity) {
-        LazyOptional<AppliedBoosts> lazyCap = AppliedBoostsHelper.getAppliedBoostsCapabilityLazy(livingEntity);
-        if(!lazyCap.isPresent()){
-            return false;
-        }
-        AppliedBoosts cap = lazyCap.resolve().get();
+        AppliedBoosts cap = AppliedBoostsHelper.getAppliedBoostsCapability(livingEntity);
         return livingEntity.getAttributes().hasAttribute(attribute)  && cap.getAppliedBoosts().stream().filter(boost -> boost.equals(this)).count() < maxApplications;
     }
 }

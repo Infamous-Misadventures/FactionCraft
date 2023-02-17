@@ -77,7 +77,7 @@ public class FactionBattleRaidTarget implements RaidTarget {
         }
         Set<Mob> raidersInWave = raid.getRaidersInWave(raid.getGroupsSpawned());
         if(raidersInWave == null) return true;
-        return raidersInWave.stream().filter(mob -> FactionEntityHelper.getFactionEntityCapabilityLazy(mob).isPresent()).map(mobEntity -> FactionEntityHelper.getFactionEntityCapability(mobEntity).getFaction()).collect(Collectors.toSet()).size()<=1;
+        return raidersInWave.stream().map(mobEntity -> FactionEntityHelper.getFactionEntityCapability(mobEntity).getFaction()).collect(Collectors.toSet()).size()<=1;
     }
 
     @Override

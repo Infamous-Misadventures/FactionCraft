@@ -17,34 +17,32 @@ import static com.patrigan.faction_craft.FactionCraft.MODID;
 public class RaiderEvents {
 
     @SubscribeEvent
-    public static void onLivingHurtEvent(LivingHurtEvent event){
+    public static void onLivingHurtEvent(LivingHurtEvent event) {
         LivingEntity livingEntity = event.getEntity();
-        if(!livingEntity.level.isClientSide() && livingEntity instanceof Mob) {
-            RaiderHelper.getRaiderCapabilityLazy((Mob) livingEntity).ifPresent(cap -> {
-                if (cap.hasActiveRaid()) {
-                    cap.getRaid().updateBossbar();
-                }
-            });
+        if (!livingEntity.level.isClientSide() && livingEntity instanceof Mob mob) {
+            Raider cap = RaiderHelper.getRaiderCapability(mob);
+            if (cap.hasActiveRaid()) {
+                cap.getRaid().updateBossbar();
+            }
         }
     }
+
     @SubscribeEvent
-    public static void onLivingDeathEvent(LivingDeathEvent event){
+    public static void onLivingDeathEvent(LivingDeathEvent event) {
         LivingEntity livingEntity = event.getEntity();
-        if(!livingEntity.level.isClientSide() && livingEntity instanceof Mob) {
-            Mob mobEntity = (Mob) livingEntity;
-            RaiderHelper.getRaiderCapabilityLazy(mobEntity).ifPresent(cap -> {
-                if (cap.hasActiveRaid()) {
-                    Raid raid = cap.getRaid();
-                    raid.updateBossbar();
-                    if(cap.isWaveLeader()){
-                        raid.removeLeader(cap.getWave());
-                    }
-                    if (event.getSource().getEntity() != null && event.getSource().getEntity().getType() == EntityType.PLAYER) {
-                        raid.addHeroOfTheVillage(event.getSource().getEntity());
-                    }
-                    raid.removeFromRaid(mobEntity, cap.getWave(), false);
+        if (!livingEntity.level.isClientSide() && livingEntity instanceof Mob mob) {
+            Raider cap = RaiderHelper.getRaiderCapability(mob);
+            if (cap.hasActiveRaid()) {
+                Raid raid = cap.getRaid();
+                raid.updateBossbar();
+                if (cap.isWaveLeader()) {
+                    raid.removeLeader(cap.getWave());
                 }
-            });
+                if (event.getSource().getEntity() != null && event.getSource().getEntity().getType() == EntityType.PLAYER) {
+                    raid.addHeroOfTheVillage(event.getSource().getEntity());
+                }
+                raid.removeFromRaid(mob, cap.getWave(), false);
+            }
         }
     }
 
@@ -62,15 +60,13 @@ public class RaiderEvents {
 //    }
 
     @SubscribeEvent
-    public static void onAllowDespawn(LivingSpawnEvent.AllowDespawn event){
-        LivingEntity livingEntity = event.getEntity();
-        if(!livingEntity.level.isClientSide() && livingEntity instanceof Mob) {
-            Mob mobEntity = (Mob) livingEntity;
-            RaiderHelper.getRaiderCapabilityLazy(mobEntity).ifPresent(cap -> {
-                if (cap.hasActiveRaid()) {
-                    event.setResult(Event.Result.DENY);
-                }
-            });
+    public static void onAllowDespawn(LivingSpawnEvent.AllowDespawn event) {
+        Mob mob = event.getEntity();
+        if (!mob.level.isClientSide()) {
+            Raider cap = RaiderHelper.getRaiderCapability(mob);
+            if (cap.hasActiveRaid()) {
+                event.setResult(Event.Result.DENY);
+            }
         }
     }
 }

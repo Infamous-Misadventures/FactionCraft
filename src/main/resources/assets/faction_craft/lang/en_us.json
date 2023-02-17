@@ -5,6 +5,10 @@
   "commands.raid.success": "Spawned a raid at %s",
   "commands.batle.failed": "Could not spawn a batle",
   "commands.battle.success": "Spawned a battle between %s and %s at %s",
+  "commands.factionsummon.failed": "Could not spawn a faction entity",
+  "commands.factionsummon.success": "Spawned a faction entity at %s",
+  "commands.argument.factionEntityTypeNotFound": "Faction Entity Type is not known." ,
+  "commands.argument.factionNotFound": "Faction is not known.",
   "effect.faction_craft.faction_bad_omen": "Bad Omen",
   "event.faction_craft.battle": "Faction Battle",
   "event.faction_craft.battle.over": "Faction Battle ended"

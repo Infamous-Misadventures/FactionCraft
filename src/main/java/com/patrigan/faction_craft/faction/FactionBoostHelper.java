@@ -89,6 +89,8 @@ public class FactionBoostHelper {
         return appliedStrength;
     }
 
+
+
     public static List<Boost> getWhitelistBoosts(Faction faction, FactionEntityType factionEntityType){
         List<Boost> resultList = new ArrayList<>();
         resultList.addAll(faction.getBoostConfig().getWhitelistBoosts());

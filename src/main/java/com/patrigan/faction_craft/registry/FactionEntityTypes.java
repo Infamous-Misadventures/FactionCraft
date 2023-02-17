@@ -17,7 +17,7 @@ public class FactionEntityTypes {
 
     public static final CodecJsonDataManager<FactionEntityType> FACTION_ENTITY_TYPE_DATA = new CodecJsonDataManager<>("faction_entity_type", FactionEntityType.CODEC);
 
-    public static FactionEntityType getFaction(ResourceLocation factionResourceLocation){
+    public static FactionEntityType getFactionEntityType(ResourceLocation factionResourceLocation){
         return getFactionEntityTypeData().getOrDefault(factionResourceLocation, FactionEntityType.DEFAULT);
     }
 

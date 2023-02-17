@@ -17,10 +17,6 @@ public class RaidOpenDoorGoal extends OpenDoorGoal {
      * method as well.
      */
     public boolean canUse() {
-        LazyOptional<Raider> raiderCapabilityLazy = RaiderHelper.getRaiderCapabilityLazy(this.mob);
-        if(!raiderCapabilityLazy.isPresent()){
-            return false;
-        }
         Raider raiderCapability = RaiderHelper.getRaiderCapability(this.mob);
         return super.canUse() && raiderCapability.hasActiveRaid();
     }

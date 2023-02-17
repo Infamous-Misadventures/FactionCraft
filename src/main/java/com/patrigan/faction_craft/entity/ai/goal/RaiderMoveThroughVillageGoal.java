@@ -45,10 +45,6 @@ public class RaiderMoveThroughVillageGoal extends Goal {
     }
 
     private boolean isValidRaid() {
-        LazyOptional<Raider> raiderCapabilityLazy = RaiderHelper.getRaiderCapabilityLazy(this.raider);
-        if(!raiderCapabilityLazy.isPresent()){
-            return false;
-        }
         Raider raiderCapability = RaiderHelper.getRaiderCapability(this.raider);
         return raiderCapability.hasActiveRaid() && !raiderCapability.getRaid().isOver();
     }

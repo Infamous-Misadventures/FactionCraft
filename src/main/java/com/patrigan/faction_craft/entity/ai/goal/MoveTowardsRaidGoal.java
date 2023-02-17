@@ -27,12 +27,8 @@ public class MoveTowardsRaidGoal<T extends Mob> extends Goal {
      * method as well.
      */
     public boolean canUse() {
-        LazyOptional<Raider> raiderCapabilityLazy = RaiderHelper.getRaiderCapabilityLazy(this.mob);
-        if(!raiderCapabilityLazy.isPresent()){
-            return false;
-        }
         Raider raiderCapability = RaiderHelper.getRaiderCapability(this.mob);
-        return raiderCapability != null && this.mob instanceof PathfinderMob
+        return this.mob instanceof PathfinderMob
                 && this.mob.getTarget() == null
                 && !this.mob.isVehicle() && raiderCapability.hasActiveRaid()
                 && !raiderCapability.getRaid().isOver()
