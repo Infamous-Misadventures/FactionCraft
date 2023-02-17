@@ -2,11 +2,10 @@ package com.patrigan.faction_craft.boost;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.*;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.animal.horse.AbstractHorse;
+import net.minecraft.world.entity.animal.horse.Horse;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.server.level.ServerLevel;
 
@@ -65,14 +64,17 @@ public class MountBoost extends Boost {
             if (mount != null) {
                 Vec3 pos = livingEntity.position();
                 mount.setPos(pos.x, pos.y, pos.z);
-                if (mount instanceof Mob) {
-                    Mob mobMount = (Mob) mount;
+                if (mount instanceof Mob mobMount) {
                     if (net.minecraftforge.common.ForgeHooks.canEntitySpawn(mobMount, level, mount.blockPosition().getX(), mount.blockPosition().getY(), mount.blockPosition().getZ(), null, MobSpawnType.EVENT) == -1)
                         return 0;
                     mobMount.finalizeSpawn(level, level.getCurrentDifficultyAt(mount.blockPosition()), MobSpawnType.EVENT, null, null);
                 }
                 super.apply(livingEntity);
                 level.addFreshEntity(mount);
+                if(mount instanceof AbstractHorse horse) {
+                    horse.setTamed(true);
+                    horse.setOwnerUUID(livingEntity.getUUID());
+                }
                 livingEntity.startRiding(mount);
                 return strengthAdjustment;
             }
