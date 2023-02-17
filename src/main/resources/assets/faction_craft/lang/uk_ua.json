@@ -1,0 +1,12 @@
+{
+  "commands.patrol.failed": "Не вдалося створити патруль",
+  "commands.patrol.success": "Створено патруль з %s осіб, біля %s",
+  "commands.raid.failed": "Не вдалося створити рейд",
+  "commands.raid.success": "Створено рейд на %s",
+  "commands.batle.failed": "Не вдалося створити битву",
+  "commands.battle.success": "Створено битву між %s та %s біля %s",
+  "effect.faction_craft.faction_bad_omen": "Погана прикмета",
+  "event.faction_craft.battle": "Битва фракцій",
+  "event.faction_craft.battle.over": "Битву фракцій завершено"
+
+}
