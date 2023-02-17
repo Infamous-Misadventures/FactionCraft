@@ -254,7 +254,9 @@ public class Raid {
                         this.status = Status.VICTORY;
                         FactionRaidEvent.Victory event = new FactionRaidEvent.Victory(this);
                         net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event);
-                        this.playSound(raidTarget.getTargetBlockPos(), factions.get(0).getRaidConfig().getVictorySoundEvent());
+                        if(factions.get(0).getRaidConfig().getVictorySoundEvent() != null) {
+                            this.playSound(raidTarget.getTargetBlockPos(), factions.get(0).getRaidConfig().getVictorySoundEvent());
+                        }
                         this.raidEvent.setName(getRaidEventNameVictory(raidTarget));
 
                         for(UUID uuid : this.heroesOfTheVillage) {
