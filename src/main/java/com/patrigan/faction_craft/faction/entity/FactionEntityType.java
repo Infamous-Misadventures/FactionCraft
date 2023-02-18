@@ -7,10 +7,7 @@ import com.patrigan.faction_craft.capabilities.factionentity.FactionEntity;
 import com.patrigan.faction_craft.capabilities.factionentity.FactionEntityHelper;
 import com.patrigan.faction_craft.faction.Faction;
 import com.patrigan.faction_craft.registry.FactionEntityTypes;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderSet;
-import net.minecraft.core.Registry;
-import net.minecraft.core.RegistryCodecs;
+import net.minecraft.core.*;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -24,9 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static net.minecraft.data.BuiltinRegistries.BIOME;
 import static net.minecraft.world.level.biome.Biome.DIRECT_CODEC;
-import static net.minecraftforge.registries.ForgeRegistries.BIOMES;
 import static net.minecraftforge.registries.ForgeRegistries.ENTITY_TYPES;
 
 
@@ -47,7 +42,7 @@ public class FactionEntityType {
                     Codec.INT.optionalFieldOf("maximum_spawned", 10000).forGetter(data -> data.maximumSpawned),
                     Codec.INT.optionalFieldOf("minimum_omen", 0).forGetter(data -> data.minimumOmen),
                     Codec.INT.optionalFieldOf("maximum_omen", 10000).forGetter(data -> data.maximumOmen),
-                    RegistryCodecs.homogeneousList(Registry.BIOME_REGISTRY, DIRECT_CODEC).optionalFieldOf("biomes", null).forGetter(data -> data.biome)
+                    RegistryCodecs.homogeneousList(Registry.BIOME_REGISTRY, DIRECT_CODEC).optionalFieldOf("biomes", null).forGetter(data -> data.biomes)
             ).apply(builder, FactionEntityType::new));
 
     private final ResourceLocation entityType;
@@ -63,9 +58,9 @@ public class FactionEntityType {
     private final int maximumSpawned;
     private final int minimumOmen;
     private final int maximumOmen;
-    private final HolderSet<Biome> biome;
+    private final HolderSet<Biome> biomes;
 
-    public FactionEntityType(ResourceLocation entityType, CompoundTag tag, int weight, int strength, FactionRank rank, FactionRank maximumRank, EntityBoostConfig entityBoostConfig, int minimumWave, int maximumWave, int minimumSpawned, int maximumSpawned, int minimumOmen, int maximumOmen, HolderSet<Biome> biome) {
+    public FactionEntityType(ResourceLocation entityType, CompoundTag tag, int weight, int strength, FactionRank rank, FactionRank maximumRank, EntityBoostConfig entityBoostConfig, int minimumWave, int maximumWave, int minimumSpawned, int maximumSpawned, int minimumOmen, int maximumOmen, HolderSet<Biome> biomes) {
         this.entityType = entityType;
         this.tag = tag;
         this.weight = weight;
@@ -79,7 +74,7 @@ public class FactionEntityType {
         this.maximumSpawned = maximumSpawned;
         this.minimumOmen = minimumOmen;
         this.maximumOmen = maximumOmen;
-        this.biome = biome;
+        this.biomes = biomes;
     }
 
     public static FactionEntityType load(CompoundTag compoundNbt) {
@@ -162,6 +157,10 @@ public class FactionEntityType {
         return maximumSpawned;
     }
 
+    public HolderSet<Biome> getBiomes() {
+        return biomes;
+    }
+
     public boolean canSpawnInWave(int wave){
         return wave >= getMinimumWave() && wave <= getMaximumWave();
     }
@@ -215,7 +214,16 @@ public class FactionEntityType {
         return requiredRanks.stream().anyMatch(possibleRanks::contains);
     }
 
-    //See and use SummonCommand approach for tag and add to the level
+    public boolean canSpawnForBiome(Biome biome) {
+        if(this.getBiomes().size() == 0){
+            return true;
+        }else if(biome == null){
+            return false;
+        }else {
+            return this.getBiomes().contains(Holder.direct(biome));
+        }
+    }
+
     public Entity createEntity(ServerLevel level, Faction faction, BlockPos spawnBlockPos, boolean bannerHolder, MobSpawnType spawnReason) {
         EntityType<?> entityType = ENTITY_TYPES.getValue(this.getEntityType());
         Entity entity = null;

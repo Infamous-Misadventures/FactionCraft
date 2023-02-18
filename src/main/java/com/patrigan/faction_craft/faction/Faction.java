@@ -96,8 +96,9 @@ public class Faction {
     public List<Pair<FactionEntityType, Integer>> getWeightMap(EntityWeightMapProperties properties){
         return entityTypes.stream().filter(
                 factionEntityType -> factionEntityType.canSpawnInWave(properties.getWave())
-                && factionEntityType.hasRanks(properties.allowedRanks)
-                && factionEntityType.canSpawnForOmen(properties.getOmen()))
+                && factionEntityType.hasRanks(properties.getAllowedRanks())
+                && factionEntityType.canSpawnForOmen(properties.getOmen())
+                && factionEntityType.canSpawnForBiome(properties.getBiome()))
                 .map(factionEntityType -> new Pair<>(factionEntityType, factionEntityType.getWeight())).toList();
     }
 

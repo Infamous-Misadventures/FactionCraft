@@ -1,14 +1,16 @@
 package com.patrigan.faction_craft.faction;
 
 import com.patrigan.faction_craft.faction.entity.FactionEntityType;
+import net.minecraft.world.level.biome.Biome;
 
 import java.util.Arrays;
 import java.util.List;
 
 public class EntityWeightMapProperties {
-    int wave = 0;
-    int omen = 0;
-    List<FactionEntityType.FactionRank> allowedRanks = Arrays.asList(FactionEntityType.FactionRank.values());
+    private int wave = 0;
+    private int omen = 0;
+    private List<FactionEntityType.FactionRank> allowedRanks = Arrays.asList(FactionEntityType.FactionRank.values());
+    private Biome biome = null;
 
     public int getWave() {
         return wave;
@@ -45,5 +47,13 @@ public class EntityWeightMapProperties {
     public EntityWeightMapProperties removeAllowedRank(FactionEntityType.FactionRank rank) {
         this.allowedRanks.remove(rank);
         return this;
+    }
+
+    public Biome getBiome() {
+        return biome;
+    }
+
+    public void setBiome(Biome biome) {
+        this.biome = biome;
     }
 }
