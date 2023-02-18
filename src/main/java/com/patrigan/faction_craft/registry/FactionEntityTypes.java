@@ -50,4 +50,7 @@ public class FactionEntityTypes {
         return entityType.getNamespace().equals(faction.getNamespace()) && entityType.getPath().startsWith(faction.getPath());
     }
 
+    public static ResourceLocation getFactionEntityTypeKey(FactionEntityType factionEntityType) {
+        return FACTION_ENTITY_TYPE_DATA.getData().entrySet().stream().filter(entry -> entry.getValue().equals(factionEntityType)).map(Map.Entry::getKey).findFirst().orElse(null);
+    }
 }
