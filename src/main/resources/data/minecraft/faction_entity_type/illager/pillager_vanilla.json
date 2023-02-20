@@ -4,7 +4,6 @@
   "strength": 6,
   "rank": "soldier",
   "maximum_rank": "general",
-  "minimum_wave": 1,
   "boosts": {
     "rarity_overrides": [
       {

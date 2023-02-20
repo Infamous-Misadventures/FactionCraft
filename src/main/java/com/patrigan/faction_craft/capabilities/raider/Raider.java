@@ -3,9 +3,9 @@ package com.patrigan.faction_craft.capabilities.raider;
 
 import com.patrigan.faction_craft.capabilities.raidmanager.RaidManager;
 import com.patrigan.faction_craft.capabilities.raidmanager.RaidManagerHelper;
-import com.patrigan.faction_craft.entity.ai.goal.RaiderMoveThroughVillageGoal;
 import com.patrigan.faction_craft.entity.ai.goal.MoveTowardsRaidGoal;
 import com.patrigan.faction_craft.entity.ai.goal.RaidOpenDoorGoal;
+import com.patrigan.faction_craft.entity.ai.goal.RaiderMoveThroughVillageGoal;
 import com.patrigan.faction_craft.raid.Raid;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;

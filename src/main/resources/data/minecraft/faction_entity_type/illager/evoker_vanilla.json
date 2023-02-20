@@ -4,7 +4,9 @@
   "strength": 10,
   "rank": "captain",
   "maximum_rank": "leader",
-  "minimum_wave": 5,
+  "wave_range": {
+    "min": 5
+  },
   "boosts": {
     "rarity_overrides": [
       {

@@ -445,9 +445,9 @@ public class Raid {
         for(Pair<FactionEntityType, Integer> pair : weightMap) {
             if(selectedStrength < targetStrength) {
                 FactionEntityType factionEntityType = pair.getFirst();
-                if(factionEntityType.getMinimumSpawned() > 0) {
+                if(factionEntityType.getSpawnedRange().min() > 0) {
                     int strength = factionEntityType.getStrength();
-                    int amount = Math.min((int) Math.ceil((targetStrength - selectedStrength) / strength), factionEntityType.getMinimumSpawned());
+                    int amount = Math.min((int) Math.ceil((targetStrength - selectedStrength) / strength), factionEntityType.getSpawnedRange().min());
                     selectedStrength += strength*amount;
                     waveFactionEntities.merge(factionEntityType, amount, Integer::sum);
                 }
@@ -460,7 +460,7 @@ public class Raid {
             FactionEntityType randomEntry = getRandomEntry(weightMap, level.random);
             waveFactionEntities.merge(randomEntry, 1, Integer::sum);
             selectedStrength += randomEntry.getStrength();
-            if(waveFactionEntities.get(randomEntry) >= randomEntry.getMaximumSpawned()) {
+            if(waveFactionEntities.get(randomEntry) >= randomEntry.getSpawnedRange().getMax()) {
                 weightMap = weightMap.stream().filter(pair -> !pair.getFirst().equals(randomEntry)).toList();
             }
         }

@@ -4,6 +4,10 @@
   "strength": 5,
   "rank": "support",
   "maximum_rank": "support",
-  "minimum_wave": 3,
-  "maximum_spawned": 1
+  "wave_range":{
+    "min": 3
+  },
+  "spawned_range": {
+    "max": 1
+  }
 }

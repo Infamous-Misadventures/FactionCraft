@@ -4,6 +4,10 @@
   "strength": 5,
   "rank": "mount",
   "maximum_rank": "mount",
-  "minimum_wave": 4,
-  "maximum_spawned": 1
+  "wave_range":{
+    "min": 4
+  },
+  "spawned_range": {
+    "max": 1
+  }
 }

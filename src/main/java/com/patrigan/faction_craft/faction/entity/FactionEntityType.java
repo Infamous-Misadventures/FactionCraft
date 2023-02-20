@@ -7,6 +7,7 @@ import com.patrigan.faction_craft.capabilities.factionentity.FactionEntity;
 import com.patrigan.faction_craft.capabilities.factionentity.FactionEntityHelper;
 import com.patrigan.faction_craft.faction.Faction;
 import com.patrigan.faction_craft.registry.FactionEntityTypes;
+import com.patrigan.faction_craft.util.IntRange;
 import net.minecraft.core.*;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -26,7 +27,7 @@ import static net.minecraftforge.registries.ForgeRegistries.ENTITY_TYPES;
 
 
 public class FactionEntityType {
-    public static final FactionEntityType DEFAULT = new FactionEntityType(new ResourceLocation("minecraft:pig"), new CompoundTag(), 1, 1, FactionRank.SOLDIER, FactionRank.SOLDIER, EntityBoostConfig.DEFAULT, 0, 10000, 0, 10000, 0, 1000, HolderSet.direct(), HolderSet.direct());
+    public static final FactionEntityType DEFAULT = new FactionEntityType(new ResourceLocation("minecraft:pig"), new CompoundTag(), 1, 1, FactionRank.SOLDIER, FactionRank.SOLDIER, EntityBoostConfig.DEFAULT, new IntRange(0, 10000), new IntRange(0, 10000), new IntRange(0, 10000), HolderSet.direct(), HolderSet.direct());
     public static final Codec<FactionEntityType> CODEC = RecordCodecBuilder.create(builder ->
             builder.group(
                     ResourceLocation.CODEC.fieldOf("entity_type").forGetter(data -> data.entityType),
@@ -36,14 +37,28 @@ public class FactionEntityType {
                     FactionRank.CODEC.fieldOf("rank").forGetter(data -> data.rank),
                     FactionRank.CODEC.fieldOf("maximum_rank").forGetter(data -> data.maximumRank),
                     EntityBoostConfig.CODEC.optionalFieldOf("boosts", EntityBoostConfig.DEFAULT).forGetter(data -> data.entityBoostConfig),
-                    Codec.INT.fieldOf("minimum_wave").forGetter(data -> data.minimumWave),
-                    Codec.INT.optionalFieldOf("maximum_wave", 10000).forGetter(data -> data.maximumWave),
-                    Codec.INT.optionalFieldOf("minimum_spawned", 0).forGetter(data -> data.minimumSpawned),
-                    Codec.INT.optionalFieldOf("maximum_spawned", 10000).forGetter(data -> data.maximumSpawned),
-                    Codec.INT.optionalFieldOf("minimum_omen", 0).forGetter(data -> data.minimumOmen),
-                    Codec.INT.optionalFieldOf("maximum_omen", 10000).forGetter(data -> data.maximumOmen),
+                    IntRange.getCodec(0, 10000).optionalFieldOf("wave_range", new IntRange(1, 10000)).forGetter(data -> data.waveRange),
+                    IntRange.getCodec(0, 10000).optionalFieldOf("spawned_range", new IntRange(0, 10000)).forGetter(data -> data.spawnedRange),
+                    IntRange.getCodec(0, 10000).optionalFieldOf("omen_range", new IntRange(0, 10000)).forGetter(data -> data.omenRange),
                     RegistryCodecs.homogeneousList(Registry.BIOME_REGISTRY, DIRECT_CODEC).optionalFieldOf("biome_whitelist", HolderSet.direct()).forGetter(data -> data.biomeWhitelist),
                     RegistryCodecs.homogeneousList(Registry.BIOME_REGISTRY, DIRECT_CODEC).optionalFieldOf("biome_blacklist", HolderSet.direct()).forGetter(data -> data.biomeBlacklist)
+            ).apply(builder, FactionEntityType::new));
+
+    public static final Codec<FactionEntityType> CODEC_OLD = RecordCodecBuilder.create(builder ->
+            builder.group(
+                    ResourceLocation.CODEC.fieldOf("entity_type").forGetter(data -> data.entityType),
+                    CompoundTag.CODEC.optionalFieldOf("tag", new CompoundTag()).forGetter(data -> data.tag),
+                    Codec.INT.fieldOf("weight").forGetter(data -> data.weight),
+                    Codec.INT.fieldOf("strength").forGetter(data -> data.strength),
+                    FactionRank.CODEC.fieldOf("rank").forGetter(data -> data.rank),
+                    FactionRank.CODEC.fieldOf("maximum_rank").forGetter(data -> data.maximumRank),
+                    EntityBoostConfig.CODEC.optionalFieldOf("boosts", EntityBoostConfig.DEFAULT).forGetter(data -> data.entityBoostConfig),
+                    Codec.INT.fieldOf("minimum_wave").forGetter(data -> data.waveRange.getMin()),
+                    Codec.INT.optionalFieldOf("maximum_wave", 10000).forGetter(data -> data.waveRange.getMax()),
+                    Codec.INT.optionalFieldOf("minimum_spawned", 0).forGetter(data -> data.spawnedRange.getMin()),
+                    Codec.INT.optionalFieldOf("maximum_spawned", 10000).forGetter(data -> data.spawnedRange.getMax()),
+                    Codec.INT.optionalFieldOf("minimum_omen", 0).forGetter(data -> data.omenRange.getMin()),
+                    Codec.INT.optionalFieldOf("maximum_omen", 10000).forGetter(data -> data.omenRange.getMax())
             ).apply(builder, FactionEntityType::new));
 
     private final ResourceLocation entityType;
@@ -53,16 +68,13 @@ public class FactionEntityType {
     private final FactionRank rank;
     private final FactionRank maximumRank;
     private final EntityBoostConfig entityBoostConfig;
-    private final int minimumWave;
-    private final int maximumWave;
-    private final int minimumSpawned;
-    private final int maximumSpawned;
-    private final int minimumOmen;
-    private final int maximumOmen;
+    private final IntRange waveRange;
+    private final IntRange spawnedRange;
+    private final IntRange omenRange;
     private final HolderSet<Biome> biomeWhitelist;
     private final HolderSet<Biome> biomeBlacklist;
 
-    public FactionEntityType(ResourceLocation entityType, CompoundTag tag, int weight, int strength, FactionRank rank, FactionRank maximumRank, EntityBoostConfig entityBoostConfig, int minimumWave, int maximumWave, int minimumSpawned, int maximumSpawned, int minimumOmen, int maximumOmen, HolderSet<Biome> biomeWhitelist, HolderSet<Biome> biomeBlacklist) {
+    public FactionEntityType(ResourceLocation entityType, CompoundTag tag, int weight, int strength, FactionRank rank, FactionRank maximumRank, EntityBoostConfig entityBoostConfig, IntRange waveRange, IntRange spawnedRange, IntRange omenRange, HolderSet<Biome> biomeWhitelist, HolderSet<Biome> biomeBlacklist) {
         this.entityType = entityType;
         this.tag = tag;
         this.weight = weight;
@@ -70,25 +82,37 @@ public class FactionEntityType {
         this.rank = rank;
         this.maximumRank = maximumRank;
         this.entityBoostConfig = entityBoostConfig;
-        this.minimumWave = minimumWave;
-        this.maximumWave = maximumWave;
-        this.minimumSpawned = minimumSpawned;
-        this.maximumSpawned = maximumSpawned;
-        this.minimumOmen = minimumOmen;
-        this.maximumOmen = maximumOmen;
+        this.waveRange = waveRange;
+        this.spawnedRange = spawnedRange;
+        this.omenRange = omenRange;
         this.biomeWhitelist = biomeWhitelist;
         this.biomeBlacklist = biomeBlacklist;
     }
 
+    public FactionEntityType(ResourceLocation entityType, CompoundTag tag, int weight, int strength, FactionRank rank, FactionRank maximumRank, EntityBoostConfig entityBoostConfig, int minimumWave, int maximumWave, int minimumSpawned, int maximumSpawned, int minimumOmen, int maximumOmen) {
+        this.entityType = entityType;
+        this.tag = tag;
+        this.weight = weight;
+        this.strength = strength;
+        this.rank = rank;
+        this.maximumRank = maximumRank;
+        this.entityBoostConfig = entityBoostConfig;
+        this.waveRange = new IntRange(minimumWave, maximumWave);
+        this.spawnedRange = new IntRange(minimumSpawned, maximumSpawned);
+        this.omenRange = new IntRange(minimumOmen, maximumOmen);
+        this.biomeWhitelist = HolderSet.direct();
+        this.biomeBlacklist = HolderSet.direct();
+    }
+
     public static FactionEntityType load(CompoundTag compoundNbt) {
-        if(compoundNbt.contains("factionEntityType")){
+        if (compoundNbt.contains("factionEntityType")) {
             ResourceLocation factionEntityType = new ResourceLocation(compoundNbt.getString("factionEntityType"));
-            if(FactionEntityTypes.getFactionEntityType(factionEntityType) != null){
+            if (FactionEntityTypes.getFactionEntityType(factionEntityType) != null) {
                 return FactionEntityTypes.getFactionEntityType(factionEntityType);
-            }else{
+            } else {
                 return FactionEntityType.DEFAULT;
             }
-        }else {
+        } else {
             return new FactionEntityType(
                     new ResourceLocation(compoundNbt.getString("entityType")),
                     compoundNbt.getCompound("tag"),
@@ -97,12 +121,12 @@ public class FactionEntityType {
                     FactionRank.byName(compoundNbt.getString("rank"), FactionRank.SOLDIER),
                     FactionRank.byName(compoundNbt.getString("maximumRank"), null),
                     EntityBoostConfig.load(compoundNbt.getCompound("entityBoostConfig")),
-                    compoundNbt.getInt("minimumWave"),
-                    compoundNbt.getInt("maximumWave"),
-                    compoundNbt.getInt("minimumSpawned"),
-                    compoundNbt.getInt("maximumSpawned"),
-                    compoundNbt.getInt("minimumOmen"),
-                    compoundNbt.getInt("maximumOmen"),
+                    new IntRange(compoundNbt.getInt("minimumWave"),
+                            compoundNbt.getInt("maximumWave")),
+                    new IntRange(compoundNbt.getInt("minimumSpawned"),
+                            compoundNbt.getInt("maximumSpawned")),
+                    new IntRange(compoundNbt.getInt("minimumOmen"),
+                            compoundNbt.getInt("maximumOmen")),
                     HolderSet.direct(),
                     HolderSet.direct()
             );
@@ -137,48 +161,40 @@ public class FactionEntityType {
         return entityBoostConfig;
     }
 
-    public int getMinimumWave() {
-        return minimumWave;
+    public IntRange getWaveRange() {
+        return waveRange;
     }
 
-    public int getMaximumWave() {
-        return maximumWave;
+    public IntRange getSpawnedRange() {
+        return spawnedRange;
     }
 
-    public int getMinimumSpawned() {
-        return minimumSpawned;
-    }
-
-    public int getMaximumSpawned() {
-        return maximumSpawned;
-    }
-
-    public int getMinimumOmen() {
-        return minimumSpawned;
-    }
-
-    public int getMaximumOmen() {
-        return maximumSpawned;
+    public IntRange getOmenRange() {
+        return omenRange;
     }
 
     public HolderSet<Biome> getBiomeWhitelist() {
         return biomeWhitelist;
     }
 
-    public boolean canSpawnInWave(int wave){
-        return wave >= getMinimumWave() && wave <= getMaximumWave();
+    public HolderSet<Biome> getBiomeBlacklist() {
+        return biomeBlacklist;
     }
 
-    public boolean canSpawnForOmen(int omen){
-        return omen >= getMinimumOmen() && omen <= getMaximumOmen();
+    public boolean canSpawnInWave(int wave) {
+        return wave >= getWaveRange().getMin() && wave <= getWaveRange().getMax();
+    }
+
+    public boolean canSpawnForOmen(int omen) {
+        return omen >= getOmenRange().getMin() && omen <= getOmenRange().getMax();
     }
 
     public boolean canSpawnForBiome(Biome biome) {
-        if(biome == null) {
+        if (biome == null) {
             return this.getBiomeWhitelist().size() == 0;
-        }else if(biomeBlacklist.contains(Holder.direct(biome))){
+        } else if (getBiomeBlacklist().contains(Holder.direct(biome))) {
             return false;
-        }else {
+        } else {
             return this.getBiomeWhitelist().size() == 0 || this.getBiomeWhitelist().contains(Holder.direct(biome));
         }
     }
@@ -258,14 +274,15 @@ public class FactionEntityType {
             mobEntity.setOnGround(true);
         }
         entity.getRootVehicle().getSelfAndPassengers()
-            .forEach(stackedEntity -> {
-                if (stackedEntity instanceof Mob mob) {
-                    FactionEntity cap = FactionEntityHelper.getFactionEntityCapability(mob);
-                    cap.setFaction(faction);
-                    cap.setFactionEntityType(this);
-                    cap.getFaction().getBoostConfig().getMandatoryBoosts().forEach(boost -> boost.apply(mob));
-                    cap.getFactionEntityType().getBoostConfig().getMandatoryBoosts().forEach(boost -> boost.apply(mob));
-            }});
+                .forEach(stackedEntity -> {
+                    if (stackedEntity instanceof Mob mob) {
+                        FactionEntity cap = FactionEntityHelper.getFactionEntityCapability(mob);
+                        cap.setFaction(faction);
+                        cap.setFactionEntityType(this);
+                        cap.getFaction().getBoostConfig().getMandatoryBoosts().forEach(boost -> boost.apply(mob));
+                        cap.getFactionEntityType().getBoostConfig().getMandatoryBoosts().forEach(boost -> boost.apply(mob));
+                    }
+                });
 
         level.addFreshEntityWithPassengers(entity.getRootVehicle());
         return entity;
@@ -273,9 +290,9 @@ public class FactionEntityType {
 
     public CompoundTag save(CompoundTag compoundNbt) {
         ResourceLocation factionEntityType = FactionEntityTypes.getFactionEntityTypeKey(this);
-        if(factionEntityType != null){
+        if (factionEntityType != null) {
             compoundNbt.putString("factionEntityType", factionEntityType.toString());
-        }else {
+        } else {
             compoundNbt.putString("entityType", this.entityType.toString());
             compoundNbt.put("tag", tag);
             compoundNbt.putInt("weight", weight);
@@ -284,12 +301,12 @@ public class FactionEntityType {
             compoundNbt.putString("maximumRank", maximumRank.getName());
             CompoundTag boostConfigNbt = new CompoundTag();
             compoundNbt.put("entityBoostConfig", entityBoostConfig.save(boostConfigNbt));
-            compoundNbt.putInt("minimumWave", minimumWave);
-            compoundNbt.putInt("maximumWave", maximumWave);
-            compoundNbt.putInt("minimumSpawned", minimumSpawned);
-            compoundNbt.putInt("maximumSpawned", maximumSpawned);
-            compoundNbt.putInt("minimumOmen", minimumOmen);
-            compoundNbt.putInt("maximumOmen", maximumOmen);
+            compoundNbt.putInt("minimumWave", waveRange.min());
+            compoundNbt.putInt("maximumWave", waveRange.max());
+            compoundNbt.putInt("minimumSpawned", spawnedRange.min());
+            compoundNbt.putInt("maximumSpawned", spawnedRange.max());
+            compoundNbt.putInt("minimumOmen", omenRange.min());
+            compoundNbt.putInt("maximumOmen", omenRange.max());
         }
         return compoundNbt;
     }

@@ -4,5 +4,7 @@
   "strength": 9,
   "rank": "captain",
   "maximum_rank": "leader",
-  "minimum_wave": 4
+  "wave_range": {
+    "min": 4
+  }
 }

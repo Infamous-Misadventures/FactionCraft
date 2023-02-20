@@ -71,7 +71,7 @@ public class FactionMountBoost extends Boost {
                 if (raiderCap != null && raiderCap.hasActiveRaid()) {
                     weightMap = weightMap.stream()
                             .filter(pair -> pair.getFirst().canSpawnInWave(raiderCap.getWave()))
-                            .filter(pair -> pair.getFirst().getMaximumSpawned() > raiderCap.getRaid().getRaidersInWave(raiderCap.getWave()).stream()
+                            .filter(pair -> pair.getFirst().getSpawnedRange().max() > raiderCap.getRaid().getRaidersInWave(raiderCap.getWave()).stream()
                                     .filter(entity -> FactionEntityHelper.getFactionEntityCapability(entity).getFactionEntityType() != null && FactionEntityHelper.getFactionEntityCapability(entity).getFactionEntityType().equals(pair.getFirst()))
                                     .count())
                             .collect(Collectors.toList());
@@ -112,7 +112,7 @@ public class FactionMountBoost extends Boost {
             if (raiderCap != null && raiderCap.hasActiveRaid()) {
                 weightMap = weightMap.stream()
                         .filter(pair -> pair.getFirst().canSpawnInWave(raiderCap.getWave()))
-                        .filter(pair -> pair.getFirst().getMaximumSpawned() > raiderCap.getRaid().getRaidersInWave(raiderCap.getWave()).stream()
+                        .filter(pair -> pair.getFirst().getSpawnedRange().getMax() > raiderCap.getRaid().getRaidersInWave(raiderCap.getWave()).stream()
                                 .filter(entity -> FactionEntityHelper.getFactionEntityCapability(entity).getFactionEntityType() != null && FactionEntityHelper.getFactionEntityCapability(entity).getFactionEntityType().equals(pair.getFirst()))
                                 .count())
                         .collect(Collectors.toList());

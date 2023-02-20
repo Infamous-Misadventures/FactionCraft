@@ -15,7 +15,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import static com.patrigan.faction_craft.FactionCraft.LOGGER;
 import static com.patrigan.faction_craft.FactionCraft.MODID;
 
 public class Faction {
@@ -29,7 +28,7 @@ public class Faction {
                     FactionRaidConfig.CODEC.optionalFieldOf("raid_config", FactionRaidConfig.DEFAULT).forGetter(Faction::getRaidConfig),
                     FactionBoostConfig.CODEC.optionalFieldOf("boosts", FactionBoostConfig.DEFAULT).forGetter(Faction::getBoostConfig),
                     FactionRelations.CODEC.optionalFieldOf("relations", FactionRelations.DEFAULT).forGetter(Faction::getRelations),
-                    FactionEntityType.CODEC.listOf().optionalFieldOf("entities", new ArrayList<>()).forGetter(Faction::getEntityTypes),
+                    FactionEntityType.CODEC_OLD.listOf().optionalFieldOf("entities", new ArrayList<>()).forGetter(Faction::getEntityTypes),
                     ResourceLocation.CODEC.optionalFieldOf("activation_advancement", new ResourceLocation(MODID, "default")).forGetter(Faction::getActivationAdvancement)
             ).apply(builder, Faction::new));
 

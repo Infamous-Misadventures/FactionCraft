@@ -4,5 +4,7 @@
   "strength": 8,
   "rank": "soldier",
   "maximum_rank": "leader",
-  "minimum_wave": 2
+  "wave_range": {
+    "min": 2
+  }
 }
