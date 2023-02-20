@@ -19,6 +19,7 @@ import com.patrigan.faction_craft.raid.target.RaidTargetHelper;
 import com.patrigan.faction_craft.util.GeneralUtils;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtUtils;
@@ -40,6 +41,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.Vec3;
 
@@ -383,7 +385,7 @@ public class Raid {
         int mobsFraction = (int) Math.floor(targetStrength * faction.getRaidConfig().getMobsFraction());
 
         int waveStrength = 0;
-        Map<FactionEntityType, Integer> waveFactionEntities = determineFactionEntityTypes(mobsFraction, waveNumber, faction);
+        Map<FactionEntityType, Integer> waveFactionEntities = determineFactionEntityTypes(mobsFraction, waveNumber, faction, spawnBlockPos);
         List<Mob> entities = new ArrayList<>();
         // Collect Entities
         for (Map.Entry<FactionEntityType, Integer> entry : waveFactionEntities.entrySet()) {
@@ -437,10 +439,11 @@ public class Raid {
         });
     }
 
-    private Map<FactionEntityType, Integer> determineFactionEntityTypes(int targetStrength, int waveNumber, Faction faction) {
+    private Map<FactionEntityType, Integer> determineFactionEntityTypes(int targetStrength, int waveNumber, Faction faction, BlockPos spawnBlockPos) {
         Map<FactionEntityType, Integer> waveFactionEntities = new HashMap<>();
         int selectedStrength = 0;
-        EntityWeightMapProperties entityWeightMapProperties = new EntityWeightMapProperties().setWave(waveNumber);
+        Holder<Biome> biome = this.level.getBiome(spawnBlockPos);
+        EntityWeightMapProperties entityWeightMapProperties = new EntityWeightMapProperties().setWave(waveNumber).setBiome(biome.get()).setBlockPos(spawnBlockPos);
         List<Pair<FactionEntityType, Integer>> weightMap = faction.getWeightMap(entityWeightMapProperties);
         for(Pair<FactionEntityType, Integer> pair : weightMap) {
             if(selectedStrength < targetStrength) {

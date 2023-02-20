@@ -97,7 +97,8 @@ public class Faction {
                 factionEntityType -> factionEntityType.canSpawnInWave(properties.getWave())
                 && factionEntityType.hasRanks(properties.getAllowedRanks())
                 && factionEntityType.canSpawnForOmen(properties.getOmen())
-                && factionEntityType.canSpawnForBiome(properties.getBiome()))
+                && factionEntityType.canSpawnForBiome(properties.getBiome())
+                && factionEntityType.canSpawnForYPos(properties.getBlockPos()))
                 .map(factionEntityType -> new Pair<>(factionEntityType, factionEntityType.getWeight())).toList();
     }
 

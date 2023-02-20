@@ -27,7 +27,7 @@ import static net.minecraftforge.registries.ForgeRegistries.ENTITY_TYPES;
 
 
 public class FactionEntityType {
-    public static final FactionEntityType DEFAULT = new FactionEntityType(new ResourceLocation("minecraft:pig"), new CompoundTag(), 1, 1, FactionRank.SOLDIER, FactionRank.SOLDIER, EntityBoostConfig.DEFAULT, new IntRange(0, 10000), new IntRange(0, 10000), new IntRange(0, 10000), HolderSet.direct(), HolderSet.direct());
+    public static final FactionEntityType DEFAULT = new FactionEntityType(new ResourceLocation("minecraft:pig"), new CompoundTag(), 1, 1, FactionRank.SOLDIER, FactionRank.SOLDIER, EntityBoostConfig.DEFAULT, new IntRange(0, 10000), new IntRange(0, 10000), new IntRange(0, 10000), new IntRange(-64, 320), HolderSet.direct(), HolderSet.direct());
     public static final Codec<FactionEntityType> CODEC = RecordCodecBuilder.create(builder ->
             builder.group(
                     ResourceLocation.CODEC.fieldOf("entity_type").forGetter(data -> data.entityType),
@@ -40,6 +40,7 @@ public class FactionEntityType {
                     IntRange.getCodec(0, 10000).optionalFieldOf("wave_range", new IntRange(1, 10000)).forGetter(data -> data.waveRange),
                     IntRange.getCodec(0, 10000).optionalFieldOf("spawned_range", new IntRange(0, 10000)).forGetter(data -> data.spawnedRange),
                     IntRange.getCodec(0, 10000).optionalFieldOf("omen_range", new IntRange(0, 10000)).forGetter(data -> data.omenRange),
+                    IntRange.getCodec(-10000, 10000).optionalFieldOf("y_range", new IntRange(-64, 320)).forGetter(data -> data.yRange),
                     RegistryCodecs.homogeneousList(Registry.BIOME_REGISTRY, DIRECT_CODEC).optionalFieldOf("biome_whitelist", HolderSet.direct()).forGetter(data -> data.biomeWhitelist),
                     RegistryCodecs.homogeneousList(Registry.BIOME_REGISTRY, DIRECT_CODEC).optionalFieldOf("biome_blacklist", HolderSet.direct()).forGetter(data -> data.biomeBlacklist)
             ).apply(builder, FactionEntityType::new));
@@ -71,10 +72,11 @@ public class FactionEntityType {
     private final IntRange waveRange;
     private final IntRange spawnedRange;
     private final IntRange omenRange;
+    private final IntRange yRange;
     private final HolderSet<Biome> biomeWhitelist;
     private final HolderSet<Biome> biomeBlacklist;
 
-    public FactionEntityType(ResourceLocation entityType, CompoundTag tag, int weight, int strength, FactionRank rank, FactionRank maximumRank, EntityBoostConfig entityBoostConfig, IntRange waveRange, IntRange spawnedRange, IntRange omenRange, HolderSet<Biome> biomeWhitelist, HolderSet<Biome> biomeBlacklist) {
+    public FactionEntityType(ResourceLocation entityType, CompoundTag tag, int weight, int strength, FactionRank rank, FactionRank maximumRank, EntityBoostConfig entityBoostConfig, IntRange waveRange, IntRange spawnedRange, IntRange omenRange, IntRange yRange, HolderSet<Biome> biomeWhitelist, HolderSet<Biome> biomeBlacklist) {
         this.entityType = entityType;
         this.tag = tag;
         this.weight = weight;
@@ -85,6 +87,7 @@ public class FactionEntityType {
         this.waveRange = waveRange;
         this.spawnedRange = spawnedRange;
         this.omenRange = omenRange;
+        this.yRange = yRange;
         this.biomeWhitelist = biomeWhitelist;
         this.biomeBlacklist = biomeBlacklist;
     }
@@ -100,6 +103,7 @@ public class FactionEntityType {
         this.waveRange = new IntRange(minimumWave, maximumWave);
         this.spawnedRange = new IntRange(minimumSpawned, maximumSpawned);
         this.omenRange = new IntRange(minimumOmen, maximumOmen);
+        this.yRange = new IntRange(-64, 320);
         this.biomeWhitelist = HolderSet.direct();
         this.biomeBlacklist = HolderSet.direct();
     }
@@ -127,6 +131,7 @@ public class FactionEntityType {
                             compoundNbt.getInt("maximumSpawned")),
                     new IntRange(compoundNbt.getInt("minimumOmen"),
                             compoundNbt.getInt("maximumOmen")),
+                    new IntRange(-64, 320),
                     HolderSet.direct(),
                     HolderSet.direct()
             );
@@ -173,6 +178,10 @@ public class FactionEntityType {
         return omenRange;
     }
 
+    public IntRange getYRange() {
+        return yRange;
+    }
+
     public HolderSet<Biome> getBiomeWhitelist() {
         return biomeWhitelist;
     }
@@ -182,11 +191,15 @@ public class FactionEntityType {
     }
 
     public boolean canSpawnInWave(int wave) {
-        return wave >= getWaveRange().getMin() && wave <= getWaveRange().getMax();
+        return getWaveRange().isBetween(wave);
     }
 
     public boolean canSpawnForOmen(int omen) {
-        return omen >= getOmenRange().getMin() && omen <= getOmenRange().getMax();
+        return getOmenRange().isBetween(omen);
+    }
+
+    public boolean canSpawnForYPos(BlockPos blockPos) {
+        return blockPos != null && getYRange().isBetween(blockPos.getY());
     }
 
     public boolean canSpawnForBiome(Biome biome) {

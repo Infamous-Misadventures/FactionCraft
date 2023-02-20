@@ -26,4 +26,8 @@ public record IntRange(int min, int max) {
     public int getMax() {
         return max;
     }
+
+    public boolean isBetween(int value) {
+        return value >= min && value <= max;
+    }
 }
