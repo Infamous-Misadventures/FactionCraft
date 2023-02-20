@@ -26,7 +26,7 @@ import static net.minecraftforge.registries.ForgeRegistries.ENTITY_TYPES;
 
 
 public class FactionEntityType {
-    public static final FactionEntityType DEFAULT = new FactionEntityType(new ResourceLocation("minecraft:pig"), new CompoundTag(), 1, 1, FactionRank.SOLDIER, FactionRank.SOLDIER, EntityBoostConfig.DEFAULT, 0, 10000, 0, 10000, 0, 1000, HolderSet.direct());
+    public static final FactionEntityType DEFAULT = new FactionEntityType(new ResourceLocation("minecraft:pig"), new CompoundTag(), 1, 1, FactionRank.SOLDIER, FactionRank.SOLDIER, EntityBoostConfig.DEFAULT, 0, 10000, 0, 10000, 0, 1000, HolderSet.direct(), HolderSet.direct());
     public static final Codec<FactionEntityType> CODEC = RecordCodecBuilder.create(builder ->
             builder.group(
                     ResourceLocation.CODEC.fieldOf("entity_type").forGetter(data -> data.entityType),
@@ -42,7 +42,8 @@ public class FactionEntityType {
                     Codec.INT.optionalFieldOf("maximum_spawned", 10000).forGetter(data -> data.maximumSpawned),
                     Codec.INT.optionalFieldOf("minimum_omen", 0).forGetter(data -> data.minimumOmen),
                     Codec.INT.optionalFieldOf("maximum_omen", 10000).forGetter(data -> data.maximumOmen),
-                    RegistryCodecs.homogeneousList(Registry.BIOME_REGISTRY, DIRECT_CODEC).optionalFieldOf("biomes", null).forGetter(data -> data.biomes)
+                    RegistryCodecs.homogeneousList(Registry.BIOME_REGISTRY, DIRECT_CODEC).optionalFieldOf("biome_whitelist", HolderSet.direct()).forGetter(data -> data.biomeWhitelist),
+                    RegistryCodecs.homogeneousList(Registry.BIOME_REGISTRY, DIRECT_CODEC).optionalFieldOf("biome_blacklist", HolderSet.direct()).forGetter(data -> data.biomeBlacklist)
             ).apply(builder, FactionEntityType::new));
 
     private final ResourceLocation entityType;
@@ -58,9 +59,10 @@ public class FactionEntityType {
     private final int maximumSpawned;
     private final int minimumOmen;
     private final int maximumOmen;
-    private final HolderSet<Biome> biomes;
+    private final HolderSet<Biome> biomeWhitelist;
+    private final HolderSet<Biome> biomeBlacklist;
 
-    public FactionEntityType(ResourceLocation entityType, CompoundTag tag, int weight, int strength, FactionRank rank, FactionRank maximumRank, EntityBoostConfig entityBoostConfig, int minimumWave, int maximumWave, int minimumSpawned, int maximumSpawned, int minimumOmen, int maximumOmen, HolderSet<Biome> biomes) {
+    public FactionEntityType(ResourceLocation entityType, CompoundTag tag, int weight, int strength, FactionRank rank, FactionRank maximumRank, EntityBoostConfig entityBoostConfig, int minimumWave, int maximumWave, int minimumSpawned, int maximumSpawned, int minimumOmen, int maximumOmen, HolderSet<Biome> biomeWhitelist, HolderSet<Biome> biomeBlacklist) {
         this.entityType = entityType;
         this.tag = tag;
         this.weight = weight;
@@ -74,7 +76,8 @@ public class FactionEntityType {
         this.maximumSpawned = maximumSpawned;
         this.minimumOmen = minimumOmen;
         this.maximumOmen = maximumOmen;
-        this.biomes = biomes;
+        this.biomeWhitelist = biomeWhitelist;
+        this.biomeBlacklist = biomeBlacklist;
     }
 
     public static FactionEntityType load(CompoundTag compoundNbt) {
@@ -100,6 +103,7 @@ public class FactionEntityType {
                     compoundNbt.getInt("maximumSpawned"),
                     compoundNbt.getInt("minimumOmen"),
                     compoundNbt.getInt("maximumOmen"),
+                    HolderSet.direct(),
                     HolderSet.direct()
             );
         }
@@ -157,8 +161,8 @@ public class FactionEntityType {
         return maximumSpawned;
     }
 
-    public HolderSet<Biome> getBiomes() {
-        return biomes;
+    public HolderSet<Biome> getBiomeWhitelist() {
+        return biomeWhitelist;
     }
 
     public boolean canSpawnInWave(int wave){
@@ -167,6 +171,16 @@ public class FactionEntityType {
 
     public boolean canSpawnForOmen(int omen){
         return omen >= getMinimumOmen() && omen <= getMaximumOmen();
+    }
+
+    public boolean canSpawnForBiome(Biome biome) {
+        if(biome == null) {
+            return this.getBiomeWhitelist().size() == 0;
+        }else if(biomeBlacklist.contains(Holder.direct(biome))){
+            return false;
+        }else {
+            return this.getBiomeWhitelist().size() == 0 || this.getBiomeWhitelist().contains(Holder.direct(biome));
+        }
     }
 
     public List<FactionRank> getRanks() {
@@ -212,16 +226,6 @@ public class FactionEntityType {
     public boolean hasRanks(List<FactionRank> requiredRanks) {
         List<FactionRank> possibleRanks = getRanks();
         return requiredRanks.stream().anyMatch(possibleRanks::contains);
-    }
-
-    public boolean canSpawnForBiome(Biome biome) {
-        if(this.getBiomes().size() == 0){
-            return true;
-        }else if(biome == null){
-            return false;
-        }else {
-            return this.getBiomes().contains(Holder.direct(biome));
-        }
     }
 
     public Entity createEntity(ServerLevel level, Faction faction, BlockPos spawnBlockPos, boolean bannerHolder, MobSpawnType spawnReason) {
