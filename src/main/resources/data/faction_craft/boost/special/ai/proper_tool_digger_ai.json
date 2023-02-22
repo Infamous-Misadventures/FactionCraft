@@ -1,0 +1,6 @@
+{
+  "type":"faction_craft:digger_boost",
+  "strength_adjustment": 1,
+  "requires_tool": true,
+  "requires_proper_tool": true
+}

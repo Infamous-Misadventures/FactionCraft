@@ -16,6 +16,8 @@ import net.minecraft.network.protocol.game.ClientboundEntityEventPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.raid.Raider;
 import net.minecraft.world.level.GameRules;
 import net.minecraftforge.common.util.INBTSerializable;
 
@@ -52,6 +54,14 @@ public class RaidManager implements INBTSerializable<CompoundTag> {
         }
 
 //        DebugPacketSender.sendRaids(this.level, this.raidMap.values());
+    }
+
+    public static boolean canJoinRaid(Mob pRaider, Raid pRaid) {
+        if (pRaider != null && pRaid != null && pRaid.getLevel() != null) {
+            return pRaider.isAlive() && pRaider.getNoActionTime() <= 2400 && pRaider.level.dimensionType() == pRaid.getLevel().dimensionType();
+        } else {
+            return false;
+        }
     }
 
     public Map<Integer, Raid> getRaids() {

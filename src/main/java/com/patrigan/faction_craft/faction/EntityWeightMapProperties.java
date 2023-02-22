@@ -9,7 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class EntityWeightMapProperties {
-    private int wave = 0;
+    private int wave = 1;
     private int omen = 0;
     private List<FactionEntityType.FactionRank> allowedRanks = new ArrayList<>(Arrays.asList(FactionEntityType.FactionRank.values()));
     private BlockPos blockPos = null;

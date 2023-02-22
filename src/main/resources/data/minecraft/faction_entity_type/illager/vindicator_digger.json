@@ -1,0 +1,10 @@
+{
+  "entity_type": "minecraft:vindicator",
+  "weight": 30,
+  "strength": 8,
+  "rank": "digger",
+  "maximum_rank": "digger",
+  "boosts": {
+    "mandatory": ["faction_craft:special/ai/barehanded_digger_ai", "minecraft:hand/iron_pickaxe"]
+  }
+}

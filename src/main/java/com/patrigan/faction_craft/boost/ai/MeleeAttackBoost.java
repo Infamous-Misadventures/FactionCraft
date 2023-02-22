@@ -1,7 +1,8 @@
-package com.patrigan.faction_craft.boost;
+package com.patrigan.faction_craft.boost.ai;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.patrigan.faction_craft.boost.Boost;
 import com.patrigan.faction_craft.entity.ai.goal.GoalHelper;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -15,7 +16,6 @@ import java.util.stream.Collectors;
 
 import static com.patrigan.faction_craft.boost.Boost.BoostType.*;
 import static com.patrigan.faction_craft.boost.Boost.Rarity.NONE;
-import static com.patrigan.faction_craft.boost.BoostProviders.WEAR_HANDS;
 
 public class MeleeAttackBoost extends Boost {
 

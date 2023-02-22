@@ -1,6 +1,8 @@
 package com.patrigan.faction_craft.boost;
 
 import com.mojang.serialization.Codec;
+import com.patrigan.faction_craft.boost.ai.DiggerBoost;
+import com.patrigan.faction_craft.boost.ai.MeleeAttackBoost;
 import com.patrigan.faction_craft.util.RegistryDispatcher;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.fml.common.Mod;
@@ -27,5 +29,7 @@ public class BoostProviders {
     public static final RegistryObject<Codec<DaylightProtectionBoost>> DAYLIGHT_PROTECTION = BOOST_DISPATCHER.registry().register("daylight_protection_boost", () -> DaylightProtectionBoost.CODEC);
     public static final RegistryObject<Codec<MountBoost>> MOUNT = BOOST_DISPATCHER.registry().register("mount_boost", () -> MountBoost.CODEC);
     public static final RegistryObject<Codec<FactionMountBoost>> FACTION_MOUNT = BOOST_DISPATCHER.registry().register("faction_mount_boost", () -> FactionMountBoost.CODEC);
+    //AI
     public static final RegistryObject<Codec<MeleeAttackBoost>> MELEE_ATTACK = BOOST_DISPATCHER.registry().register("melee_attack_boost", () -> MeleeAttackBoost.CODEC);
+    public static final RegistryObject<Codec<DiggerBoost>> Digger = BOOST_DISPATCHER.registry().register("digger_boost", () -> DiggerBoost.CODEC);
 }

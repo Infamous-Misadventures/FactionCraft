@@ -328,6 +328,7 @@ public class FactionEntityType {
         LEADER("leader", null),
         SUPPORT("support", null),
         MOUNT("mount", null),
+        DIGGER("digger", null),
         GENERAL("general", LEADER),
         CAPTAIN("captain", GENERAL),
         SOLDIER("soldier", CAPTAIN);
