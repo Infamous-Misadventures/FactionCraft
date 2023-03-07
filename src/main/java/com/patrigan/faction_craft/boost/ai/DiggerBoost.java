@@ -89,7 +89,7 @@ public class DiggerBoost extends Boost {
     public void applyAIChanges(Mob mobEntity) {
         if (mobEntity instanceof PathfinderMob pathfinder) {
             FactionDigGoal meleeGoal = new FactionDigGoal(pathfinder, requiresTool, requiresProperTool, getHand());
-            mobEntity.goalSelector.addGoal(3, meleeGoal);
+            mobEntity.goalSelector.addGoal(2, meleeGoal);
         }
     }
 }

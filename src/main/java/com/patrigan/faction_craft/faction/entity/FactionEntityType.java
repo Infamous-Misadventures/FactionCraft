@@ -16,6 +16,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
 import net.minecraft.world.level.biome.Biome;
 
 import java.util.ArrayList;
@@ -259,30 +260,29 @@ public class FactionEntityType {
 
     public Entity createEntity(ServerLevel level, Faction faction, BlockPos spawnBlockPos, boolean bannerHolder, MobSpawnType spawnReason) {
         EntityType<?> entityType = ENTITY_TYPES.getValue(this.getEntityType());
-        Entity entity = null;
+        Entity entity;
         if (!this.getTag().isEmpty()) {
             CompoundTag compoundnbt = this.getTag().copy();
             compoundnbt.putString("id", this.getEntityType().toString());
-            entity = EntityType.loadEntityRecursive(compoundnbt, level, createdEntity -> {
-                createdEntity.moveTo(spawnBlockPos.getX() + 0.5D, spawnBlockPos.getY() + 1.0D, spawnBlockPos.getZ() + 0.5D, createdEntity.getYRot(), createdEntity.getXRot());
-                return createdEntity;
-            });
+            entity = EntityType.loadEntityRecursive(compoundnbt, level, createdEntity -> createdEntity);
         } else {
             entity = entityType.create(level);
-            entity.setPos(spawnBlockPos.getX() + 0.5D, spawnBlockPos.getY() + 1.0D, spawnBlockPos.getZ() + 0.5D);
         }
         if (entity == null) {
             return null;
         }
-        if (entity instanceof Mob) {
-            Mob mobEntity = (Mob) entity;
+        entity.moveTo(spawnBlockPos.getX() + 0.5D, spawnBlockPos.getY() + 1.0D, spawnBlockPos.getZ() + 0.5D, entity.getYRot(), entity.getXRot());
+        if (entity instanceof Mob mobEntity) {
             if (bannerHolder) {
                 faction.makeBannerHolder(mobEntity);
             }
             if (net.minecraftforge.common.ForgeHooks.canEntitySpawn(mobEntity, level, spawnBlockPos.getX(), spawnBlockPos.getY(), spawnBlockPos.getZ(), null, spawnReason) == -1)
                 return null;
-            if (this.tag.isEmpty()) {
+            if (this.getTag().isEmpty()) {
                 mobEntity.finalizeSpawn(level, level.getCurrentDifficultyAt(spawnBlockPos), MobSpawnType.EVENT, null, null);
+            }
+            if(mobEntity.getNavigation() instanceof GroundPathNavigation groundPathNavigation) {
+                groundPathNavigation.setCanOpenDoors(true);
             }
             mobEntity.setOnGround(true);
         }

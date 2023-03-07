@@ -14,12 +14,17 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
 import net.minecraft.world.entity.ai.util.DefaultRandomPos;
 import net.minecraft.world.entity.ai.village.poi.PoiManager;
 import net.minecraft.world.entity.ai.village.poi.PoiTypes;
+import net.minecraft.world.level.block.DoorBlock;
+import net.minecraft.world.level.pathfinder.Node;
+import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.*;
+import java.util.function.BooleanSupplier;
 
 public class RaiderMoveThroughVillageGoal extends Goal {
     private final Mob mob;
@@ -28,15 +33,18 @@ public class RaiderMoveThroughVillageGoal extends Goal {
     private final int distanceToPoi;
     private BlockPos poiPos;
     private boolean stuck;
+    private final BooleanSupplier canDealWithDoors;
     private int lastStuckCheck = 0;
     private Vec3 lastStuckCheckPos;
+    private Path path = null;
 
-    public RaiderMoveThroughVillageGoal(Mob p_i50570_1_, double p_i50570_2_, int p_i50570_4_) {
+    public RaiderMoveThroughVillageGoal(Mob p_i50570_1_, double pSpeedModifier, int pDistanceToPoi, BooleanSupplier canDealWithDoors) {
         this.mob = p_i50570_1_;
         this.lastStuckCheck = mob.tickCount;
         this.lastStuckCheckPos = mob.position();
-        this.speedModifier = p_i50570_2_;
-        this.distanceToPoi = p_i50570_4_;
+        this.speedModifier = pSpeedModifier;
+        this.distanceToPoi = pDistanceToPoi;
+        this.canDealWithDoors = canDealWithDoors;
         this.setFlags(EnumSet.of(Goal.Flag.MOVE));
     }
 
@@ -73,7 +81,7 @@ public class RaiderMoveThroughVillageGoal extends Goal {
         if (this.mob.getNavigation().isDone()) {
             return false;
         } else {
-            return this.mob.getTarget() == null && !this.poiPos.closerToCenterThan(this.mob.position(), this.mob.getBbWidth() + (float) this.distanceToPoi);
+            return this.mob.getTarget() == null && !this.poiPos.closerToCenterThan(this.mob.position(), this.mob.getBbWidth() + (float) this.distanceToPoi) && !this.stuck;
         }
     }
 
@@ -93,7 +101,42 @@ public class RaiderMoveThroughVillageGoal extends Goal {
     public void start() {
         super.start();
         this.mob.setNoActionTime(0);
-        this.mob.getNavigation().moveTo(this.poiPos.getX(), this.poiPos.getY(), this.poiPos.getZ(), this.speedModifier);
+        PathfinderMob pathfinderMob = (PathfinderMob) this.mob;
+        GroundPathNavigation groundpathnavigation = (GroundPathNavigation) this.mob.getNavigation();
+        boolean flag = groundpathnavigation.canOpenDoors();
+        groundpathnavigation.setCanOpenDoors(this.canDealWithDoors.getAsBoolean());
+        this.path = groundpathnavigation.createPath(this.poiPos, 0);
+        groundpathnavigation.setCanOpenDoors(flag);
+        this.stuck = true;
+        if (this.path == null) {
+            Vec3 vec31 = DefaultRandomPos.getPosTowards(pathfinderMob, 10, 7, Vec3.atBottomCenterOf(this.poiPos), (double) ((float) Math.PI / 2F));
+            if (vec31 == null) {
+                return;
+            }
+
+            groundpathnavigation.setCanOpenDoors(this.canDealWithDoors.getAsBoolean());
+            this.path = this.mob.getNavigation().createPath(vec31.x, vec31.y, vec31.z, 0);
+            groundpathnavigation.setCanOpenDoors(flag);
+            if (this.path == null) {
+                return;
+            }
+        }
+
+        for (int i = 0; i < this.path.getNodeCount(); ++i) {
+            Node node = this.path.getNode(i);
+            BlockPos blockpos1 = new BlockPos(node.x, node.y + 1, node.z);
+            if (DoorBlock.isWoodenDoor(this.mob.level, blockpos1)) {
+                this.path = this.mob.getNavigation().createPath((double) node.x, (double) node.y, (double) node.z, 0);
+                break;
+            }
+        }
+
+        if (path == null) {
+            Raider raiderCapability = RaiderHelper.getRaiderCapability(this.mob);
+            Faction faction = FactionEntityHelper.getFactionEntityCapability(this.mob).getFaction();
+            raiderCapability.getRaid().spawnDigger(faction, this.mob.blockPosition());
+        }
+        this.mob.getNavigation().moveTo(path, this.speedModifier);
         this.stuck = false;
     }
 
@@ -104,31 +147,10 @@ public class RaiderMoveThroughVillageGoal extends Goal {
         Raider raiderCapability = RaiderHelper.getRaiderCapability(this.mob);
         if (raiderCapability.hasActiveRaid()) {
             Raid raid = raiderCapability.getRaid();
-            if (doStuckCheck()) {
-
-                Faction faction = FactionEntityHelper.getFactionEntityCapability(this.mob).getFaction();
-                raiderCapability.getRaid().spawnDigger(faction, mob.blockPosition());
-            }
-
             if (this.mob.tickCount % 20 == 0) {
                 this.recruitNearby(raid);
             }
         }
-        if (this.mob.getNavigation().isDone()) {
-            Vec3 vector3d = Vec3.atBottomCenterOf(this.poiPos);
-            Vec3 vector3d1 = DefaultRandomPos.getPosTowards((PathfinderMob) this.mob, 16, 7, vector3d, (double) ((float) Math.PI / 10F));
-            if (vector3d1 == null) {
-                vector3d1 = DefaultRandomPos.getPosTowards((PathfinderMob) this.mob, 8, 7, vector3d, (double) ((float) Math.PI / 2F));
-            }
-
-            if (vector3d1 == null) {
-                this.stuck = true;
-                return;
-            }
-
-            this.mob.getNavigation().moveTo(vector3d1.x, vector3d1.y, vector3d1.z, this.speedModifier);
-        }
-
     }
 
     private boolean doStuckCheck() {
@@ -138,7 +160,16 @@ public class RaiderMoveThroughVillageGoal extends Goal {
                 this.lastStuckCheckPos = mob.position();
                 return true;
             }
-
+            // Todo: add a check to see if the distance of the mob's postion to the targetPos is increasing compared to the lastStuckCheckPos
+//            BlockPos targetBlockPos = this.mob.getNavigation().getTargetPos();
+//            if (targetBlockPos != null) {
+//                Vec3 targetPos = Vec3.atCenterOf(targetBlockPos);
+//                if (this.mob.position().distanceToSqr(targetPos) - this.lastStuckCheckPos.distanceToSqr(targetPos) < 2.25D) {
+//                    this.lastStuckCheck = this.mob.tickCount;
+//                    this.lastStuckCheckPos = mob.position();
+//                    return true;
+//                }
+//            }
             this.lastStuckCheck = this.mob.tickCount;
             this.lastStuckCheckPos = mob.position();
         }
@@ -173,7 +204,7 @@ public class RaiderMoveThroughVillageGoal extends Goal {
     }
 
     private void updateVisited() {
-        if (this.visited.size() > 2) {
+        if (this.visited.size() > 15) {
             this.visited.remove(0);
         }
 
