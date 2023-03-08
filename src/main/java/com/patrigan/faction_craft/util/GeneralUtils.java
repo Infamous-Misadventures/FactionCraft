@@ -1,11 +1,11 @@
 package com.patrigan.faction_craft.util;
 
 import com.mojang.datafixers.util.Pair;
+import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.entity.Mob;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
-import java.util.Random;
 
 public class GeneralUtils {
 
@@ -33,5 +33,9 @@ public class GeneralUtils {
             return null;
         }
         return givenList.get(random.nextInt(givenList.size()));
+    }
+
+    public static BlockPos vec3ToBlockPos(Vec3 vec3) {
+        return new BlockPos(vec3.x, vec3.y, vec3.z);
     }
 }

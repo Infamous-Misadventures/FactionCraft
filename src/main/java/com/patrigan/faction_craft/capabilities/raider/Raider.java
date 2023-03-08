@@ -93,7 +93,7 @@ public class Raider implements INBTSerializable<CompoundTag> {
                 addGoal(2, new RaidOpenDoorGoal(entity));
             }
             addGoal(3, new MoveTowardsRaidGoal<>(this.entity));
-            addGoal(4, new RaiderMoveThroughVillageGoal(entity, 1.05F, 1, () -> true));
+            addGoal(4, new RaiderMoveThroughVillageGoal(entity, 1.05F, 1, () -> true, 15));
             addGoal(3, new NearestAttackableTargetGoal<>(this.entity, AbstractVillager.class, false));
         }else{
             this.addedGoals.forEach(this.entity.goalSelector::removeGoal);

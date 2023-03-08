@@ -18,28 +18,30 @@ import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
 import net.minecraft.world.entity.ai.util.DefaultRandomPos;
 import net.minecraft.world.entity.ai.village.poi.PoiManager;
 import net.minecraft.world.entity.ai.village.poi.PoiTypes;
-import net.minecraft.world.level.block.DoorBlock;
-import net.minecraft.world.level.pathfinder.Node;
 import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.*;
 import java.util.function.BooleanSupplier;
 
+import static com.patrigan.faction_craft.util.GeneralUtils.vec3ToBlockPos;
+
 public class RaiderMoveThroughVillageGoal extends Goal {
     private final Mob mob;
     private final double speedModifier;
     private final List<BlockPos> visited = Lists.newArrayList();
     private final int distanceToPoi;
+    private final BooleanSupplier canDealWithDoors;
     private BlockPos poiPos;
     private boolean stuck;
-    private final BooleanSupplier canDealWithDoors;
     private int lastStuckCheck = 0;
     private Vec3 lastStuckCheckPos;
     private Path path = null;
+    private int uncertaintyDistance;
 
-    public RaiderMoveThroughVillageGoal(Mob p_i50570_1_, double pSpeedModifier, int pDistanceToPoi, BooleanSupplier canDealWithDoors) {
+    public RaiderMoveThroughVillageGoal(Mob p_i50570_1_, double pSpeedModifier, int pDistanceToPoi, BooleanSupplier canDealWithDoors, int uncertaintyDistance) {
         this.mob = p_i50570_1_;
+        this.uncertaintyDistance = uncertaintyDistance;
         this.lastStuckCheck = mob.tickCount;
         this.lastStuckCheckPos = mob.position();
         this.speedModifier = pSpeedModifier;
@@ -102,42 +104,41 @@ public class RaiderMoveThroughVillageGoal extends Goal {
         super.start();
         this.mob.setNoActionTime(0);
         PathfinderMob pathfinderMob = (PathfinderMob) this.mob;
-        GroundPathNavigation groundpathnavigation = (GroundPathNavigation) this.mob.getNavigation();
-        boolean flag = groundpathnavigation.canOpenDoors();
-        groundpathnavigation.setCanOpenDoors(this.canDealWithDoors.getAsBoolean());
-        this.path = groundpathnavigation.createPath(this.poiPos, 0);
-        groundpathnavigation.setCanOpenDoors(flag);
+        GroundPathNavigation groundPathNavigation = (GroundPathNavigation) this.mob.getNavigation();
         this.stuck = true;
-        if (this.path == null) {
+        boolean flag = groundPathNavigation.canOpenDoors();
+        if (this.mob.blockPosition().closerThan(this.poiPos, uncertaintyDistance)) {
+            this.path = getPathTowards(groundPathNavigation, flag, this.poiPos);
+            if (this.path == null) {
+                Vec3 vec31 = DefaultRandomPos.getPosTowards(pathfinderMob, 10, 7, Vec3.atBottomCenterOf(this.poiPos), (double) ((float) Math.PI / 2F));
+                if (vec31 == null) {
+                    return;
+                }
+                this.path = getPathTowards(groundPathNavigation, flag, vec3ToBlockPos(vec31));
+            }
+        } else {
             Vec3 vec31 = DefaultRandomPos.getPosTowards(pathfinderMob, 10, 7, Vec3.atBottomCenterOf(this.poiPos), (double) ((float) Math.PI / 2F));
             if (vec31 == null) {
                 return;
             }
-
-            groundpathnavigation.setCanOpenDoors(this.canDealWithDoors.getAsBoolean());
-            this.path = this.mob.getNavigation().createPath(vec31.x, vec31.y, vec31.z, 0);
-            groundpathnavigation.setCanOpenDoors(flag);
-            if (this.path == null) {
-                return;
-            }
-        }
-
-        for (int i = 0; i < this.path.getNodeCount(); ++i) {
-            Node node = this.path.getNode(i);
-            BlockPos blockpos1 = new BlockPos(node.x, node.y + 1, node.z);
-            if (DoorBlock.isWoodenDoor(this.mob.level, blockpos1)) {
-                this.path = this.mob.getNavigation().createPath((double) node.x, (double) node.y, (double) node.z, 0);
-                break;
-            }
+            this.path = getPathTowards(groundPathNavigation, flag, vec3ToBlockPos(vec31));
         }
 
         if (path == null) {
             Raider raiderCapability = RaiderHelper.getRaiderCapability(this.mob);
             Faction faction = FactionEntityHelper.getFactionEntityCapability(this.mob).getFaction();
             raiderCapability.getRaid().spawnDigger(faction, this.mob.blockPosition());
+            return;
         }
         this.mob.getNavigation().moveTo(path, this.speedModifier);
         this.stuck = false;
+    }
+
+    private Path getPathTowards(GroundPathNavigation groundPathNavigation, boolean flag, BlockPos poiPos) {
+        groundPathNavigation.setCanOpenDoors(this.canDealWithDoors.getAsBoolean());
+        Path path = groundPathNavigation.createPath(poiPos, 0);
+        groundPathNavigation.setCanOpenDoors(flag);
+        return path;
     }
 
     /**

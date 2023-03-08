@@ -46,7 +46,7 @@ public class FactionDigGoal extends Goal {
     private final EquipmentSlot hand;
     private BlockState currentBlockState = null;
     private float breakDuration = 0;
-    private int breakingProgressTicks = 0;
+    private int destroyProgressStart = 0;
     private int prevBreakingProgressTicks;
     private int lastStuckCheck = 0;
     private Vec3 lastStuckCheckPos;
@@ -105,7 +105,8 @@ public class FactionDigGoal extends Goal {
     private void initBlockBreak() {
         this.currentBlockState = this.mob.level.getBlockState(this.targetBlocks.get(0));
         this.breakDuration = breakProgress(mob.level, this.targetBlocks.get(0));
-        this.breakingProgressTicks = 0;
+        this.mob.level.destroyBlockProgress(this.mob.getId(), targetBlocks.get(0), (int) this.breakDuration);
+        this.destroyProgressStart = this.mob.tickCount;
     }
 
     private float breakProgress(Level pLevel, BlockPos pPos) {
@@ -130,20 +131,17 @@ public class FactionDigGoal extends Goal {
             return;
         if (this.requiresProperTool && this.currentBlockState != null && !this.isCorrectToolForDrops())
             return;
-        this.breakingProgressTicks++;
         this.mob.getLookControl().setLookAt(this.targetBlocks.get(0).getX() + 0.5d, this.targetBlocks.get(0).getY() + 0.5d, this.targetBlocks.get(0).getZ() + 0.5d);
-        if (this.prevBreakingProgressTicks != (int) ((this.breakingProgressTicks / (float) this.breakDuration) * 10)) {
-            this.mob.level.destroyBlockProgress(this.mob.getId(), targetBlocks.get(0), this.prevBreakingProgressTicks);
-            this.prevBreakingProgressTicks = (int) ((this.breakingProgressTicks / (float) this.breakDuration) * 10);
-        }
-        if (this.breakingProgressTicks % 6 == 0) {
+        int destroyTicks = this.mob.tickCount - this.destroyProgressStart;
+        if (destroyTicks % 6 == 0) {
             this.mob.swing(InteractionHand.MAIN_HAND);
         }
-        if (this.breakingProgressTicks % 4 == 0) {
+        if (destroyTicks % 4 == 0) {
             SoundType soundType = this.currentBlockState.getSoundType(this.mob.level, this.targetBlocks.get(0), this.mob);
             this.mob.level.playSound(null, this.targetBlocks.get(0), soundType.getHitSound(), SoundSource.BLOCKS, (soundType.getVolume() + 1.0F) / 2.0F, soundType.getPitch() * 0.8F);
         }
-        if (this.breakingProgressTicks >= this.breakDuration) {
+        float f1 = this.breakDuration * (float)(destroyTicks + 1);
+        if (f1 >= 0.7F) {
 //            this.mob.level.destroyBlock(targetBlocks.get(0), true, this.mob);
 //            this.mob.level.destroyBlockProgress(this.mob.getId(), targetBlocks.get(0), -1);
             RaidManager raidManager = RaidManagerHelper.getRaidManagerCapability(this.mob.level);
