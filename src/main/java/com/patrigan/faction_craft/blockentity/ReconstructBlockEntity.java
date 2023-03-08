@@ -9,6 +9,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Difficulty;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -22,6 +23,7 @@ public class ReconstructBlockEntity extends BlockEntity {
     private int raidId = 0;
     private Raid raid = null;
     private int timer = -1000;
+    private Mob mob = null;
 
     public ReconstructBlockEntity(BlockPos p_155229_, BlockState p_155230_) {
         super(ModBlockEntityTypes.RECONSTRUCT_BLOCK_ENTITY.get(), p_155229_, p_155230_);
@@ -48,17 +50,25 @@ public class ReconstructBlockEntity extends BlockEntity {
         if(timer == -1000){
             timer = FactionCraftConfig.RECONSTRUCT_TICK_DELAY.get() + level.getRandom().nextInt(FactionCraftConfig.RECONSTRUCT_VARIABLE_TICK_DELAY.get());
         }
-        if(raid != null && (raid.isVictory() || raid.isStopped())) {
+        if(raid != null) {
+            if (raid.isVictory() || raid.isStopped()) {
+                timer--;
+            }
+            if (raid.isLoss()) {
+                if (FactionCraftConfig.RECONSTRUCT_ON_LOSS.get()) {
+                    timer--;
+                } else {
+                    level.removeBlock(this.worldPosition, false);
+                }
+            }
+        }else if(mob != null){
+            if(mob.isDeadOrDying()){
+                timer--;
+            }
+        }else{
             timer--;
         }
-        if(raid != null && raid.isLoss()){
-            if(FactionCraftConfig.RECONSTRUCT_ON_LOSS.get()){
-                timer--;
-            }else{
-                level.removeBlock(this.worldPosition, false);
-            }
-        }
-        if(timer <= 0 || raid == null || level.getDifficulty().equals(Difficulty.PEACEFUL)){
+        if(timer <= 0 || level.getDifficulty().equals(Difficulty.PEACEFUL)){
             revertBlock(level);
         }
     }
@@ -66,9 +76,7 @@ public class ReconstructBlockEntity extends BlockEntity {
     private void loadRaid(ServerLevel level) {
         if(raid == null && raidId != 0) {
             RaidManager raidManager = RaidManagerHelper.getRaidManagerCapability(level);
-            if (raidManager != null) {
-                this.raid = raidManager.getRaids().get(raidId);
-            }
+            this.raid = raidManager.getRaids().get(raidId);
         }
     }
 
@@ -94,6 +102,14 @@ public class ReconstructBlockEntity extends BlockEntity {
 
     public void setRaid(Raid raid) {
         this.raid = raid;
+    }
+
+    public Mob getMob() {
+        return mob;
+    }
+
+    public void setMob(Mob mob) {
+        this.mob = mob;
     }
 
     @Override

@@ -47,7 +47,6 @@ public class FactionDigGoal extends Goal {
     private BlockState currentBlockState = null;
     private float breakDuration = 0;
     private int destroyProgressStart = 0;
-    private int prevBreakingProgressTicks;
     private int lastStuckCheck = 0;
     private Vec3 lastStuckCheckPos;
 
@@ -65,7 +64,7 @@ public class FactionDigGoal extends Goal {
         if (this.requiresTool && !canToolDig()) {
             return false;
         }
-        if(this.mob.getNavigation().isDone() || this.mob.getNavigation().getTargetPos() == null){
+        if (this.mob.getNavigation().isDone() || this.mob.getNavigation().getTargetPos() == null) {
             return false;
         }
         return doStuckCheck();
@@ -86,7 +85,13 @@ public class FactionDigGoal extends Goal {
     @Override
     public boolean canContinueToUse() {
         float reachDistance = getReachDistance();
-        return this.canUse() && !this.targetBlocks.isEmpty()
+        if (this.requiresTool && !canToolDig()) {
+            return false;
+        }
+        if (this.mob.getNavigation().isDone() || this.mob.getNavigation().getTargetPos() == null) {
+            return false;
+        }
+        return !this.targetBlocks.isEmpty()
                 && this.targetBlocks.get(0).distSqr(this.mob.blockPosition()) < reachDistance * reachDistance;
     }
 
@@ -115,7 +120,7 @@ public class FactionDigGoal extends Goal {
             return 0.0F;
         } else {
             int i = !this.requiresProperTool || isCorrectToolForDrops() ? 30 : 100;
-            return getDigSpeed(this.currentBlockState, pPos) / f / (float)i;
+            return getDigSpeed(this.currentBlockState, pPos) / f / (float) i;
         }
     }
 
@@ -140,15 +145,11 @@ public class FactionDigGoal extends Goal {
             SoundType soundType = this.currentBlockState.getSoundType(this.mob.level, this.targetBlocks.get(0), this.mob);
             this.mob.level.playSound(null, this.targetBlocks.get(0), soundType.getHitSound(), SoundSource.BLOCKS, (soundType.getVolume() + 1.0F) / 2.0F, soundType.getPitch() * 0.8F);
         }
-        float f1 = this.breakDuration * (float)(destroyTicks + 1);
+        float f1 = this.breakDuration * (float) (destroyTicks + 1);
         if (f1 >= 0.7F) {
-//            this.mob.level.destroyBlock(targetBlocks.get(0), true, this.mob);
-//            this.mob.level.destroyBlockProgress(this.mob.getId(), targetBlocks.get(0), -1);
             RaidManager raidManager = RaidManagerHelper.getRaidManagerCapability(this.mob.level);
             Raid raid = raidManager.getRaidAt(targetBlocks.get(0));
-            if(raid != null && !raid.isOver()) {
-                setReconstructBlock(this.mob.level, targetBlocks.get(0), this.mob.level.getBlockState(targetBlocks.get(0)), raid);
-            }
+            setReconstructBlock(this.mob.level, targetBlocks.get(0), this.mob.level.getBlockState(targetBlocks.get(0)), raid, this.mob);
             this.targetBlocks.remove(0);
             if (!this.targetBlocks.isEmpty())
                 initBlockBreak();
@@ -164,13 +165,11 @@ public class FactionDigGoal extends Goal {
         int mobHeight = Mth.ceil(this.mob.getBbHeight());
         BlockPos targetPos = this.mob.getNavigation().getTargetPos();
         for (int i = 0; i < mobHeight; i++) {
-            BlockHitResult rayTraceResult = this.mob.level.clip(new ClipContext(this.mob.position().add(0, i + 0.5d, 0), new Vec3(targetPos.getX(), targetPos.getY()+i, targetPos.getZ()), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this.mob));
+            BlockHitResult rayTraceResult = this.mob.level.clip(new ClipContext(this.mob.position().add(0, i + 0.5d, 0), new Vec3(targetPos.getX(), targetPos.getY() + i, targetPos.getZ()), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this.mob));
             if (rayTraceResult.getType() == HitResult.Type.MISS)
                 continue;
             if (this.targetBlocks.contains(rayTraceResult.getBlockPos()))
                 continue;
-//			if (rayTraceResult.getBlockPos().getY() > Modules.zombie.diggerMob.maxYDig)
-//				continue;
 
             float reachDistance = getReachDistance();
             double distance = this.mob.distanceToSqr(rayTraceResult.getLocation());
@@ -182,17 +181,14 @@ public class FactionDigGoal extends Goal {
             if (state.hasBlockEntity() || state.getDestroySpeed(this.mob.level, rayTraceResult.getBlockPos()) == -1)
                 continue;
 
-//			if (Modules.zombie.diggerMob.blockBlacklist.isBlockBlackOrNotWhiteListed(state.getBlock()))
-//				continue;
-
             this.targetBlocks.add(rayTraceResult.getBlockPos());
         }
         Collections.reverse(this.targetBlocks);
     }
 
     private boolean canToolDig() {
-        for(ToolAction action : digActions) {
-            if(this.getTool().canPerformAction(action))
+        for (ToolAction action : digActions) {
+            if (this.getTool().canPerformAction(action))
                 return true;
         }
         return false;
@@ -204,12 +200,12 @@ public class FactionDigGoal extends Goal {
             int i = EnchantmentHelper.getBlockEfficiency(this.mob);
             ItemStack itemstack = getTool();
             if (i > 0 && !itemstack.isEmpty()) {
-                f += (float)(i * i + 1);
+                f += (float) (i * i + 1);
             }
         }
 
         if (MobEffectUtil.hasDigSpeed(this.mob)) {
-            f *= 1.0F + (float)(MobEffectUtil.getDigSpeedAmplification(this.mob) + 1) * 0.2F;
+            f *= 1.0F + (float) (MobEffectUtil.getDigSpeedAmplification(this.mob) + 1) * 0.2F;
         }
 
         if (this.mob.hasEffect(MobEffects.DIG_SLOWDOWN)) {

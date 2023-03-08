@@ -25,7 +25,7 @@ public class BlockEvents {
         if(raid != null && !raid.isOver()) {
             List<BlockPos> blockPosList = event.getAffectedBlocks();
             blockPosList.forEach(blockPos -> {
-                setReconstructBlock(event.getLevel(), blockPos, event.getLevel().getBlockState(blockPos), raid);
+                setReconstructBlock(event.getLevel(), blockPos, event.getLevel().getBlockState(blockPos), raid, null);
             });
             event.getAffectedBlocks().clear();
         }

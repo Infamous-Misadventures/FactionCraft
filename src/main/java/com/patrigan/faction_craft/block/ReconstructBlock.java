@@ -4,6 +4,7 @@ import com.patrigan.faction_craft.blockentity.ReconstructBlockEntity;
 import com.patrigan.faction_craft.raid.Raid;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -43,7 +44,7 @@ public class ReconstructBlock extends Block implements EntityBlock {
         return 0;
     }
 
-    public static void setReconstructBlock(Level level, BlockPos blockPos, BlockState blockState, Raid raid) {
+    public static void setReconstructBlock(Level level, BlockPos blockPos, BlockState blockState, Raid raid, Mob mob) {
         if(!ENABLE_RECONSTRUCT_BLOCKS.get()) return;
         if(blockState.isAir()) return;
         if(blockState.is(RECONSTRUCT_BLOCK.get())) return;
@@ -53,12 +54,13 @@ public class ReconstructBlock extends Block implements EntityBlock {
             ReconstructBlockEntity reconstructBlockEntity = (ReconstructBlockEntity) blockEntity;
             reconstructBlockEntity.setRaid(raid);
             reconstructBlockEntity.setReplacedBlockState(blockState);
+            reconstructBlockEntity.setMob(mob);
         }
         for (Direction direction : Direction.values()) {
             BlockPos relativePos = blockPos.relative(direction);
             BlockState neighbour = level.getBlockState(relativePos);
             if(!neighbour.canSurvive(level, relativePos)){
-                setReconstructBlock(level, relativePos, neighbour, raid);
+                setReconstructBlock(level, relativePos, neighbour, raid, null);
             }
         }
     }

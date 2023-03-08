@@ -39,7 +39,7 @@ public class FireBlockMixin {
             ordinal = 0)
     public BlockState factioncraft_tryCatchFire_afterSet(BlockState blockstate, Level pLevel, BlockPos pPos, int pChance, RandomSource pRandom, int arg4, Direction face){
         if(raid != null && !raid.isOver()){
-            setReconstructBlock(pLevel, pPos, blockstate, raid);
+            setReconstructBlock(pLevel, pPos, blockstate, raid, null);
         }
         return blockstate;
     }
@@ -57,7 +57,7 @@ public class FireBlockMixin {
     public void factioncraft_tick_afterSet(BlockState pState, ServerLevel pLevel, BlockPos pPos, RandomSource pRand, CallbackInfo ci) {
         if(raid != null && !raid.isOver()){
             for(Map.Entry<BlockPos, BlockState> entry : blockStateToReplace.entrySet()){
-                setReconstructBlock(pLevel, entry.getKey(), entry.getValue(), raid);
+                setReconstructBlock(pLevel, entry.getKey(), entry.getValue(), raid, null);
             }
         }
     }
