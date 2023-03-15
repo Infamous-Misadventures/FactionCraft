@@ -79,6 +79,13 @@ public class VillageRaidTarget implements RaidTarget {
 
     @Override
     public boolean checkLossCondition(Raid raid, ServerLevel level) {
+        if(level.getGameTime() % 20 == 0) {
+            if (level.getEntitiesOfClass(AbstractVillager.class,
+                    new AABB(blockPos).inflate(100),
+                    abstractVillagerEntity -> !abstractVillagerEntity.isBaby()).size() == 0) {
+                return true;
+            }
+        }
         return !level.isVillage(blockPos);
     }
 
