@@ -13,8 +13,8 @@ public class RaidEvents {
 
     @SubscribeEvent
     public static void onWorldTickEvent(TickEvent.WorldTickEvent event){
-        RaidManager raidManagerCapability = getRaidManagerCapability(event.world);
-        if(event.phase == TickEvent.Phase.END) {
+        if(event.phase == TickEvent.Phase.END && event.side.isServer()) {
+            RaidManager raidManagerCapability = getRaidManagerCapability(event.world);
             raidManagerCapability.tick();
         }
     }
