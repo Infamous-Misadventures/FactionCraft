@@ -4,6 +4,7 @@ package com.patrigan.faction_craft.capabilities.factionentity;
 import com.patrigan.faction_craft.faction.Faction;
 import com.patrigan.faction_craft.registry.Factions;
 import com.patrigan.faction_craft.faction.entity.FactionEntityType;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -16,6 +17,8 @@ public class FactionEntity implements INBTSerializable<CompoundTag> {
     private Mob entity;
     private Faction faction = null;
     private FactionEntityType factionEntityType;
+    private BlockPos targetPosition = null;
+    private boolean isStuck = false;
 
     public FactionEntity() {
         this.entity = null;
@@ -49,6 +52,22 @@ public class FactionEntity implements INBTSerializable<CompoundTag> {
         this.faction = faction;
     }
 
+    public BlockPos getTargetPosition() {
+        return targetPosition;
+    }
+
+    public void setTargetPosition(BlockPos targetPosition) {
+        this.targetPosition = targetPosition;
+    }
+
+    public boolean isStuck() {
+        return isStuck;
+    }
+
+    public void setStuck(boolean stuck) {
+        isStuck = stuck;
+    }
+
     @Override
     public CompoundTag serializeNBT() {
         if (FACTION_ENTITY_CAPABILITY == null) {
@@ -62,6 +81,9 @@ public class FactionEntity implements INBTSerializable<CompoundTag> {
                 CompoundTag compoundNBT = new CompoundTag();
                 compoundNBT = factionEntityType.save(compoundNBT);
                 tag.put("FactionEntityType", compoundNBT);
+            }
+            if(targetPosition != null) {
+                tag.putLong("TargetPosition", targetPosition.asLong());
             }
             return tag;
         }
@@ -77,6 +99,9 @@ public class FactionEntity implements INBTSerializable<CompoundTag> {
         }
         if(tag.contains("FactionEntityType")) {
             factionEntityType = FactionEntityType.load(tag.getCompound("FactionEntityType"));
+        }
+        if(tag.contains("TargetPosition")) {
+            targetPosition = BlockPos.of(tag.getLong("TargetPosition"));
         }
     }
 }

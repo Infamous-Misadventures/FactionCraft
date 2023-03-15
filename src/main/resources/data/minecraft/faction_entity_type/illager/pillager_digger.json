@@ -1,5 +1,5 @@
 {
-  "entity_type": "minecraft:vindicator",
+  "entity_type": "minecraft:pillager",
   "weight": 30,
   "strength": 8,
   "rank": "digger",

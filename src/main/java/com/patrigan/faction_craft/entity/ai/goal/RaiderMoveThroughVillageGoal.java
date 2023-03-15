@@ -32,18 +32,16 @@ public class RaiderMoveThroughVillageGoal extends Goal {
     private final List<BlockPos> visited = Lists.newArrayList();
     private final int distanceToPoi;
     private final BooleanSupplier canDealWithDoors;
-    private BlockPos poiPos;
-    private boolean stuck;
-    private int lastStuckCheck = 0;
-    private Vec3 lastStuckCheckPos;
+    private final Raider raiderCapability;
+    private final FactionEntity factionEntityCapability;
+    private final int uncertaintyDistance;
     private Path path = null;
-    private int uncertaintyDistance;
 
     public RaiderMoveThroughVillageGoal(Mob p_i50570_1_, double pSpeedModifier, int pDistanceToPoi, BooleanSupplier canDealWithDoors, int uncertaintyDistance) {
         this.mob = p_i50570_1_;
+        this.raiderCapability = RaiderHelper.getRaiderCapability(this.mob);
+        this.factionEntityCapability = FactionEntityHelper.getFactionEntityCapability(this.mob);
         this.uncertaintyDistance = uncertaintyDistance;
-        this.lastStuckCheck = mob.tickCount;
-        this.lastStuckCheckPos = mob.position();
         this.speedModifier = pSpeedModifier;
         this.distanceToPoi = pDistanceToPoi;
         this.canDealWithDoors = canDealWithDoors;
@@ -60,7 +58,6 @@ public class RaiderMoveThroughVillageGoal extends Goal {
     }
 
     private boolean isValidRaid() {
-        Raider raiderCapability = RaiderHelper.getRaiderCapability(this.mob);
         return raiderCapability.hasActiveRaid() && !raiderCapability.getRaid().isOver();
     }
 
@@ -71,7 +68,7 @@ public class RaiderMoveThroughVillageGoal extends Goal {
         if (optional.isEmpty()) {
             return false;
         } else {
-            this.poiPos = optional.get().immutable();
+            factionEntityCapability.setTargetPosition(optional.get().immutable());
             return true;
         }
     }
@@ -83,7 +80,7 @@ public class RaiderMoveThroughVillageGoal extends Goal {
         if (this.mob.getNavigation().isDone()) {
             return false;
         } else {
-            return this.mob.getTarget() == null && !this.poiPos.closerToCenterThan(this.mob.position(), this.mob.getBbWidth() + (float) this.distanceToPoi) && !this.stuck;
+            return this.mob.getTarget() == null && !this.factionEntityCapability.getTargetPosition().closerToCenterThan(this.mob.position(), this.mob.getBbWidth() + (float) this.distanceToPoi) && !factionEntityCapability.isStuck();
         }
     }
 
@@ -91,8 +88,9 @@ public class RaiderMoveThroughVillageGoal extends Goal {
      * Reset the task's internal state. Called when this task is interrupted by another one
      */
     public void stop() {
-        if (this.poiPos.closerToCenterThan(this.mob.position(), this.distanceToPoi)) {
-            this.visited.add(this.poiPos);
+        if (this.factionEntityCapability.getTargetPosition().closerToCenterThan(this.mob.position(), this.distanceToPoi)) {
+            this.visited.add(this.factionEntityCapability.getTargetPosition());
+            factionEntityCapability.setTargetPosition(null);
         }
 
     }
@@ -105,19 +103,19 @@ public class RaiderMoveThroughVillageGoal extends Goal {
         this.mob.setNoActionTime(0);
         PathfinderMob pathfinderMob = (PathfinderMob) this.mob;
         GroundPathNavigation groundPathNavigation = (GroundPathNavigation) this.mob.getNavigation();
-        this.stuck = true;
+        factionEntityCapability.setStuck(true);
         boolean flag = groundPathNavigation.canOpenDoors();
-        if (this.mob.blockPosition().closerThan(this.poiPos, uncertaintyDistance)) {
-            this.path = getPathTowards(groundPathNavigation, flag, this.poiPos);
+        if (this.mob.blockPosition().closerThan(this.factionEntityCapability.getTargetPosition(), uncertaintyDistance)) {
+            this.path = getPathTowards(groundPathNavigation, flag, this.factionEntityCapability.getTargetPosition());
             if (this.path == null) {
-                Vec3 vec31 = DefaultRandomPos.getPosTowards(pathfinderMob, 10, 7, Vec3.atBottomCenterOf(this.poiPos), (double) ((float) Math.PI / 2F));
+                Vec3 vec31 = DefaultRandomPos.getPosTowards(pathfinderMob, 10, 7, Vec3.atBottomCenterOf(this.factionEntityCapability.getTargetPosition()), (double) ((float) Math.PI / 2F));
                 if (vec31 == null) {
                     return;
                 }
                 this.path = getPathTowards(groundPathNavigation, flag, vec3ToBlockPos(vec31));
             }
         } else {
-            Vec3 vec31 = DefaultRandomPos.getPosTowards(pathfinderMob, 10, 7, Vec3.atBottomCenterOf(this.poiPos), (double) ((float) Math.PI / 2F));
+            Vec3 vec31 = DefaultRandomPos.getPosTowards(pathfinderMob, 10, 7, Vec3.atBottomCenterOf(this.factionEntityCapability.getTargetPosition()), (double) ((float) Math.PI / 2F));
             if (vec31 == null) {
                 return;
             }
@@ -125,13 +123,12 @@ public class RaiderMoveThroughVillageGoal extends Goal {
         }
 
         if (path == null) {
-            Raider raiderCapability = RaiderHelper.getRaiderCapability(this.mob);
             Faction faction = FactionEntityHelper.getFactionEntityCapability(this.mob).getFaction();
-            raiderCapability.getRaid().spawnDigger(faction, this.mob.blockPosition());
+            raiderCapability.getRaid().spawnDigger(faction, this.mob.blockPosition(), this.mob);
             return;
         }
         this.mob.getNavigation().moveTo(path, this.speedModifier);
-        this.stuck = false;
+        this.factionEntityCapability.setStuck(false);
     }
 
     private Path getPathTowards(GroundPathNavigation groundPathNavigation, boolean flag, BlockPos poiPos) {
@@ -145,7 +142,6 @@ public class RaiderMoveThroughVillageGoal extends Goal {
      * Keep ticking a continuous task that has already been started
      */
     public void tick() {
-        Raider raiderCapability = RaiderHelper.getRaiderCapability(this.mob);
         if (raiderCapability.hasActiveRaid()) {
             Raid raid = raiderCapability.getRaid();
             if (this.mob.tickCount % 20 == 0) {
@@ -154,42 +150,18 @@ public class RaiderMoveThroughVillageGoal extends Goal {
         }
     }
 
-    private boolean doStuckCheck() {
-        if (this.mob.tickCount - this.lastStuckCheck > 75) {
-            if (mob.position().distanceToSqr(this.lastStuckCheckPos) < 2.25D) {
-                this.lastStuckCheck = this.mob.tickCount;
-                this.lastStuckCheckPos = mob.position();
-                return true;
-            }
-            // Todo: add a check to see if the distance of the mob's postion to the targetPos is increasing compared to the lastStuckCheckPos
-//            BlockPos targetBlockPos = this.mob.getNavigation().getTargetPos();
-//            if (targetBlockPos != null) {
-//                Vec3 targetPos = Vec3.atCenterOf(targetBlockPos);
-//                if (this.mob.position().distanceToSqr(targetPos) - this.lastStuckCheckPos.distanceToSqr(targetPos) < 2.25D) {
-//                    this.lastStuckCheck = this.mob.tickCount;
-//                    this.lastStuckCheckPos = mob.position();
-//                    return true;
-//                }
-//            }
-            this.lastStuckCheck = this.mob.tickCount;
-            this.lastStuckCheckPos = mob.position();
-        }
-        return false;
-    }
-
     private void recruitNearby(Raid pRaid) {
         FactionEntity sourceFactionEntityCapability = FactionEntityHelper.getFactionEntityCapability(this.mob);
         if (pRaid.isActive()) {
             Set<Mob> set = Sets.newHashSet();
             List<Mob> list = this.mob.level.getEntitiesOfClass(Mob.class, this.mob.getBoundingBox().inflate(16.0D), (p_220742_1_) -> {
-                Raider raiderCapability = RaiderHelper.getRaiderCapability(p_220742_1_);
                 FactionEntity targetFactionEntityCapability = FactionEntityHelper.getFactionEntityCapability(p_220742_1_);
                 return sourceFactionEntityCapability.getFaction().equals(targetFactionEntityCapability.getFaction()) && !raiderCapability.hasActiveRaid() && RaidManager.canJoinRaid(p_220742_1_, pRaid);
             });
             set.addAll(list);
 
             for (Mob abstractraiderentity : set) {
-                pRaid.joinRaid(pRaid.getGroupsSpawned(), abstractraiderentity, (BlockPos) null, true);
+                pRaid.joinRaid(pRaid.getGroupsSpawned(), abstractraiderentity, true);
             }
         }
     }

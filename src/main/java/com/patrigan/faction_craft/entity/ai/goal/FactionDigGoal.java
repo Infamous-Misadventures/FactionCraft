@@ -1,5 +1,7 @@
 package com.patrigan.faction_craft.entity.ai.goal;
 
+import com.patrigan.faction_craft.capabilities.factionentity.FactionEntity;
+import com.patrigan.faction_craft.capabilities.factionentity.FactionEntityHelper;
 import com.patrigan.faction_craft.capabilities.raidmanager.RaidManager;
 import com.patrigan.faction_craft.capabilities.raidmanager.RaidManagerHelper;
 import com.patrigan.faction_craft.raid.Raid;
@@ -12,8 +14,10 @@ import net.minecraft.world.effect.MobEffectUtil;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.ai.util.DefaultRandomPos;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.ClipContext;
@@ -25,14 +29,13 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ToolAction;
 import net.minecraftforge.common.ToolActions;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static com.patrigan.faction_craft.block.ReconstructBlock.setReconstructBlock;
+import static com.patrigan.faction_craft.util.GeneralUtils.blockPosToVec3;
 import static net.minecraftforge.common.ForgeMod.REACH_DISTANCE;
 
 public class FactionDigGoal extends Goal {
@@ -44,16 +47,15 @@ public class FactionDigGoal extends Goal {
     private final boolean requiresProperTool;
     private final List<BlockPos> targetBlocks = new ArrayList<>();
     private final EquipmentSlot hand;
+    private final FactionEntity factionEntityCapability;
     private BlockState currentBlockState = null;
     private float breakDuration = 0;
     private int destroyProgressStart = 0;
-    private int lastStuckCheck = 0;
-    private Vec3 lastStuckCheckPos;
+    private BlockPos targetPos = null;
 
     public FactionDigGoal(Mob mob, boolean requiresTool, boolean requiresProperTool, EquipmentSlot hand) {
         this.mob = mob;
-        this.lastStuckCheck = mob.tickCount;
-        this.lastStuckCheckPos = mob.position();
+        this.factionEntityCapability = FactionEntityHelper.getFactionEntityCapability(mob);
         this.requiresTool = requiresTool;
         this.requiresProperTool = requiresProperTool;
         this.hand = hand;
@@ -64,35 +66,23 @@ public class FactionDigGoal extends Goal {
         if (this.requiresTool && !canToolDig()) {
             return false;
         }
-        if (this.mob.getNavigation().isDone() || this.mob.getNavigation().getTargetPos() == null) {
+        if(!factionEntityCapability.isStuck()) {
             return false;
         }
-        return doStuckCheck();
-    }
-
-    private boolean doStuckCheck() {
-        if (this.mob.tickCount - this.lastStuckCheck > 75) {
-            if (mob.position().distanceToSqr(this.lastStuckCheckPos) < 2.25D) {
-                return true;
+        if(factionEntityCapability.getTargetPosition() == null) {
+            if (this.mob.getNavigation().isDone() || this.mob.getNavigation().getTargetPos() == null) {
+                return false;
             }
-
-            this.lastStuckCheck = this.mob.tickCount;
-            this.lastStuckCheckPos = mob.position();
         }
-        return false;
+        return true;
     }
 
     @Override
     public boolean canContinueToUse() {
-        float reachDistance = getReachDistance();
         if (this.requiresTool && !canToolDig()) {
             return false;
         }
-        if (this.mob.getNavigation().isDone() || this.mob.getNavigation().getTargetPos() == null) {
-            return false;
-        }
-        return !this.targetBlocks.isEmpty()
-                && this.targetBlocks.get(0).distSqr(this.mob.blockPosition()) < reachDistance * reachDistance;
+        return !this.targetBlocks.isEmpty();
     }
 
     private float getReachDistance() {
@@ -102,6 +92,11 @@ public class FactionDigGoal extends Goal {
 
     @Override
     public void start() {
+        if(factionEntityCapability.getTargetPosition() != null) {
+            this.targetPos = factionEntityCapability.getTargetPosition();
+        }else{
+            this.targetPos = this.mob.getNavigation().getTargetPos();
+        }
         selectBlocksToDig();
         if (!this.targetBlocks.isEmpty())
             initBlockBreak();
@@ -137,6 +132,21 @@ public class FactionDigGoal extends Goal {
         if (this.requiresProperTool && this.currentBlockState != null && !this.isCorrectToolForDrops())
             return;
         this.mob.getLookControl().setLookAt(this.targetBlocks.get(0).getX() + 0.5d, this.targetBlocks.get(0).getY() + 0.5d, this.targetBlocks.get(0).getZ() + 0.5d);
+        float reachDistance = this.getReachDistance();
+        if (this.mob.distanceToSqr(blockPosToVec3(this.targetBlocks.get(0))) > reachDistance * reachDistance) {
+            Vec3 posTowards = DefaultRandomPos.getPosTowards((PathfinderMob) this.mob, 3, 4, Vec3.atBottomCenterOf(this.targetBlocks.get(0)), (double)((float)Math.PI / 2F));
+            if (posTowards != null) {
+                this.mob.getNavigation().moveTo(posTowards.x+0.5D, posTowards.y, posTowards.z+0.5D, 1.0d);
+            }else{
+                this.targetBlocks.clear();
+                selectBlocksToDig();
+                if (!this.targetBlocks.isEmpty())
+                    initBlockBreak();
+            }
+            return;
+        } else {
+            this.mob.getNavigation().stop();
+        }
         int destroyTicks = this.mob.tickCount - this.destroyProgressStart;
         if (destroyTicks % 6 == 0) {
             this.mob.swing(InteractionHand.MAIN_HAND);
@@ -151,8 +161,17 @@ public class FactionDigGoal extends Goal {
             Raid raid = raidManager.getRaidAt(targetBlocks.get(0));
             setReconstructBlock(this.mob.level, targetBlocks.get(0), this.mob.level.getBlockState(targetBlocks.get(0)), raid, this.mob);
             this.targetBlocks.remove(0);
-            if (!this.targetBlocks.isEmpty())
+            if (!this.targetBlocks.isEmpty()) {
                 initBlockBreak();
+            }else{
+                if(this.mob.getNavigation().createPath(this.targetPos, 0) == null){
+                    selectBlocksToDig();
+                    if (!this.targetBlocks.isEmpty())
+                        initBlockBreak();
+                }else{
+                    factionEntityCapability.setStuck(false);
+                }
+            }
         }
     }
 
@@ -163,15 +182,16 @@ public class FactionDigGoal extends Goal {
 
     private void selectBlocksToDig() {
         int mobHeight = Mth.ceil(this.mob.getBbHeight());
-        BlockPos targetPos = this.mob.getNavigation().getTargetPos();
         for (int i = 0; i < mobHeight; i++) {
-            BlockHitResult rayTraceResult = this.mob.level.clip(new ClipContext(this.mob.position().add(0, i + 0.5d, 0), new Vec3(targetPos.getX(), targetPos.getY() + i, targetPos.getZ()), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this.mob));
+            Vec3 vecFrom = this.mob.position().add(0, i+0.51D, 0);
+            Vec3 vecTo = getVecTo(targetPos, vecFrom, i);
+            BlockHitResult rayTraceResult = this.mob.level.clip(new ClipContext(vecFrom, vecTo, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this.mob));
             if (rayTraceResult.getType() == HitResult.Type.MISS)
                 continue;
             if (this.targetBlocks.contains(rayTraceResult.getBlockPos()))
                 continue;
 
-            float reachDistance = getReachDistance();
+            float reachDistance = getReachDistance() + 2;
             double distance = this.mob.distanceToSqr(rayTraceResult.getLocation());
             if (distance > reachDistance * reachDistance)
                 continue;
@@ -183,7 +203,37 @@ public class FactionDigGoal extends Goal {
 
             this.targetBlocks.add(rayTraceResult.getBlockPos());
         }
-        Collections.reverse(this.targetBlocks);
+        // sort target blocks by distance to the mob
+        this.targetBlocks.sort(Comparator.comparingDouble(value -> this.mob.distanceToSqr(blockPosToVec3(value))));
+    }
+
+    @NotNull
+    private Vec3 getVecTo(BlockPos targetPos, Vec3 originVec, int i) {
+        // Get the direction vector from the origin to the target position
+        Vec3 directionVec = new Vec3(targetPos.getX(), targetPos.getY() + i, targetPos.getZ()).subtract(originVec).normalize();
+
+        // Calculate the horizontal angle between the direction vector and the x-axis
+        double horizontalAngle = Math.atan2(directionVec.z, directionVec.x);
+
+        // Calculate the vertical angle between the direction vector and the y-axis
+        double verticalAngle = Math.asin(directionVec.y);
+
+        // Calculate the new direction vector with a 20-degree horizontal offset
+        double newHorizontalAngle = horizontalAngle + Math.toRadians(45);
+        double newX = Math.cos(newHorizontalAngle);
+        double newZ = Math.sin(newHorizontalAngle);
+        Vec3 newDirectionVec = new Vec3(newX, directionVec.y, newZ).normalize();
+
+        // Calculate the new direction vector with a vertical offset limited to +/- 45 degrees
+        double angleFromHorizontal = Math.acos(newDirectionVec.y);
+        double angleLimit = Math.toRadians(45);
+        double limitedAngleFromHorizontal = Math.min(Math.max(angleFromHorizontal, -angleLimit), angleLimit);
+        double newY = Math.sin(limitedAngleFromHorizontal);
+        double newMagnitude = Math.sqrt(newDirectionVec.x * newDirectionVec.x + newDirectionVec.z * newDirectionVec.z);
+        Vec3 newVerticalVec = new Vec3(0, newY, 0).normalize().scale(newMagnitude);
+
+        // Return the final vector with both horizontal and vertical offsets
+        return newDirectionVec.add(newVerticalVec).scale(getReachDistance()*2).add(originVec);
     }
 
     private boolean canToolDig() {

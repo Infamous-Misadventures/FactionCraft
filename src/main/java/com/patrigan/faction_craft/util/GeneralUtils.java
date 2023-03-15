@@ -38,4 +38,8 @@ public class GeneralUtils {
     public static BlockPos vec3ToBlockPos(Vec3 vec3) {
         return new BlockPos(vec3.x, vec3.y, vec3.z);
     }
+
+    public static Vec3 blockPosToVec3(BlockPos blockPos) {
+        return new Vec3(blockPos.getX()+0.5D, blockPos.getY(), blockPos.getZ()+0.5D);
+    }
 }

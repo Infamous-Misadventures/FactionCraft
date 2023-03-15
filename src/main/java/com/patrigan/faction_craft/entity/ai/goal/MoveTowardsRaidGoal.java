@@ -1,40 +1,36 @@
 package com.patrigan.faction_craft.entity.ai.goal;
 
 import com.google.common.collect.Sets;
-import com.mojang.datafixers.util.Pair;
 import com.patrigan.faction_craft.capabilities.factionentity.FactionEntity;
 import com.patrigan.faction_craft.capabilities.factionentity.FactionEntityHelper;
 import com.patrigan.faction_craft.capabilities.raider.Raider;
 import com.patrigan.faction_craft.capabilities.raider.RaiderHelper;
 import com.patrigan.faction_craft.capabilities.raidmanager.RaidManager;
-import com.patrigan.faction_craft.faction.EntityWeightMapProperties;
 import com.patrigan.faction_craft.faction.Faction;
-import com.patrigan.faction_craft.faction.entity.FactionEntityType;
 import com.patrigan.faction_craft.raid.Raid;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.util.DefaultRandomPos;
-import net.minecraft.world.entity.ai.util.RandomPos;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraftforge.common.util.LazyOptional;
 
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
-import static com.patrigan.faction_craft.util.GeneralUtils.getRandomEntry;
-
 public class MoveTowardsRaidGoal<T extends Mob> extends Goal {
     private final T mob;
+    private final Raider raiderCapability;
+    private final FactionEntity factionEntityCapability;
     private int lastStuckCheck = 0;
     private Vec3 lastStuckCheckPos;
 
     public MoveTowardsRaidGoal(T p_i50323_1_) {
         this.mob = p_i50323_1_;
+        this.raiderCapability = RaiderHelper.getRaiderCapability(this.mob);
+        this.factionEntityCapability = FactionEntityHelper.getFactionEntityCapability(this.mob);
         this.lastStuckCheck = mob.tickCount;
         this.lastStuckCheckPos = mob.position();
         this.setFlags(EnumSet.of(Goal.Flag.MOVE));
@@ -45,7 +41,6 @@ public class MoveTowardsRaidGoal<T extends Mob> extends Goal {
      * method as well.
      */
     public boolean canUse() {
-        Raider raiderCapability = RaiderHelper.getRaiderCapability(this.mob);
         return this.mob instanceof PathfinderMob
                 && this.mob.getTarget() == null
                 && !this.mob.isVehicle() && raiderCapability.hasActiveRaid()
@@ -57,21 +52,32 @@ public class MoveTowardsRaidGoal<T extends Mob> extends Goal {
      * Returns whether an in-progress EntityAIBase should continue executing
      */
     public boolean canContinueToUse() {
-        Raider raiderCapability = RaiderHelper.getRaiderCapability(this.mob);
         return raiderCapability != null && raiderCapability.hasActiveRaid() && this.mob.getTarget() == null && !raiderCapability.getRaid().isOver() && this.mob.level instanceof ServerLevel && !((ServerLevel)this.mob.level).isVillage(this.mob.blockPosition());
+    }
+
+    @Override
+    public void start() {
+        if (raiderCapability.hasActiveRaid()) {
+            Raid raid = raiderCapability.getRaid();
+            factionEntityCapability.setTargetPosition(raid.getCenter());
+        }
+        super.start();
     }
 
     /**
      * Keep ticking a continuous task that has already been started
      */
     public void tick() {
-        Raider raiderCapability = RaiderHelper.getRaiderCapability(this.mob);
         if (raiderCapability.hasActiveRaid()) {
             Raid raid = raiderCapability.getRaid();
+            factionEntityCapability.setTargetPosition(raid.getCenter());
 
             if(doStuckCheck()) {
                 Faction faction = FactionEntityHelper.getFactionEntityCapability(this.mob).getFaction();
-                raiderCapability.getRaid().spawnDigger(faction, mob.blockPosition());
+                raiderCapability.getRaid().spawnDigger(faction, mob.blockPosition(), this.mob);
+                factionEntityCapability.setStuck(true);
+            }else{
+                factionEntityCapability.setStuck(false);
             }
 
             if (this.mob.tickCount % 20 == 0) {
@@ -105,14 +111,13 @@ public class MoveTowardsRaidGoal<T extends Mob> extends Goal {
         if (pRaid.isActive()) {
             Set<Mob> set = Sets.newHashSet();
             List<Mob> list = this.mob.level.getEntitiesOfClass(Mob.class, this.mob.getBoundingBox().inflate(16.0D), (p_220742_1_) -> {
-                Raider raiderCapability = RaiderHelper.getRaiderCapability(p_220742_1_);
                 FactionEntity targetFactionEntityCapability = FactionEntityHelper.getFactionEntityCapability(p_220742_1_);
                 return sourceFactionEntityCapability.getFaction().equals(targetFactionEntityCapability.getFaction()) && !raiderCapability.hasActiveRaid() && RaidManager.canJoinRaid(p_220742_1_, pRaid);
             });
             set.addAll(list);
 
             for(Mob abstractraiderentity : set) {
-                pRaid.joinRaid(pRaid.getGroupsSpawned(), abstractraiderentity, (BlockPos)null, true);
+                pRaid.joinRaid(pRaid.getGroupsSpawned(), abstractraiderentity, true);
             }
         }
     }
