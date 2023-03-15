@@ -14,7 +14,7 @@ public class RaidEvents {
     @SubscribeEvent
     public static void onWorldTickEvent(TickEvent.WorldTickEvent event){
         RaidManager raidManagerCapability = getRaidManagerCapability(event.world);
-        if(event.phase == TickEvent.Phase.END && raidManagerCapability != null) {
+        if(event.phase == TickEvent.Phase.END) {
             raidManagerCapability.tick();
         }
     }
