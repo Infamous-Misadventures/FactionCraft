@@ -80,7 +80,7 @@ public class Factions {
             entities.addAll(raw.getEntityTypes());
         }
         if(!entities.isEmpty()){
-            LOGGER.info("Entity types within the faction file is deprecated. They should now be in separate files in the faction/entity_types folder. For faction: " + id);
+            LOGGER.info("Entity types within the faction file is deprecated. They should now be in separate files in the faction_entity_type/<factionname>/ folder. For faction: " + id);
         }
         return new Faction(name,false, banner, factionRaidConfig, boostConfig, factionRelations, new ArrayList<>(entities), activationAdvancement);
     }

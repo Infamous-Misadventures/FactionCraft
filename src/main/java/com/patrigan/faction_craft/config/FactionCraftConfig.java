@@ -57,18 +57,32 @@ public class FactionCraftConfig {
     public static ForgeConfigSpec.ConfigValue<Integer> RECONSTRUCT_TICK_DELAY;
     public static ForgeConfigSpec.ConfigValue<Integer> RECONSTRUCT_VARIABLE_TICK_DELAY;
 
+    public static ForgeConfigSpec.ConfigValue<Boolean> ENABLE_DIGGER_AI;
+
 
     public static class Common {
 
         public Common(ForgeConfigSpec.Builder builder){
 
+            factionConfig(builder);
+            standardRaidConfig(builder);
+            raidTargetConfig(builder);
+            patrollerConfig(builder);
+            factionBattleConfig(builder);
+            reconstructBlockConfig(builder);
+            AIConfig(builder);
+        }
+
+        private void factionConfig(ForgeConfigSpec.Builder builder) {
             builder.comment("Factions").push("factions");
             DISABLED_FACTIONS = builder
                     .comment("A list of disabled factions. \n" +
                             "Default: The internal skeleton test faction. ")
                     .defineList("disabledFactions", Arrays.asList(MODID+":skeleton_test", MODID+":slime_test"), o -> o instanceof String);
             builder.pop();
+        }
 
+        private void standardRaidConfig(ForgeConfigSpec.Builder builder) {
             builder.comment("Standard Raid Calculations").push("standard_raid_calculations");
             DISABLE_FACTION_RAIDS = builder
                     .comment("Disables faction raids \n" +
@@ -124,7 +138,9 @@ public class FactionCraftConfig {
                     .defineInRange("targetStrengthDifficultyMultiplierHard", 0.1, -100.0, 100.0);
 
             builder.pop();
+        }
 
+        private void raidTargetConfig(ForgeConfigSpec.Builder builder) {
             builder.comment("Village Raid Target Calculations").push("village_raid_target_calculations");
             VILLAGE_RAID_TARGET_STRENGTH_MULTIPLIER = builder
                     .comment("Applied to the target strength of the village \n" +
@@ -171,7 +187,9 @@ public class FactionCraftConfig {
                             "Multiplies the target strength and rounds down. Default 1.0F")
                     .defineInRange("factionBattleRaidTargetStrengthMultiplier", 1.0, 0.0, 100.0);
             builder.pop();
+        }
 
+        private void patrollerConfig(ForgeConfigSpec.Builder builder) {
             builder.comment("Patroller Config").push("patroller_config");
             DISABLE_FACTION_PATROLS = builder
                     .comment("Disables faction patrols \n" +
@@ -198,7 +216,9 @@ public class FactionCraftConfig {
                             "Vanilla default is 0.2 Default 0.3")
                     .defineInRange("patrolSpawnChanceOnSpawnAttempt", 0.3, 0.0, 1.0);
             builder.pop();
+        }
 
+        private void factionBattleConfig(ForgeConfigSpec.Builder builder) {
             builder.comment("Faction Battle Config").push("faction_battle_config");
             DISABLE_FACTION_BATTLES = builder
                     .comment("Disables faction battles \n" +
@@ -225,7 +245,9 @@ public class FactionCraftConfig {
                             "Default 3")
                     .defineInRange("battleStartingWave", 3, 0, 999999999);
             builder.pop();
+        }
 
+        private void reconstructBlockConfig(ForgeConfigSpec.Builder builder) {
             builder.comment("Reconstruct Block Config").push("reconstruct_block_config");
             ENABLE_RECONSTRUCT_BLOCKS = builder
                     .comment("Enables Reconstruct Blocks \n" +
@@ -243,6 +265,15 @@ public class FactionCraftConfig {
                     .comment("A random value between 0 and this value is added to the static delay to determine total delay. \n" +
                             "Default 200")
                     .defineInRange("reconstructVariableTickDelay", 60, 0, 999999999);
+            builder.pop();
+        }
+
+        private void AIConfig(ForgeConfigSpec.Builder builder) {
+            builder.comment("AI Config").push("ai_config");
+            ENABLE_DIGGER_AI = builder
+                    .comment("Enables Digger AI and the spawning of diggers \n" +
+                            "Default true")
+                    .define("enableDiggerAI", true);
             builder.pop();
         }
     }

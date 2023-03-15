@@ -6,6 +6,7 @@ import com.patrigan.faction_craft.capabilities.factionentity.FactionEntityHelper
 import com.patrigan.faction_craft.capabilities.raider.Raider;
 import com.patrigan.faction_craft.capabilities.raider.RaiderHelper;
 import com.patrigan.faction_craft.capabilities.raidmanager.RaidManager;
+import com.patrigan.faction_craft.config.FactionCraftConfig;
 import com.patrigan.faction_craft.faction.Faction;
 import com.patrigan.faction_craft.raid.Raid;
 import net.minecraft.core.BlockPos;
@@ -72,7 +73,7 @@ public class MoveTowardsRaidGoal<T extends Mob> extends Goal {
             Raid raid = raiderCapability.getRaid();
             factionEntityCapability.setTargetPosition(raid.getCenter());
 
-            if(doStuckCheck()) {
+            if(FactionCraftConfig.ENABLE_DIGGER_AI.get() && doStuckCheck()) {
                 Faction faction = FactionEntityHelper.getFactionEntityCapability(this.mob).getFaction();
                 raiderCapability.getRaid().spawnDigger(faction, mob.blockPosition(), this.mob);
                 factionEntityCapability.setStuck(true);

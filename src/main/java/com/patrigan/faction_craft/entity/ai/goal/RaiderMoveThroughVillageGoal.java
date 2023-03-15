@@ -7,6 +7,7 @@ import com.patrigan.faction_craft.capabilities.factionentity.FactionEntityHelper
 import com.patrigan.faction_craft.capabilities.raider.Raider;
 import com.patrigan.faction_craft.capabilities.raider.RaiderHelper;
 import com.patrigan.faction_craft.capabilities.raidmanager.RaidManager;
+import com.patrigan.faction_craft.config.FactionCraftConfig;
 import com.patrigan.faction_craft.faction.Faction;
 import com.patrigan.faction_craft.raid.Raid;
 import net.minecraft.core.BlockPos;
@@ -123,8 +124,10 @@ public class RaiderMoveThroughVillageGoal extends Goal {
         }
 
         if (path == null) {
-            Faction faction = FactionEntityHelper.getFactionEntityCapability(this.mob).getFaction();
-            raiderCapability.getRaid().spawnDigger(faction, this.mob.blockPosition(), this.mob);
+            if(FactionCraftConfig.ENABLE_DIGGER_AI.get()) {
+                Faction faction = FactionEntityHelper.getFactionEntityCapability(this.mob).getFaction();
+                raiderCapability.getRaid().spawnDigger(faction, this.mob.blockPosition(), this.mob);
+            }
             return;
         }
         this.mob.getNavigation().moveTo(path, this.speedModifier);

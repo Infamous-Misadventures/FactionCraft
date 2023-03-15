@@ -3,6 +3,7 @@ package com.patrigan.faction_craft.boost.ai;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.patrigan.faction_craft.boost.Boost;
+import com.patrigan.faction_craft.config.FactionCraftConfig;
 import com.patrigan.faction_craft.entity.ai.goal.FactionDigGoal;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -87,7 +88,7 @@ public class DiggerBoost extends Boost {
 
     @Override
     public void applyAIChanges(Mob mobEntity) {
-        if (mobEntity instanceof PathfinderMob pathfinder) {
+        if (mobEntity instanceof PathfinderMob pathfinder && FactionCraftConfig.ENABLE_DIGGER_AI.get()) {
             FactionDigGoal meleeGoal = new FactionDigGoal(pathfinder, requiresTool, requiresProperTool, getHand());
             mobEntity.goalSelector.addGoal(2, meleeGoal);
         }
