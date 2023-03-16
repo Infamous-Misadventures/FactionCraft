@@ -5,6 +5,6 @@
   "rank": "digger",
   "maximum_rank": "digger",
   "boosts": {
-    "mandatory": ["faction_craft:special/ai/barehanded_digger_ai", "minecraft:hand/iron_pickaxe"]
+    "mandatory": ["faction_craft:special/ai/barehanded_digger_ai", "minecraft:hand/stone_pickaxe"]
   }
 }
