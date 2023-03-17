@@ -16,6 +16,7 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
+import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.ai.util.DefaultRandomPos;
 import net.minecraft.world.entity.ai.village.poi.PoiManager;
 import net.minecraft.world.entity.ai.village.poi.PoiTypes;
@@ -103,24 +104,23 @@ public class RaiderMoveThroughVillageGoal extends Goal {
         super.start();
         this.mob.setNoActionTime(0);
         PathfinderMob pathfinderMob = (PathfinderMob) this.mob;
-        GroundPathNavigation groundPathNavigation = (GroundPathNavigation) this.mob.getNavigation();
+        if(!(this.mob.getNavigation() instanceof GroundPathNavigation)) return;
         factionEntityCapability.setStuck(true);
-        boolean flag = groundPathNavigation.canOpenDoors();
         if (this.mob.blockPosition().closerThan(this.factionEntityCapability.getTargetPosition(), uncertaintyDistance)) {
-            this.path = getPathTowards(groundPathNavigation, flag, this.factionEntityCapability.getTargetPosition());
+            this.path = getPathTowards(this.mob.getNavigation(), this.factionEntityCapability.getTargetPosition());
             if (this.path == null) {
                 Vec3 vec31 = DefaultRandomPos.getPosTowards(pathfinderMob, 10, 7, Vec3.atBottomCenterOf(this.factionEntityCapability.getTargetPosition()), (double) ((float) Math.PI / 2F));
                 if (vec31 == null) {
                     return;
                 }
-                this.path = getPathTowards(groundPathNavigation, flag, vec3ToBlockPos(vec31));
+                this.path = getPathTowards(this.mob.getNavigation(), vec3ToBlockPos(vec31));
             }
         } else {
             Vec3 vec31 = DefaultRandomPos.getPosTowards(pathfinderMob, 10, 7, Vec3.atBottomCenterOf(this.factionEntityCapability.getTargetPosition()), (double) ((float) Math.PI / 2F));
             if (vec31 == null) {
                 return;
             }
-            this.path = getPathTowards(groundPathNavigation, flag, vec3ToBlockPos(vec31));
+            this.path = getPathTowards(this.mob.getNavigation(), vec3ToBlockPos(vec31));
         }
 
         if (path == null) {
@@ -134,10 +134,15 @@ public class RaiderMoveThroughVillageGoal extends Goal {
         this.factionEntityCapability.setStuck(false);
     }
 
-    private Path getPathTowards(GroundPathNavigation groundPathNavigation, boolean flag, BlockPos poiPos) {
-        groundPathNavigation.setCanOpenDoors(this.canDealWithDoors.getAsBoolean());
-        Path path = groundPathNavigation.createPath(poiPos, 0);
-        groundPathNavigation.setCanOpenDoors(flag);
+    private Path getPathTowards(PathNavigation pathNavigation, BlockPos poiPos) {
+        boolean isGroundPathNavigation = pathNavigation instanceof GroundPathNavigation;
+        if(isGroundPathNavigation) {
+            ((GroundPathNavigation) pathNavigation).setCanOpenDoors(this.canDealWithDoors.getAsBoolean());
+        }
+        Path path = pathNavigation.createPath(poiPos, 0);
+        if(isGroundPathNavigation) {
+            ((GroundPathNavigation) pathNavigation).setCanOpenDoors(((GroundPathNavigation) pathNavigation).canOpenDoors());
+        }
         return path;
     }
 
