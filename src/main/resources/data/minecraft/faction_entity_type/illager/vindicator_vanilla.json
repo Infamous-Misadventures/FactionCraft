@@ -2,8 +2,7 @@
   "entity_type": "minecraft:vindicator",
   "weight": 80,
   "strength": 8,
-  "rank": "soldier",
-  "maximum_rank": "leader",
+  "ranks": ["soldier","captain", "general", "leader"],
   "wave_range": {
     "min": 2
   }

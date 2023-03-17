@@ -2,8 +2,7 @@
   "entity_type": "minecraft:evoker",
   "weight": 40,
   "strength": 10,
-  "rank": "captain",
-  "maximum_rank": "leader",
+  "ranks": ["captain", "general", "leader"],
   "wave_range": {
     "min": 5
   },

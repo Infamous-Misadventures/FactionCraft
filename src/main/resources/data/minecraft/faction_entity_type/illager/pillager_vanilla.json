@@ -2,8 +2,7 @@
   "entity_type": "minecraft:pillager",
   "weight": 100,
   "strength": 6,
-  "rank": "soldier",
-  "maximum_rank": "general",
+  "ranks": ["soldier","captain", "general", "leader"],
   "boosts": {
     "rarity_overrides": [
       {

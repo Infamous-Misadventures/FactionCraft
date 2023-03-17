@@ -2,8 +2,7 @@
   "entity_type": "minecraft:witch",
   "weight": 40,
   "strength": 9,
-  "rank": "captain",
-  "maximum_rank": "leader",
+  "ranks": ["captain", "general", "leader"],
   "wave_range": {
     "min": 4
   }
