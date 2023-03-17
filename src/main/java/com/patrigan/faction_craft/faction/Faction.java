@@ -3,6 +3,7 @@ package com.patrigan.faction_craft.faction;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.patrigan.faction_craft.data.JsonHolderSetCodec;
 import com.patrigan.faction_craft.faction.entity.FactionEntityType;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
@@ -35,7 +36,7 @@ public class Faction {
                     FactionRelations.CODEC.optionalFieldOf("relations", FactionRelations.DEFAULT).forGetter(Faction::getRelations),
                     FactionEntityType.CODEC_OLD.listOf().optionalFieldOf("entities", new ArrayList<>()).forGetter(Faction::getEntityTypes),
                     ResourceLocation.CODEC.optionalFieldOf("activation_advancement", new ResourceLocation(MODID, "activation_advancement")).forGetter(Faction::getActivationAdvancement),
-                    RegistryCodecs.homogeneousList(Registry.ENTITY_TYPE_REGISTRY).optionalFieldOf("default_entities", HolderSet.direct()).forGetter(data -> data.defaultEntities)
+                    JsonHolderSetCodec.create(Registry.ENTITY_TYPE_REGISTRY, false).optionalFieldOf("default_entities", HolderSet.direct()).forGetter(data -> data.defaultEntities)
             ).apply(builder, Faction::new));
 
     private final ResourceLocation name;

@@ -1,0 +1,19 @@
+{
+  "entity_type": "minecraft:skeleton",
+  "weight": 100,
+  "strength": 5,
+  "ranks": ["soldier","captain", "general", "leader"],
+  "boosts": {
+    "mandatory": ["minecraft:special/leather_daylight_protection"],
+    "rarity_overrides": [
+      {
+        "boost": "minecraft:mount/skeleton_horse",
+        "rarity": "common"
+      },
+      {
+        "boost": "faction_craft:mount/faction_spider",
+        "rarity": "rare"
+      }
+    ]
+  }
+}

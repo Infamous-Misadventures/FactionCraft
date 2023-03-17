@@ -1,0 +1,20 @@
+
+{
+  "entity_type": "minecraft:stray",
+  "weight": 50,
+  "strength": 9,
+  "ranks": ["soldier","captain", "general", "leader"],
+  "wave_range": {
+    "min": 3
+  },
+  "boosts": {
+    "mandatory": ["minecraft:special/leather_daylight_protection"],
+    "rarity_overrides": [
+      {
+        "boost": "minecraft:mount/skeleton_horse",
+        "rarity": "common"
+      }
+    ]
+  },
+  "biome_whitelist": "#forge:is_cold"
+}

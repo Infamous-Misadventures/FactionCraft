@@ -1,0 +1,15 @@
+{
+  "entity_type": "minecraft:zombie",
+  "weight": 100,
+  "strength": 4,
+  "ranks": ["soldier","captain", "general", "leader"],
+  "boosts": {
+    "mandatory": ["minecraft:special/leather_daylight_protection"],
+    "rarity_overrides": [
+      {
+        "boost": "minecraft:mount/zombie_horse",
+        "rarity": "common"
+      }
+    ]
+  }
+}

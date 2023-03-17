@@ -5,6 +5,7 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.patrigan.faction_craft.capabilities.factionentity.FactionEntity;
 import com.patrigan.faction_craft.capabilities.factionentity.FactionEntityHelper;
+import com.patrigan.faction_craft.data.JsonHolderSetCodec;
 import com.patrigan.faction_craft.faction.Faction;
 import com.patrigan.faction_craft.registry.FactionEntityTypes;
 import com.patrigan.faction_craft.util.IntRange;
@@ -41,8 +42,8 @@ public class FactionEntityType {
                     IntRange.getCodec(0, 10000).optionalFieldOf("spawned_range", new IntRange(0, 10000)).forGetter(data -> data.spawnedRange),
                     IntRange.getCodec(0, 10000).optionalFieldOf("omen_range", new IntRange(0, 10000)).forGetter(data -> data.omenRange),
                     IntRange.getCodec(-10000, 10000).optionalFieldOf("y_range", new IntRange(-64, 320)).forGetter(data -> data.yRange),
-                    RegistryCodecs.homogeneousList(Registry.BIOME_REGISTRY, DIRECT_CODEC).optionalFieldOf("biome_whitelist", HolderSet.direct()).forGetter(data -> data.biomeWhitelist),
-                    RegistryCodecs.homogeneousList(Registry.BIOME_REGISTRY, DIRECT_CODEC).optionalFieldOf("biome_blacklist", HolderSet.direct()).forGetter(data -> data.biomeBlacklist)
+                    JsonHolderSetCodec.create(Registry.BIOME_REGISTRY, false).optionalFieldOf("biome_whitelist", HolderSet.direct()).forGetter(data -> data.biomeWhitelist),
+                    JsonHolderSetCodec.create(Registry.BIOME_REGISTRY, false).optionalFieldOf("biome_blacklist", HolderSet.direct()).forGetter(data -> data.biomeBlacklist)
             ).apply(builder, FactionEntityType::new));
 
     public static final Codec<FactionEntityType> CODEC_OLD = RecordCodecBuilder.create(builder ->

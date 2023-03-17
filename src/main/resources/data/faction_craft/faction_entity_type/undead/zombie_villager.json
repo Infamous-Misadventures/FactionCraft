@@ -1,0 +1,18 @@
+{
+  "entity_type": "minecraft:zombie_villager",
+  "weight": 100,
+  "strength": 1,
+  "ranks": ["soldier","captain", "general", "leader"],
+  "wave_range": {
+    "min": 4
+  },
+  "boosts": {
+    "mandatory": ["minecraft:special/leather_daylight_protection"],
+    "rarity_overrides": [
+      {
+        "boost": "minecraft:mount/zombie_horse",
+        "rarity": "common"
+      }
+    ]
+  }
+}

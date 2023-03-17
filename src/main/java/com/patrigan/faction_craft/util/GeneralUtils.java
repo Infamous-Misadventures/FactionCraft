@@ -1,13 +1,24 @@
 package com.patrigan.faction_craft.util;
 
+import com.mojang.datafixers.util.Either;
 import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
+import net.minecraft.data.BuiltinRegistries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.tags.TagKey;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.List;
 
 public class GeneralUtils {
+    public static <E> Codec<Either<TagKey<E>, List<E>>> getRegistryCodec(ResourceKey<? extends Registry<E>> resourceKey){
+        return Codec.either(TagKey.hashedCodec(resourceKey), ((Registry<E>) BuiltinRegistries.REGISTRY.get(resourceKey.location())).byNameCodec().listOf());
+    }
+
 
     // Weighted RandomSource from: https://stackoverflow.com/a/6737362
     public static <T> T getRandomEntry(List<Pair<T, Integer>> rlList, RandomSource random) {

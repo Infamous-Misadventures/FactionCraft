@@ -48,7 +48,7 @@ public class EntityEvents {
             if(FactionCraftConfig.ENABLE_DEFAULT_FACTION.get()) {
                 FactionEntity factionEntity = FactionEntityHelper.getFactionEntityCapability(mob);
                 if (factionEntity.getFaction() == null) {
-                    List<Faction> factions = Factions.getFactionData().values().stream().filter(faction -> faction.getDefaultEntities().contains(Holder.direct(entity.getType()))).collect(Collectors.toList());
+                    List<Faction> factions = Factions.getFactionData().values().stream().filter(faction -> faction.getDefaultEntities().contains(entity.getType().builtInRegistryHolder())).toList();
                     if (!factions.isEmpty()) {
                         RandomSource randomSource = RandomSource.create(event.getLevel().getChunkAt(mob.blockPosition()).getPos().toLong());
                         factionEntity.setFaction(factions.get(randomSource.nextInt(factions.size())));

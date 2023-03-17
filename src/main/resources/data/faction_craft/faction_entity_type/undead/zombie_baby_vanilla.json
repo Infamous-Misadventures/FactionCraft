@@ -1,0 +1,21 @@
+{
+  "entity_type": "minecraft:zombie",
+  "tag": {
+    "IsBaby": 1
+  },
+  "weight": 70,
+  "strength": 5,
+  "ranks": ["soldier","captain", "general", "leader"],
+  "wave_range": {
+    "min": 3
+  },
+  "boosts": {
+    "mandatory": ["minecraft:special/leather_daylight_protection"],
+    "rarity_overrides": [
+      {
+        "boost": "minecraft:mount/chicken",
+        "rarity": "common"
+      }
+    ]
+  }
+}

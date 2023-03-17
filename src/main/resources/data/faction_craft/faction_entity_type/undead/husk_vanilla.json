@@ -1,0 +1,19 @@
+{
+  "entity_type": "minecraft:husk",
+  "weight": 50,
+  "strength": 8,
+  "ranks": ["soldier","captain", "general", "leader"],
+  "wave_range": {
+    "min": 3
+  },
+  "boosts": {
+    "mandatory": ["minecraft:special/leather_daylight_protection"],
+    "rarity_overrides": [
+      {
+        "boost": "minecraft:mount/zombie_horse",
+        "rarity": "common"
+      }
+    ]
+  },
+  "biome_whitelist": "minecraft:desert"
+}
