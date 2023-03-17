@@ -1,6 +1,5 @@
 package com.patrigan.faction_craft.config;
 
-import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.ForgeConfigSpec;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -11,6 +10,7 @@ import static com.patrigan.faction_craft.FactionCraft.MODID;
 
 public class FactionCraftConfig {
     public static ForgeConfigSpec.ConfigValue<List<? extends String>> DISABLED_FACTIONS;
+    public static ForgeConfigSpec.ConfigValue<Boolean> ENABLE_DEFAULT_FACTION;
 
     public static ForgeConfigSpec.ConfigValue<Boolean> DISABLE_FACTION_RAIDS;
     public static ForgeConfigSpec.ConfigValue<Integer> RAID_MAX_FACTIONS;
@@ -63,7 +63,6 @@ public class FactionCraftConfig {
     public static class Common {
 
         public Common(ForgeConfigSpec.Builder builder){
-
             factionConfig(builder);
             standardRaidConfig(builder);
             raidTargetConfig(builder);
@@ -79,6 +78,10 @@ public class FactionCraftConfig {
                     .comment("A list of disabled factions. \n" +
                             "Default: The internal skeleton test faction. ")
                     .defineList("disabledFactions", Arrays.asList(MODID+":skeleton_test", MODID+":slime_test"), o -> o instanceof String);
+            ENABLE_DEFAULT_FACTION = builder
+                    .comment("Enables default faction for entities \n" +
+                            "Default false")
+                    .define("enableDefaultFaction", false);
             builder.pop();
         }
 

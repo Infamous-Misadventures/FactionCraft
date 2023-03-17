@@ -1,7 +1,6 @@
 package com.patrigan.faction_craft.registry;
 
 import com.mojang.datafixers.util.Pair;
-import com.patrigan.faction_craft.FactionCraft;
 import com.patrigan.faction_craft.boost.Boost;
 import com.patrigan.faction_craft.data.util.MergeableCodecDataManager;
 import com.patrigan.faction_craft.faction.Faction;
@@ -11,13 +10,13 @@ import com.patrigan.faction_craft.faction.FactionRelations;
 import com.patrigan.faction_craft.faction.entity.FactionEntityType;
 import com.patrigan.faction_craft.util.GeneralUtils;
 import net.minecraft.advancements.Advancement;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
-import net.minecraftforge.event.AddReloadListenerEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.minecraft.world.entity.EntityType;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -25,7 +24,6 @@ import java.util.stream.Stream;
 
 import static com.patrigan.faction_craft.FactionCraft.LOGGER;
 import static com.patrigan.faction_craft.config.FactionCraftConfig.DISABLED_FACTIONS;
-import static com.patrigan.faction_craft.registry.FactionEntityTypes.FACTION_ENTITY_TYPE_DATA;
 
 public class Factions {
 
@@ -39,6 +37,7 @@ public class Factions {
         FactionRelations factionRelations = null;
         Set<FactionEntityType> entities = new HashSet<>();
         ResourceLocation activationAdvancement = null;
+        List<Holder<EntityType<?>>> defaultEntities = new ArrayList<>();
         for (Faction raw : raws) {
             if (raw.isReplace()) {
                 banner = raw.getBanner();
@@ -78,11 +77,12 @@ public class Factions {
                 factionRelations = new FactionRelations(allies, enemies);
             }
             entities.addAll(raw.getEntityTypes());
+            defaultEntities.addAll(raw.getDefaultEntities().stream().toList());
         }
         if(!entities.isEmpty()){
             LOGGER.info("Entity types within the faction file is deprecated. They should now be in separate files in the faction_entity_type/<factionname>/ folder. For faction: " + id);
         }
-        return new Faction(name,false, banner, factionRaidConfig, boostConfig, factionRelations, new ArrayList<>(entities), activationAdvancement);
+        return new Faction(name,false, banner, factionRaidConfig, boostConfig, factionRelations, new ArrayList<>(entities), activationAdvancement, HolderSet.direct(defaultEntities));
     }
 
 
@@ -98,7 +98,7 @@ public class Factions {
         return getFactionData().keySet();
     }
 
-    private static Map<ResourceLocation, Faction> getFactionData(){
+    public static Map<ResourceLocation, Faction> getFactionData(){
         return FACTION_DATA.getData().entrySet().stream().filter(entry -> !DISABLED_FACTIONS.get().contains(entry.getKey().toString())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 

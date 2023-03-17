@@ -5,6 +5,9 @@
   "relations": {
     "enemies": ["minecraft:illager"]
   },
+  "default_entities": [
+    "minecraft:zombie"
+  ],
   "entities": [
     {
       "entity_type": "minecraft:skeleton",
