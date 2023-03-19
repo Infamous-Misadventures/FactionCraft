@@ -3,6 +3,7 @@ package com.patrigan.faction_craft.boost;
 import com.mojang.serialization.Codec;
 import com.patrigan.faction_craft.boost.ai.DiggerBoost;
 import com.patrigan.faction_craft.boost.ai.MeleeAttackBoost;
+import com.patrigan.faction_craft.boost.ai.ThrowPotionBoost;
 import com.patrigan.faction_craft.util.RegistryDispatcher;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.fml.common.Mod;
@@ -31,5 +32,8 @@ public class BoostProviders {
     public static final RegistryObject<Codec<FactionMountBoost>> FACTION_MOUNT = BOOST_DISPATCHER.registry().register("faction_mount_boost", () -> FactionMountBoost.CODEC);
     //AI
     public static final RegistryObject<Codec<MeleeAttackBoost>> MELEE_ATTACK = BOOST_DISPATCHER.registry().register("melee_attack_boost", () -> MeleeAttackBoost.CODEC);
-    public static final RegistryObject<Codec<DiggerBoost>> Digger = BOOST_DISPATCHER.registry().register("digger_boost", () -> DiggerBoost.CODEC);
+    public static final RegistryObject<Codec<DiggerBoost>> DIGGER = BOOST_DISPATCHER.registry().register("digger_boost", () -> DiggerBoost.CODEC);
+    public static final RegistryObject<Codec<ThrowPotionBoost>> THROW_POTION = BOOST_DISPATCHER.registry().register("throw_potion_boost", () -> ThrowPotionBoost.CODEC);
+    //Role
+    public static final RegistryObject<Codec<RoleBoost>> ROLE = BOOST_DISPATCHER.registry().register("role_boost", () -> RoleBoost.CODEC);
 }

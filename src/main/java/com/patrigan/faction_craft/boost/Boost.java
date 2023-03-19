@@ -49,7 +49,9 @@ public abstract class Boost {
         ARMOR("armor", 1),
         MOUNT("mount", 1),
         MAINHAND("mainhand", 1),
-        OFFHAND("offhand", 1);
+        OFFHAND("offhand", 1),
+        AI("ai", 10),
+        ROLE("role", 1),;
         public static final Codec<BoostType> CODEC = Codec.STRING.flatComapMap(s -> BoostType.byName(s, null), d -> DataResult.success(d.getName()));
 
         private final String name;

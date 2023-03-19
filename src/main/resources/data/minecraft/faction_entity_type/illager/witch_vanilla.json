@@ -5,5 +5,8 @@
   "ranks": ["captain", "general", "leader"],
   "wave_range": {
     "min": 4
+  },
+  "boosts": {
+    "mandatory": ["faction_craft:special/role/bottle_healer"]
   }
 }

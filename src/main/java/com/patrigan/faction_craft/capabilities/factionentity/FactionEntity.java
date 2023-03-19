@@ -5,6 +5,7 @@ import com.patrigan.faction_craft.faction.Faction;
 import com.patrigan.faction_craft.registry.Factions;
 import com.patrigan.faction_craft.faction.entity.FactionEntityType;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -18,6 +19,7 @@ public class FactionEntity implements INBTSerializable<CompoundTag> {
     private Faction faction = null;
     private FactionEntityType factionEntityType;
     private BlockPos targetPosition = null;
+    private LivingEntity nearestDamagedFactionAlly;
     private boolean isStuck = false;
 
     public FactionEntity() {
@@ -103,5 +105,13 @@ public class FactionEntity implements INBTSerializable<CompoundTag> {
         if(tag.contains("TargetPosition")) {
             targetPosition = BlockPos.of(tag.getLong("TargetPosition"));
         }
+    }
+
+    public LivingEntity getNearestDamagedFactionAlly() {
+        return nearestDamagedFactionAlly;
+    }
+
+    public void setNearestDamagedFactionAlly(LivingEntity nearestDamagedFactionAlly) {
+        this.nearestDamagedFactionAlly = nearestDamagedFactionAlly;
     }
 }

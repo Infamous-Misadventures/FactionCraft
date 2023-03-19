@@ -16,26 +16,25 @@ import static com.patrigan.faction_craft.boost.Boost.Rarity.NONE;
 public class DiggerBoost extends Boost {
 
     public static final Codec<DiggerBoost> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            Codec.INT.optionalFieldOf("strength_adjustment", 1).forGetter(DiggerBoost::getStrengthAdjustment),
             Codec.BOOL.optionalFieldOf("requires_tool", true).forGetter(DiggerBoost::isRequiresTool),
             Codec.BOOL.optionalFieldOf("requires_proper_tool", true).forGetter(DiggerBoost::isRequiresProperTool),
-            Codec.BOOL.optionalFieldOf("off_hand_tool", false).forGetter(DiggerBoost::isOffHandTool)
+            Codec.BOOL.optionalFieldOf("off_hand_tool", false).forGetter(DiggerBoost::isOffHandTool),
+            Codec.INT.optionalFieldOf("strength_adjustment", 1).forGetter(DiggerBoost::getStrengthAdjustment),
+            Rarity.CODEC.optionalFieldOf("rarity", NONE).forGetter(DiggerBoost::getRarity)
     ).apply(instance, DiggerBoost::new));
 
-    private final int strengthAdjustment;
     private final boolean requiresTool;
     private final boolean requiresProperTool;
     private final boolean offHandTool;
+    private final int strengthAdjustment;
+    private final Rarity rarity;
 
-    public DiggerBoost(int strengthAdjustment, boolean requiresTool, boolean requiresProperTool, boolean offHandTool) {
-        this.strengthAdjustment = strengthAdjustment;
+    public DiggerBoost(boolean requiresTool, boolean requiresProperTool, boolean offHandTool, int strengthAdjustment, Rarity rarity) {
         this.requiresTool = requiresTool;
         this.requiresProperTool = requiresProperTool;
         this.offHandTool = offHandTool;
-    }
-
-    public int getStrengthAdjustment() {
-        return strengthAdjustment;
+        this.strengthAdjustment = strengthAdjustment;
+        this.rarity = rarity;
     }
 
     public boolean isRequiresTool() {
@@ -54,6 +53,10 @@ public class DiggerBoost extends Boost {
         return offHandTool ? EquipmentSlot.OFFHAND : EquipmentSlot.MAINHAND;
     }
 
+    public int getStrengthAdjustment() {
+        return strengthAdjustment;
+    }
+
     @Override
     public Codec<? extends Boost> getCodec() {
         return CODEC;
@@ -66,7 +69,7 @@ public class DiggerBoost extends Boost {
 
     @Override
     public Rarity getRarity() {
-        return NONE;
+        return rarity;
     }
 
     @Override

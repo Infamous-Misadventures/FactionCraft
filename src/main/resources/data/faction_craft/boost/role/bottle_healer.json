@@ -1,0 +1,6 @@
+{
+  "type":"faction_craft:role_boost",
+  "boosts": ["faction_craft:special/ai/throw_healing_potion", "minecraft:attribute/negative_generic.max_health", "minecraft:attribute/negative_generic.max_health"],
+  "strength_adjustment": 0.0,
+  "rarity": "none"
+}

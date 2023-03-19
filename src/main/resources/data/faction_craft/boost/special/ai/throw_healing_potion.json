@@ -1,0 +1,7 @@
+{
+  "type":"faction_craft:throw_potion_boost",
+  "potion": "minecraft:healing",
+  "beneficial": true,
+  "requires_damaged": true,
+  "strength_adjustment": 3
+}
