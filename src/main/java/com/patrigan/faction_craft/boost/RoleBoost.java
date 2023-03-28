@@ -6,6 +6,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -14,7 +15,7 @@ public class RoleBoost extends Boost {
 
     public static final Codec<RoleBoost> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             ResourceLocation.CODEC.listOf().fieldOf("boosts").forGetter(RoleBoost::getBoosts),
-            ResourceLocation.CODEC.listOf().fieldOf("fallback_boosts").forGetter(RoleBoost::getFallbackBoosts),
+            ResourceLocation.CODEC.listOf().optionalFieldOf("fallback_boosts", new ArrayList<>()).forGetter(RoleBoost::getFallbackBoosts),
             Codec.INT.optionalFieldOf("strength_adjustment", 0).forGetter(RoleBoost::getStrengthAdjustment),
             BoostType.CODEC.optionalFieldOf("boost_type", BoostType.ROLE).forGetter(RoleBoost::getType),
             Rarity.CODEC.fieldOf("rarity").forGetter(RoleBoost::getRarity)

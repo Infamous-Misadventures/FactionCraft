@@ -9,6 +9,8 @@ import java.util.List;
 import static com.patrigan.faction_craft.FactionCraft.MODID;
 
 public class FactionCraftConfig {
+    public static ForgeConfigSpec.ConfigValue<Boolean> ENABLE_EXPERIMENTAL_FEATURES;
+
     public static ForgeConfigSpec.ConfigValue<List<? extends String>> DISABLED_FACTIONS;
     public static ForgeConfigSpec.ConfigValue<Boolean> ENABLE_DEFAULT_FACTION;
 
@@ -63,6 +65,7 @@ public class FactionCraftConfig {
     public static class Common {
 
         public Common(ForgeConfigSpec.Builder builder){
+            modConfig(builder);
             factionConfig(builder);
             standardRaidConfig(builder);
             raidTargetConfig(builder);
@@ -70,6 +73,15 @@ public class FactionCraftConfig {
             factionBattleConfig(builder);
             reconstructBlockConfig(builder);
             AIConfig(builder);
+        }
+
+        private void modConfig(ForgeConfigSpec.Builder builder) {
+            builder.comment("Faction Craft Mod Config").push("mod_config");
+            ENABLE_EXPERIMENTAL_FEATURES = builder
+                    .comment("Enables experimental features \n" +
+                            "Default false")
+                    .define("enableExperimentalFeatures", false);
+            builder.pop();
         }
 
         private void factionConfig(ForgeConfigSpec.Builder builder) {

@@ -1,0 +1,9 @@
+{
+  "entity_type": "minecraft:pillager",
+  "weight": 200,
+  "strength": 8,
+  "ranks": ["soldier","captain", "general", "leader"],
+  "boosts": {
+    "mandatory": ["faction_craft:role/tank", "minecraft:hand/iron_axe"]
+  }
+}

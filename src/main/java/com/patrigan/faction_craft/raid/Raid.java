@@ -405,7 +405,7 @@ public class Raid {
                 Mob mobEntity = (Mob) entity;
                 FactionEntity entityCapability = FactionEntityHelper.getFactionEntityCapability(mobEntity);
                 if (entityCapability.getFaction() != null && entityCapability.getFactionEntityType() != null) {
-                    this.joinRaid(waveNumber, mobEntity, false);
+                    this.joinRaid(waveNumber, mobEntity);
                     entities.add(mobEntity);
                 }
             }
@@ -427,7 +427,7 @@ public class Raid {
                 Mob mobEntity = (Mob) entity;
                 FactionEntity factionEntityCapability = FactionEntityHelper.getFactionEntityCapability(mobEntity);
                 if (factionEntityCapability != null && faction.equals(factionEntityCapability.getFaction())) {
-                    this.joinRaid(waveNumber, mobEntity, false);
+                    this.joinRaid(waveNumber, mobEntity);
                     entities.add(mobEntity);
                 }
             }
@@ -486,8 +486,8 @@ public class Raid {
         this.groupToLeaderMap.remove(wave);
     }
 
-    public void joinRaid(int pWave, Mob mobEntity, boolean spawned) {
-        this.addWaveMob(pWave, mobEntity, spawned);
+    public void joinRaid(int pWave, Mob mobEntity) {
+        this.addWaveMob(pWave, mobEntity, true);
         RaiderHelper.getRaiderCapability(mobEntity).addToRaid(pWave, this);
     }
 
@@ -758,7 +758,7 @@ public class Raid {
         FactionEntityType randomEntry = getRandomEntry(weightMap, level.random);
         Entity entity = randomEntry.createEntity(level, faction, spawnBlockPos, false, MobSpawnType.PATROL);
         if(entity instanceof Mob mob) {
-            this.joinRaid(this.getGroupsSpawned(), mob, true);
+            this.joinRaid(this.getGroupsSpawned(), mob);
         }
     }
 

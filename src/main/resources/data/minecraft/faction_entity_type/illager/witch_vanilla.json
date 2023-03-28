@@ -7,6 +7,6 @@
     "min": 4
   },
   "boosts": {
-    "mandatory": ["faction_craft:special/role/bottle_healer"]
+    "mandatory": ["faction_craft:role/bottle_healer"]
   }
 }

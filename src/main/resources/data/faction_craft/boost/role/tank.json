@@ -1,0 +1,7 @@
+{
+  "type":"faction_craft:role_boost",
+  "boosts": ["faction_craft:special/ai/shield_ai", "minecraft:hand/shield", "minecraft:attribute/negative_generic.attack_damage"],
+  "fallback_boosts": ["minecraft:attribute/generic.armor", "minecraft:attribute/generic.armor", "minecraft:attribute/generic.armor_toughness"],
+  "strength_adjustment": 0.0,
+  "rarity": "very_rare"
+}

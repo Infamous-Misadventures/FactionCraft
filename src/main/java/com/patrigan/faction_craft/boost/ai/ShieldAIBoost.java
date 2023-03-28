@@ -3,32 +3,28 @@ package com.patrigan.faction_craft.boost.ai;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.patrigan.faction_craft.boost.Boost;
-import com.patrigan.faction_craft.capabilities.factionentity.FactionEntity;
-import com.patrigan.faction_craft.capabilities.factionentity.FactionEntityHelper;
-import com.patrigan.faction_craft.entity.ai.goal.NearestFactionAllyTargetGoal;
-import com.patrigan.faction_craft.entity.ai.goal.ThrowPotionGoal;
-import net.minecraft.core.Registry;
+import com.patrigan.faction_craft.config.FactionCraftConfig;
+import com.patrigan.faction_craft.entity.ai.goal.UseShieldGoal;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.item.alchemy.Potion;
-import net.minecraft.world.item.alchemy.Potions;
+import net.minecraft.world.entity.PathfinderMob;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import static com.patrigan.faction_craft.boost.Boost.BoostType.AI;
 import static com.patrigan.faction_craft.boost.Boost.Rarity.NONE;
 import static com.patrigan.faction_craft.tags.EntityTags.CAN_USE_SHIELD;
 
-public class ShieldBoost extends Boost {
+public class ShieldAIBoost extends Boost {
 
-    public static final Codec<ShieldBoost> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            Codec.INT.optionalFieldOf("strength_adjustment", 1).forGetter(ShieldBoost::getStrengthAdjustment),
-            Rarity.CODEC.optionalFieldOf("rarity", NONE).forGetter(ShieldBoost::getRarity)
-    ).apply(instance, ShieldBoost::new));
+    public static final Codec<ShieldAIBoost> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            Codec.INT.optionalFieldOf("strength_adjustment", 1).forGetter(ShieldAIBoost::getStrengthAdjustment),
+            Rarity.CODEC.optionalFieldOf("rarity", NONE).forGetter(ShieldAIBoost::getRarity)
+    ).apply(instance, ShieldAIBoost::new));
 
     private final int strengthAdjustment;
     private final Rarity rarity;
 
-    public ShieldBoost(int strengthAdjustment, Rarity rarity) {
+    public ShieldAIBoost(int strengthAdjustment, Rarity rarity) {
         this.strengthAdjustment = strengthAdjustment;
         this.rarity = rarity;
     }
@@ -66,14 +62,13 @@ public class ShieldBoost extends Boost {
 
     @Override
     public boolean canApply(LivingEntity livingEntity) {
-        return livingEntity instanceof Mob && ForgeRegistries.ENTITY_TYPES.tags().getTag(CAN_USE_SHIELD).contains(livingEntity.getType());
+        return FactionCraftConfig.ENABLE_EXPERIMENTAL_FEATURES.get() && livingEntity instanceof PathfinderMob && ForgeRegistries.ENTITY_TYPES.tags().getTag(CAN_USE_SHIELD).contains(livingEntity.getType());
     }
 
     @Override
     public void applyAIChanges(Mob mobEntity) {
-        FactionEntity factionEntity = FactionEntityHelper.getFactionEntityCapability(mobEntity);
-        ThrowPotionGoal useShieldGoal = new ThrowPotionGoal(mobEntity, 1.0D, 60, 10.0F, potion, this.isBeneficial() ? factionEntity::getNearestDamagedFactionAlly : mobEntity::getTarget);
-        mobEntity.goalSelector.addGoal(2, useShieldGoal);
+        UseShieldGoal useShieldGoal = new UseShieldGoal((PathfinderMob) mobEntity, 7.5D, 60, 160, 15, 1, false);
+        mobEntity.goalSelector.addGoal(0, useShieldGoal);
     }
 
     private static boolean requiresDamagedSelector(LivingEntity livingEntity) {
@@ -83,6 +78,4 @@ public class ShieldBoost extends Boost {
     private static boolean anySelector(LivingEntity livingEntity) {
         return livingEntity != null && livingEntity.isAlive();
     }
-}
- {
 }

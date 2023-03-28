@@ -1,0 +1,9 @@
+{
+  "entity_type": "minecraft:zombie",
+  "weight": 200,
+  "strength": 8,
+  "ranks": ["soldier","captain", "general", "leader"],
+  "boosts": {
+    "mandatory": ["faction_craft:role/tank"]
+  }
+}

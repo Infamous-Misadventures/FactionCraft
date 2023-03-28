@@ -9,6 +9,7 @@ import com.patrigan.faction_craft.config.FactionCraftConfig;
 import com.patrigan.faction_craft.effect.ModMobEffects;
 import com.patrigan.faction_craft.entity.ai.brain.ModActivities;
 import com.patrigan.faction_craft.network.NetworkHandler;
+import com.patrigan.faction_craft.tags.EntityTags;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -35,9 +36,11 @@ public class FactionCraft
         modEventBus.addListener(this::clientSetup);
         // Register the doClientStuff method for modloading
 
+        //Register Custom Tags
+        EntityTags.register();
+
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
-
 
         ModActivities.ACTIVITIES.register(modEventBus);
         ModBlocks.BLOCKS.register(modEventBus);

@@ -169,7 +169,7 @@ public class RaiderMoveThroughVillageGoal extends Goal {
             set.addAll(list);
 
             for (Mob abstractraiderentity : set) {
-                pRaid.joinRaid(pRaid.getGroupsSpawned(), abstractraiderentity, true);
+                pRaid.joinRaid(pRaid.getGroupsSpawned(), abstractraiderentity);
             }
         }
     }

@@ -9,7 +9,6 @@ import com.patrigan.faction_craft.capabilities.raidmanager.RaidManager;
 import com.patrigan.faction_craft.config.FactionCraftConfig;
 import com.patrigan.faction_craft.faction.Faction;
 import com.patrigan.faction_craft.raid.Raid;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.util.DefaultRandomPos;
@@ -118,7 +117,7 @@ public class MoveTowardsRaidGoal<T extends Mob> extends Goal {
             set.addAll(list);
 
             for(Mob abstractraiderentity : set) {
-                pRaid.joinRaid(pRaid.getGroupsSpawned(), abstractraiderentity, true);
+                pRaid.joinRaid(pRaid.getGroupsSpawned(), abstractraiderentity);
             }
         }
     }

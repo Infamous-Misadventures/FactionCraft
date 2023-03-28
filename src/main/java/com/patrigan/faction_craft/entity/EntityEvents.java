@@ -10,11 +10,17 @@ import com.patrigan.faction_craft.config.FactionCraftConfig;
 import com.patrigan.faction_craft.entity.ai.target.FactionAllyHurtTargetGoal;
 import com.patrigan.faction_craft.entity.ai.target.NearestFactionEnemyTargetGoal;
 import com.patrigan.faction_craft.faction.Faction;
+import com.patrigan.faction_craft.mixin.LivingEntityAccessor;
 import com.patrigan.faction_craft.registry.Factions;
 import net.minecraft.core.Holder;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.targeting.TargetingConditions;
+import net.minecraft.world.phys.AABB;
+import net.minecraftforge.event.PlayLevelSoundEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingConversionEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -24,6 +30,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.patrigan.faction_craft.FactionCraft.MODID;
+import static net.minecraft.sounds.SoundEvents.SHIELD_BLOCK;
 
 @Mod.EventBusSubscriber(modid = MODID)
 public class EntityEvents {
@@ -57,6 +64,17 @@ public class EntityEvents {
             }
             mob.targetSelector.addGoal(2, new NearestFactionEnemyTargetGoal(mob, 10, true, false));
             mob.targetSelector.addGoal(2, new FactionAllyHurtTargetGoal(mob, 10, true, false));
+        }
+    }
+
+    @SubscribeEvent
+    public static void onPlayLevelSoundEvent(PlayLevelSoundEvent.AtPosition event) {
+        LivingEntity nearestEntity = event.getLevel().getNearestEntity(LivingEntity.class, TargetingConditions.forNonCombat(), null, event.getPosition().x, event.getPosition().y, event.getPosition().z, AABB.ofSize(event.getPosition(), 1, 1, 1));
+        if (nearestEntity instanceof Mob mob) {
+            SoundEvent soundEvent = ((LivingEntityAccessor) mob).invokeGetHurtSound(mob.getLastDamageSource());
+            if(event.getSound() == soundEvent && mob.getUseItem().canPerformAction(net.minecraftforge.common.ToolActions.SHIELD_BLOCK)){
+                event.setSound(SHIELD_BLOCK);
+            }
         }
     }
 }
