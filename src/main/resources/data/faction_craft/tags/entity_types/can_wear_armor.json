@@ -11,6 +11,9 @@
 	"minecraft:vindicator",
 	"minecraft:piglin_brute",
 	"minecraft:piglin",
-	"minecraft:zombified_piglin"
+	"minecraft:zombified_piglin",
+	"minecraft:evoker",
+	"minecraft:witch",
+	"minecraft:vex"
   ]
 }
