@@ -1,7 +1,7 @@
 {
   "entity_type": "minecraft:ravager",
   "weight": 15,
-  "strength": 5,
+  "strength": 15,
   "ranks": ["mount"],
   "wave_range":{
     "min": 4
