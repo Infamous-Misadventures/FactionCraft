@@ -28,7 +28,7 @@ jobs:
         run: |
           echo "mod_name=$(cat ./gradle.properties | sed -n 's/modid\=//p' | tr -d "'")" >> $GITHUB_OUTPUT
           echo "mod_version=$(cat ./gradle.properties | sed -n 's/mod_version\=//p' | tr -d "'")" >> $GITHUB_OUTPUT
-          echo "m_version=$(cat ./gradle.properties | sed -n 's/mc_version\=//p' | tr -d "'")" >> $GITHUB_OUTPUT
+          echo "mc_version=$(cat ./gradle.properties | sed -n 's/mc_version\=//p' | tr -d "'")" >> $GITHUB_OUTPUT
           echo "java_version=$(cat ./build.gradle | grep -o -P '(?<=JavaLanguageVersion.of\().*(?=\))')" >> $GITHUB_OUTPUT
       - name: MC Patch Version
         id: patchversion
