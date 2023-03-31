@@ -115,6 +115,9 @@ public class PatrolSpawner implements CustomSpawner {
          entityWeightMapProperties.addAllowedRank(FactionEntityType.FactionRank.SOLDIER);
       }
       List<Pair<FactionEntityType, Integer>> weightMap = faction.getWeightMap(entityWeightMapProperties);
+      if(weightMap.isEmpty()) {
+         return false;
+      }
       FactionEntityType factionEntityType = GeneralUtils.getRandomEntry(weightMap, pRandom);
       EntityType<? extends Mob> entityType = (EntityType<? extends Mob>) ENTITY_TYPES.getValue(factionEntityType.getEntityType());
       if (!NaturalSpawner.isValidEmptySpawnBlock(pLevel, pPos, blockstate, blockstate.getFluidState(), entityType)) {
