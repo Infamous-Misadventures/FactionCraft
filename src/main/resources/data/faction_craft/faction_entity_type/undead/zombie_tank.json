@@ -1,9 +1,9 @@
 {
   "entity_type": "minecraft:zombie",
-  "weight": 200,
+  "weight": 20,
   "strength": 8,
   "ranks": ["soldier","captain", "general", "leader"],
   "boosts": {
-    "mandatory": ["faction_craft:role/tank"]
+    "mandatory": ["minecraft:special/leather_daylight_protection", "faction_craft:role/tank"]
   }
 }
