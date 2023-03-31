@@ -1,0 +1,9 @@
+{
+  "entity_type": "minecraft:blaze",
+  "weight": 50,
+  "strength": 6,
+  "ranks": ["soldier","captain", "general", "leader"],
+  "wave_range": {
+    "min": 2
+  }
+}

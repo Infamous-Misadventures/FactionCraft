@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.19.2-1.2.2] - 2023-31-03
+#### Minor Features
+- Moved the wither faction also into the new faction entity type system.
+
+### Bugfixes / Tweaks
+- Fixed some of the weights and rarities for tank entities.
+
 ## [1.19.2-1.2.1] - 2023-31-03
 
 ### Major Features

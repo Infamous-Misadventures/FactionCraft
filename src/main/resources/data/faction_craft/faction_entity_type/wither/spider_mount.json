@@ -1,0 +1,9 @@
+{
+  "entity_type": "minecraft:spider",
+  "weight": 30,
+  "strength": 5,
+  "ranks": ["mount"],
+  "wave_range": {
+    "min": 3
+  }
+}

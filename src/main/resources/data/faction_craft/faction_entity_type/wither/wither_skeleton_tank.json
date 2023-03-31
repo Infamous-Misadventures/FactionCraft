@@ -1,0 +1,19 @@
+{
+  "entity_type": "minecraft:wither_skeleton",
+  "weight": 100,
+  "strength": 8,
+  "ranks": ["soldier","captain", "general", "leader"],
+  "boosts": {
+    "mandatory": ["minecraft:special/leather_daylight_protection", "faction_craft:role/tank"],
+    "rarity_overrides": [
+      {
+        "boost": "minecraft:mount/skeleton_horse",
+        "rarity": "common"
+      },
+      {
+        "boost": "faction_craft:mount/faction_spider",
+        "rarity": "rare"
+      }
+    ]
+  }
+}

@@ -3,6 +3,9 @@
   "weight": 20,
   "strength": 8,
   "ranks": ["soldier","captain", "general", "leader"],
+  "wave_range":{
+    "min": 2
+  },
   "boosts": {
     "mandatory": ["minecraft:special/leather_daylight_protection", "faction_craft:role/tank"]
   }
