@@ -3,9 +3,12 @@
 ## [1.19.2-1.2.2] - 2023-31-03
 #### Minor Features
 - Moved the wither faction also into the new faction entity type system.
+- Faction battles now have more randomized starting waves. Config updated to reflect this. 
 
 ### Bugfixes / Tweaks
 - Fixed some of the weights and rarities for tank entities.
+- Ravagers were pretty cheap to the raid strength.
+- Fixes crash when trying to spawn a patrol with no available patrol members.
 
 ## [1.19.2-1.2.1] - 2023-31-03
 
