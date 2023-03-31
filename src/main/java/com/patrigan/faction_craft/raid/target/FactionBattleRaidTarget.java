@@ -8,12 +8,17 @@ import com.patrigan.faction_craft.raid.Raid;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
+import net.minecraft.util.random.WeightedEntry;
+import net.minecraft.util.random.WeightedRandom;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.level.NaturalSpawner;
 import net.minecraft.world.level.block.Blocks;
 
+import java.util.ArrayList;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -96,8 +101,19 @@ public class FactionBattleRaidTarget implements RaidTarget {
 
     @Override
     public int getStartingWave() {
-        return BATTLE_STARTING_WAVE.get();
+        return getWeightedRandom(BATTLE_STARTING_WAVE_MIN.get(), BATTLE_STARTING_WAVE_MAX.get());
     }
+
+    private int getWeightedRandom(int min, int max) {
+        if(max <= min) return min;
+        ArrayList<WeightedEntry.Wrapper<Integer>> weightedEntries = new ArrayList<>();
+        for (int i = 0; i <= max-min; i++) {
+            weightedEntries.add(WeightedEntry.wrap(i+min, max - i));
+        }
+        Optional<WeightedEntry.Wrapper<Integer>> randomItem = WeightedRandom.getRandomItem(RandomSource.create(), weightedEntries);
+        return randomItem.map(WeightedEntry.Wrapper::getData).orElse(min);
+    }
+
 
     @Override
     public float getSpawnDistance() {

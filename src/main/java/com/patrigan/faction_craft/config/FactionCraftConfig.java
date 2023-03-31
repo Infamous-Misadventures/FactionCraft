@@ -52,7 +52,8 @@ public class FactionCraftConfig {
     public static ForgeConfigSpec.ConfigValue<Integer> BATTLE_TICK_DELAY_BETWEEN_SPAWN_ATTEMPTS;
     public static ForgeConfigSpec.ConfigValue<Integer> BATTLE_VARIABLE_TICK_DELAY_BETWEEN_SPAWN_ATTEMPTS;
     public static ForgeConfigSpec.ConfigValue<Double> BATTLE_SPAWN_CHANCE_ON_SPAWN_ATTEMPT;
-    public static ForgeConfigSpec.ConfigValue<Integer> BATTLE_STARTING_WAVE;
+    public static ForgeConfigSpec.ConfigValue<Integer> BATTLE_STARTING_WAVE_MIN;
+    public static ForgeConfigSpec.ConfigValue<Integer> BATTLE_STARTING_WAVE_MAX;
 
     public static ForgeConfigSpec.ConfigValue<Boolean> ENABLE_RECONSTRUCT_BLOCKS;
     public static ForgeConfigSpec.ConfigValue<Boolean> RECONSTRUCT_ON_LOSS;
@@ -255,10 +256,14 @@ public class FactionCraftConfig {
                     .comment("The chance a battle spawns on a spawn attempt. \n" +
                             "Default 0.15")
                     .defineInRange("battleSpawnChanceOnSpawnAttempt", 0.15, 0.0, 1.0);
-            BATTLE_STARTING_WAVE = builder
-                    .comment("Determines the starting wave for a battle. \n" +
-                            "Default 3")
-                    .defineInRange("battleStartingWave", 3, 0, 999999999);
+            BATTLE_STARTING_WAVE_MIN = builder
+                    .comment("Determines the minimum starting wave for a battle. \n" +
+                            "Default 1")
+                    .defineInRange("battleStartingWaveMin", 1, 0, 999999999);
+            BATTLE_STARTING_WAVE_MAX = builder
+                    .comment("Determines the maximum starting wave for a battle. \n" +
+                            "Default 5")
+                    .defineInRange("battleStartingWaveMax", 5, 0, 999999999);
             builder.pop();
         }
 
