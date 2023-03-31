@@ -37,7 +37,7 @@ public class FactionCraftConfig {
     public static ForgeConfigSpec.ConfigValue<Integer> PLAYER_RAID_TARGET_BASE_STRENGTH;
     public static ForgeConfigSpec.ConfigValue<Double> PLAYER_RAID_TARGET_STRENGTH_MULTIPLIER;
 
-    public static ForgeConfigSpec.ConfigValue<Integer> FACTION_BATTLE_RAID_TARGET_BASE_STRENGTH;
+    public static ForgeConfigSpec.ConfigValue<Integer> FACTION_BATTLE_RAID_TARGET_BASE_STRENGTH_PER_WAVE;
     public static ForgeConfigSpec.ConfigValue<Double> FACTION_BATTLE_RAID_TARGET_STRENGTH_MULTIPLIER;
 
     public static ForgeConfigSpec.ConfigValue<Boolean> DISABLE_FACTION_PATROLS;
@@ -192,17 +192,6 @@ public class FactionCraftConfig {
                             "Multiplies the target strength and rounds down. Default 1.0F")
                     .defineInRange("playerRaidTargetStrengthMultiplier", 1.0, 0.0, 100.0);
             builder.pop();
-
-            builder.comment("Faction Battle Raid Target Calculations").push("faction_battle_raid_target_calculations");
-            FACTION_BATTLE_RAID_TARGET_BASE_STRENGTH = builder
-                    .comment("Base target strength of a faction battle. \n" +
-                            "Will be divided over both factions. Default 140")
-                    .defineInRange("factionBattleRaidTargetBaseStrength", 140, 0, 9999);
-            FACTION_BATTLE_RAID_TARGET_STRENGTH_MULTIPLIER = builder
-                    .comment("Applied to the target strength of a faction battle. \n" +
-                            "Multiplies the target strength and rounds down. Default 1.0F")
-                    .defineInRange("factionBattleRaidTargetStrengthMultiplier", 1.0, 0.0, 100.0);
-            builder.pop();
         }
 
         private void patrollerConfig(ForgeConfigSpec.Builder builder) {
@@ -264,6 +253,14 @@ public class FactionCraftConfig {
                     .comment("Determines the maximum starting wave for a battle. \n" +
                             "Default 5")
                     .defineInRange("battleStartingWaveMax", 5, 0, 999999999);
+            FACTION_BATTLE_RAID_TARGET_BASE_STRENGTH_PER_WAVE = builder
+                    .comment("Base target strength of a faction battle. \n" +
+                            "Will be divided over both factions. Default 45")
+                    .defineInRange("factionBattleRaidTargetBaseStrengthPerWave", 45, 0, 9999);
+            FACTION_BATTLE_RAID_TARGET_STRENGTH_MULTIPLIER = builder
+                    .comment("Applied to the target strength of a faction battle. \n" +
+                            "Multiplies the target strength and rounds down. Default 1.0F")
+                    .defineInRange("factionBattleRaidTargetStrengthMultiplier", 1.0, 0.0, 100.0);
             builder.pop();
         }
 

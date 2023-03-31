@@ -32,27 +32,31 @@ public class FactionBattleRaidTarget implements RaidTarget {
     private final BlockPos targetBlockPos;
     private final Faction faction1;
     private final Faction faction2;
+    private final int startingWave;
 
     public FactionBattleRaidTarget(BlockPos targetBlockPos, Faction faction1, Faction faction2, ServerLevel level) {
         this.targetBlockPos = targetBlockPos;
         this.faction1 = faction1;
         this.faction2 = faction2;
-        this.targetStrength = calculateTargetStrength(level);
+        this.startingWave = getWeightedRandom(BATTLE_STARTING_WAVE_MIN.get(), BATTLE_STARTING_WAVE_MAX.get());
+        this.targetStrength = calculateTargetStrength(level, this.startingWave);
+
     }
 
-    private int calculateTargetStrength(ServerLevel level) {
-        int strength = FACTION_BATTLE_RAID_TARGET_BASE_STRENGTH.get();
+    private int calculateTargetStrength(ServerLevel level, int startingWave) {
+        int strength = FACTION_BATTLE_RAID_TARGET_BASE_STRENGTH_PER_WAVE.get() * startingWave;
         CalculateStrengthEvent event = new CalculateStrengthEvent.FactionBattle(BATTLE, targetBlockPos, level, strength, strength, faction1, faction2);
         net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event);
         FactionCraft.LOGGER.info("Strength = " + strength);
         return (int) Math.floor(event.getStrength()*FACTION_BATTLE_RAID_TARGET_STRENGTH_MULTIPLIER.get());
     }
 
-    public FactionBattleRaidTarget(int targetStrength, BlockPos targetBlockPos, Faction faction1, Faction faction2) {
+    public FactionBattleRaidTarget(int targetStrength, BlockPos targetBlockPos, Faction faction1, Faction faction2, int startingWave) {
         this.targetStrength = targetStrength;
         this.targetBlockPos = targetBlockPos;
         this.faction1 = faction1;
         this.faction2 = faction2;
+        this.startingWave = startingWave;
     }
 
     @Override
@@ -101,7 +105,7 @@ public class FactionBattleRaidTarget implements RaidTarget {
 
     @Override
     public int getStartingWave() {
-        return getWeightedRandom(BATTLE_STARTING_WAVE_MIN.get(), BATTLE_STARTING_WAVE_MAX.get());
+        return startingWave;
     }
 
     private int getWeightedRandom(int min, int max) {
@@ -129,6 +133,7 @@ public class FactionBattleRaidTarget implements RaidTarget {
         compoundNbt.putInt("TargetStrength", targetStrength);
         compoundNbt.putString("Faction1", faction1.getName().toString());
         compoundNbt.putString("Faction2", faction2.getName().toString());
+        compoundNbt.putInt("StartingWave", startingWave);
         return compoundNbt;
     }
 }

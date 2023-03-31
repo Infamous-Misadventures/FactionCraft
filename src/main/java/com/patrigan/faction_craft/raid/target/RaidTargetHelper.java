@@ -39,7 +39,8 @@ public class RaidTargetHelper {
                 compoundNBT.getInt("TargetStrength"),
                 new BlockPos(compoundNBT.getInt("X"), compoundNBT.getInt("Y"), compoundNBT.getInt("Z")),
                 Factions.getFaction(new ResourceLocation(compoundNBT.getString("Faction1"))),
-                Factions.getFaction(new ResourceLocation(compoundNBT.getString("Faction2")))
+                Factions.getFaction(new ResourceLocation(compoundNBT.getString("Faction2"))),
+                compoundNBT.getInt("StartingWave")
         );
     }
 }
