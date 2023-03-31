@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.19.2-1.2.1] - 2023-XX-XX
+## [1.19.2-1.2.1] - 2023-31-03
 
 ### Major Features
 #### Diggers
