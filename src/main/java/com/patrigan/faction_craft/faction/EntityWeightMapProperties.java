@@ -38,7 +38,7 @@ public class EntityWeightMapProperties {
     }
 
     public EntityWeightMapProperties setAllowedRanks(List<FactionEntityType.FactionRank> allowedRanks) {
-        this.allowedRanks = allowedRanks;
+        this.allowedRanks = new ArrayList<>(allowedRanks);
         return this;
     }
 
