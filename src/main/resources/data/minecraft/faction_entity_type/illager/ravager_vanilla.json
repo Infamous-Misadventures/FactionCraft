@@ -4,7 +4,8 @@
   "strength": 15,
   "ranks": ["support"],
   "wave_range":{
-    "min": 3
+    "min": 3,
+    "max": 3
   },
   "spawned_range": {
     "max": 1
