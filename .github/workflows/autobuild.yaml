@@ -26,8 +26,9 @@ jobs:
       - name: Get Details
         id: moddetails
         run: |
-          echo "mod_name=$(cat ./build.gradle | sed -n 's/archivesBaseName \= //p' | tr -d "'")" >> $GITHUB_OUTPUT
-          echo "mod_version=$(cat ./build.gradle | sed -n 's/version \= //p' | tr -d "'")" >> $GITHUB_OUTPUT
+          echo "mod_name=$(cat ./gradle.properties | sed -n 's/modid \= //p' | tr -d "'")" >> $GITHUB_OUTPUT
+          echo "mod_version=$(cat ./gradle.properties | sed -n 's/mod_version \= //p' | tr -d "'")" >> $GITHUB_OUTPUT
+          echo "m_version=$(cat ./gradle.properties | sed -n 's/mc_version \= //p' | tr -d "'")" >> $GITHUB_OUTPUT
           echo "java_version=$(cat ./build.gradle | grep -o -P '(?<=JavaLanguageVersion.of\().*(?=\))')" >> $GITHUB_OUTPUT
       - name: MC Patch Version
         id: patchversion
@@ -37,7 +38,7 @@ jobs:
         run: echo "mc_minor_version=$(echo ${{ steps.patchversion.outputs.mc_patch_version }} | awk -F. '{ print $1"."$2 }')" >> $GITHUB_OUTPUT
       - name: Get Details
         id: filepath
-        run: echo "file_path=./build/libs/${{ steps.moddetails.outputs.mod_name }}-${{ steps.moddetails.outputs.mod_version }}.jar" >> $GITHUB_OUTPUT
+        run: echo "file_path=./build/libs/${{ steps.moddetails.outputs.mod_name }}-${{ steps.moddetails.outputs.mc_version }}-${{ steps.moddetails.outputs.mod_version }}.jar" >> $GITHUB_OUTPUT
 
   build:
     name: Build and cache
@@ -85,8 +86,8 @@ jobs:
 
           files-primary: ${{ needs.setup.outputs.file_path }}
 
-          name: ${{ needs.setup.outputs.mod_name }}-${{ needs.setup.outputs.mod_version }}
-          version: ${{ needs.setup.outputs.mod_version }}
+          name: ${{ needs.setup.outputs.mod_name }}-${{ needs.setup.outputs.mc_version }}-${{ needs.setup.outputs.mod_version }}
+          version: ${{ needs.setup.outputs.mc_version }}-${{ needs.setup.outputs.mod_version }}
           changelog-file: CHANGELOG.md
 
           loaders: |
@@ -105,8 +106,8 @@ jobs:
 
           files-primary: ${{ needs.setup.outputs.file_path }}
 
-          name: ${{ needs.setup.outputs.mod_name }}-${{ needs.setup.outputs.mod_version }}
-          version: ${{ needs.setup.outputs.mod_version }}
+          name: ${{ needs.setup.outputs.mod_name }}-${{ needs.setup.outputs.mc_version }}-${{ needs.setup.outputs.mod_version }}
+          version: ${{ needs.setup.outputs.mc_version }}-${{ needs.setup.outputs.mod_version }}
           changelog-file: CHANGELOG.md
 
           loaders: |
