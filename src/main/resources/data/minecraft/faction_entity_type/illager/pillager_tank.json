@@ -1,6 +1,6 @@
 {
   "entity_type": "minecraft:pillager",
-  "weight": 200,
+  "weight": 20,
   "strength": 8,
   "ranks": ["soldier","captain", "general", "leader"],
   "boosts": {
