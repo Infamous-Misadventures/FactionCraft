@@ -6,6 +6,10 @@
     "enemies": ["minecraft:illager"]
   },
   "default_entities": [
-    "minecraft:zombie"
+    "minecraft:zombie",
+    "minecraft:skeleton",
+    "minecraft:zombie_villager",
+    "minecraft:husk",
+    "minecraft:stray"
   ]
 }

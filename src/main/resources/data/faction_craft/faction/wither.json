@@ -5,5 +5,11 @@
   "relations": {
     "enemies": ["minecraft:illager"]
   },
-  "activation_advancement": "minecraft:nether/root"
+  "activation_advancement": "minecraft:nether/root",
+  "default_entities": [
+    "minecraft:skeleton",
+    "minecraft:wither_skeleton",
+    "minecraft:blaze",
+    "minecraft:ghast"
+  ]
 }
