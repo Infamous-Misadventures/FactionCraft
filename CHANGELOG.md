@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.19.2-1.2.3] - 2023-02-04
+#### Minor Features
+
+### Bugfixes / Tweaks
+- Added missing Default factions
+- Fixed Biome Spawning not working properly.
+
 ## [1.19.2-1.2.2] - 2023-31-03
 #### Minor Features
 - Moved the wither faction also into the new faction entity type system.
