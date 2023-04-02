@@ -15,5 +15,5 @@
       }
     ]
   },
-  "biome_whitelist": "minecraft:desert"
+  "biome_whitelist": ["minecraft:desert"]
 }

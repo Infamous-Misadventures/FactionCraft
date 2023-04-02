@@ -10,11 +10,14 @@ import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.data.BuiltinRegistries;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.ExtraCodecs;
+import net.minecraftforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 
 public class JsonHolderSetCodec<E> implements Codec<HolderSet<E>> {
@@ -39,6 +42,13 @@ public class JsonHolderSetCodec<E> implements Codec<HolderSet<E>> {
 
     @Nullable
     private Registry<E> getCorrectRegistry(ResourceKey<? extends Registry<E>> resourceKey) {
+        MinecraftServer currentServer = ServerLifecycleHooks.getCurrentServer();
+        if(currentServer != null){
+            Optional<? extends Registry<E>> registryOptional = currentServer.registryAccess().registry(resourceKey);
+            if(registryOptional.isPresent()){
+                return registryOptional.get();
+            }
+        }
         Registry<E> registry = (Registry<E>) BuiltinRegistries.REGISTRY.get(resourceKey.location());
         if(registry == null){
             registry = (Registry<E>) Registry.REGISTRY.get(resourceKey.location());

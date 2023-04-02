@@ -3,11 +3,9 @@ package com.patrigan.faction_craft.faction;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import com.patrigan.faction_craft.data.JsonHolderSetCodec;
+import com.patrigan.faction_craft.data.ResourceSet;
 import com.patrigan.faction_craft.faction.entity.FactionEntityType;
-import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
-import net.minecraft.core.RegistryCodecs;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
@@ -21,10 +19,9 @@ import java.util.Collections;
 import java.util.List;
 
 import static com.patrigan.faction_craft.FactionCraft.MODID;
-import static net.minecraft.world.level.biome.Biome.DIRECT_CODEC;
 
 public class Faction {
-    public static final Faction DEFAULT = new Faction(new ResourceLocation("faction/default"), false, new CompoundTag(), FactionRaidConfig.DEFAULT, FactionBoostConfig.DEFAULT, FactionRelations.DEFAULT, Collections.emptyList(), new ResourceLocation(MODID, "default"), HolderSet.direct());
+    public static final Faction DEFAULT = new Faction(new ResourceLocation("faction/default"), false, new CompoundTag(), FactionRaidConfig.DEFAULT, FactionBoostConfig.DEFAULT, FactionRelations.DEFAULT, Collections.emptyList(), new ResourceLocation(MODID, "default"), ResourceSet.getEmpty(Registry.ENTITY_TYPE_REGISTRY));
 
     public static final Codec<Faction> CODEC = RecordCodecBuilder.create(builder ->
             builder.group(
@@ -36,7 +33,7 @@ public class Faction {
                     FactionRelations.CODEC.optionalFieldOf("relations", FactionRelations.DEFAULT).forGetter(Faction::getRelations),
                     FactionEntityType.CODEC_OLD.listOf().optionalFieldOf("entities", new ArrayList<>()).forGetter(Faction::getEntityTypes),
                     ResourceLocation.CODEC.optionalFieldOf("activation_advancement", new ResourceLocation(MODID, "activation_advancement")).forGetter(Faction::getActivationAdvancement),
-                    JsonHolderSetCodec.create(Registry.ENTITY_TYPE_REGISTRY, false).optionalFieldOf("default_entities", HolderSet.direct()).forGetter(data -> data.defaultEntities)
+                    ResourceSet.getCodec(Registry.ENTITY_TYPE_REGISTRY).optionalFieldOf("default_entities", ResourceSet.getEmpty(Registry.ENTITY_TYPE_REGISTRY)).forGetter(data -> data.defaultEntities)
             ).apply(builder, Faction::new));
 
     private final ResourceLocation name;
@@ -47,9 +44,9 @@ public class Faction {
     private final FactionRelations relations;
     private List<FactionEntityType> entityTypes;
     private final ResourceLocation activationAdvancement;
-    private final HolderSet<EntityType<?>> defaultEntities;
+    private final ResourceSet<EntityType<?>> defaultEntities;
 
-    public Faction(ResourceLocation name, boolean replace, CompoundTag banner, FactionRaidConfig raidConfig, FactionBoostConfig boostConfig, FactionRelations relations, List<FactionEntityType> entityTypes, ResourceLocation activationAdvancement, HolderSet<EntityType<?>> defaultEntities) {
+    public Faction(ResourceLocation name, boolean replace, CompoundTag banner, FactionRaidConfig raidConfig, FactionBoostConfig boostConfig, FactionRelations relations, List<FactionEntityType> entityTypes, ResourceLocation activationAdvancement, ResourceSet<EntityType<?>> defaultEntities) {
         this.name = name;
         this.replace = replace;
         this.banner = banner;
@@ -93,7 +90,7 @@ public class Faction {
         return activationAdvancement;
     }
 
-    public HolderSet<EntityType<?>> getDefaultEntities() {
+    public ResourceSet<EntityType<?>> getDefaultEntities() {
         return defaultEntities;
     }
 

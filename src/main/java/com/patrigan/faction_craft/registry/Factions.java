@@ -2,6 +2,7 @@ package com.patrigan.faction_craft.registry;
 
 import com.mojang.datafixers.util.Pair;
 import com.patrigan.faction_craft.boost.Boost;
+import com.patrigan.faction_craft.data.ResourceSet;
 import com.patrigan.faction_craft.data.util.MergeableCodecDataManager;
 import com.patrigan.faction_craft.faction.Faction;
 import com.patrigan.faction_craft.faction.FactionBoostConfig;
@@ -12,6 +13,7 @@ import com.patrigan.faction_craft.util.GeneralUtils;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
+import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -37,7 +39,7 @@ public class Factions {
         FactionRelations factionRelations = null;
         Set<FactionEntityType> entities = new HashSet<>();
         ResourceLocation activationAdvancement = null;
-        List<Holder<EntityType<?>>> defaultEntities = new ArrayList<>();
+        ResourceSet<EntityType<?>> defaultEntities = new ResourceSet<>(Registry.ENTITY_TYPE_REGISTRY, new ArrayList<>());
         for (Faction raw : raws) {
             if (raw.isReplace()) {
                 banner = raw.getBanner();
@@ -77,12 +79,12 @@ public class Factions {
                 factionRelations = new FactionRelations(allies, enemies);
             }
             entities.addAll(raw.getEntityTypes());
-            defaultEntities.addAll(raw.getDefaultEntities().stream().toList());
+            defaultEntities = defaultEntities.merge(raw.getDefaultEntities());
         }
         if(!entities.isEmpty()){
             LOGGER.info("Entity types within the faction file is deprecated. They should now be in separate files in the faction_entity_type/<factionname>/ folder. For faction: " + id);
         }
-        return new Faction(name,false, banner, factionRaidConfig, boostConfig, factionRelations, new ArrayList<>(entities), activationAdvancement, HolderSet.direct(defaultEntities));
+        return new Faction(name,false, banner, factionRaidConfig, boostConfig, factionRelations, new ArrayList<>(entities), activationAdvancement, defaultEntities);
     }
 
 

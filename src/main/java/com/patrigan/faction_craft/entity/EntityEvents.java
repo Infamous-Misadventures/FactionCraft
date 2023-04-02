@@ -12,7 +12,6 @@ import com.patrigan.faction_craft.entity.ai.target.NearestFactionEnemyTargetGoal
 import com.patrigan.faction_craft.faction.Faction;
 import com.patrigan.faction_craft.mixin.LivingEntityAccessor;
 import com.patrigan.faction_craft.registry.Factions;
-import net.minecraft.core.Holder;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
@@ -27,7 +26,6 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.patrigan.faction_craft.FactionCraft.MODID;
 import static net.minecraft.sounds.SoundEvents.SHIELD_BLOCK;
@@ -55,7 +53,7 @@ public class EntityEvents {
             if(FactionCraftConfig.ENABLE_DEFAULT_FACTION.get()) {
                 FactionEntity factionEntity = FactionEntityHelper.getFactionEntityCapability(mob);
                 if (factionEntity.getFaction() == null) {
-                    List<Faction> factions = Factions.getFactionData().values().stream().filter(faction -> faction.getDefaultEntities().contains(entity.getType().builtInRegistryHolder())).toList();
+                    List<Faction> factions = Factions.getFactionData().values().stream().filter(faction -> faction.getDefaultEntities().contains(entity.getType())).toList();
                     if (!factions.isEmpty()) {
                         RandomSource randomSource = RandomSource.create(event.getLevel().getChunkAt(mob.blockPosition()).getPos().toLong());
                         factionEntity.setFaction(factions.get(randomSource.nextInt(factions.size())));

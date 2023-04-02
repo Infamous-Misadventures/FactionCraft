@@ -5,11 +5,12 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.patrigan.faction_craft.capabilities.factionentity.FactionEntity;
 import com.patrigan.faction_craft.capabilities.factionentity.FactionEntityHelper;
-import com.patrigan.faction_craft.data.JsonHolderSetCodec;
+import com.patrigan.faction_craft.data.ResourceSet;
 import com.patrigan.faction_craft.faction.Faction;
 import com.patrigan.faction_craft.registry.FactionEntityTypes;
 import com.patrigan.faction_craft.util.IntRange;
-import net.minecraft.core.*;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -24,12 +25,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static net.minecraft.world.level.biome.Biome.DIRECT_CODEC;
 import static net.minecraftforge.registries.ForgeRegistries.ENTITY_TYPES;
 
 
 public class FactionEntityType {
-    public static final FactionEntityType DEFAULT = new FactionEntityType(new ResourceLocation("minecraft:pig"), new CompoundTag(), 1, 1, List.of(FactionRank.SOLDIER), EntityBoostConfig.DEFAULT, new IntRange(0, 10000), new IntRange(0, 10000), new IntRange(0, 10000), new IntRange(-64, 320), HolderSet.direct(), HolderSet.direct());
+    public static final FactionEntityType DEFAULT = new FactionEntityType(new ResourceLocation("minecraft:pig"), new CompoundTag(), 1, 1, List.of(FactionRank.SOLDIER), EntityBoostConfig.DEFAULT, new IntRange(0, 10000), new IntRange(0, 10000), new IntRange(0, 10000), new IntRange(-64, 320), ResourceSet.getEmpty(Registry.BIOME_REGISTRY), ResourceSet.getEmpty(Registry.BIOME_REGISTRY));
     public static final Codec<FactionEntityType> CODEC = RecordCodecBuilder.create(builder ->
             builder.group(
                     ResourceLocation.CODEC.fieldOf("entity_type").forGetter(data -> data.entityType),
@@ -42,8 +42,8 @@ public class FactionEntityType {
                     IntRange.getCodec(0, 10000).optionalFieldOf("spawned_range", new IntRange(0, 10000)).forGetter(data -> data.spawnedRange),
                     IntRange.getCodec(0, 10000).optionalFieldOf("omen_range", new IntRange(0, 10000)).forGetter(data -> data.omenRange),
                     IntRange.getCodec(-10000, 10000).optionalFieldOf("y_range", new IntRange(-64, 320)).forGetter(data -> data.yRange),
-                    JsonHolderSetCodec.create(Registry.BIOME_REGISTRY, false).optionalFieldOf("biome_whitelist", HolderSet.direct()).forGetter(data -> data.biomeWhitelist),
-                    JsonHolderSetCodec.create(Registry.BIOME_REGISTRY, false).optionalFieldOf("biome_blacklist", HolderSet.direct()).forGetter(data -> data.biomeBlacklist)
+                    ResourceSet.getCodec(Registry.BIOME_REGISTRY).optionalFieldOf("biome_whitelist", ResourceSet.getEmpty(Registry.BIOME_REGISTRY)).forGetter(data -> data.biomeWhitelist),
+                    ResourceSet.getCodec(Registry.BIOME_REGISTRY).optionalFieldOf("biome_blacklist", ResourceSet.getEmpty(Registry.BIOME_REGISTRY)).forGetter(data -> data.biomeBlacklist)
             ).apply(builder, FactionEntityType::new));
 
     public static final Codec<FactionEntityType> CODEC_OLD = RecordCodecBuilder.create(builder ->
@@ -73,10 +73,10 @@ public class FactionEntityType {
     private final IntRange spawnedRange;
     private final IntRange omenRange;
     private final IntRange yRange;
-    private final HolderSet<Biome> biomeWhitelist;
-    private final HolderSet<Biome> biomeBlacklist;
+    private final ResourceSet<Biome> biomeWhitelist;
+    private final ResourceSet<Biome> biomeBlacklist;
 
-    public FactionEntityType(ResourceLocation entityType, CompoundTag tag, int weight, int strength, List<FactionRank> ranks, EntityBoostConfig entityBoostConfig, IntRange waveRange, IntRange spawnedRange, IntRange omenRange, IntRange yRange, HolderSet<Biome> biomeWhitelist, HolderSet<Biome> biomeBlacklist) {
+    public FactionEntityType(ResourceLocation entityType, CompoundTag tag, int weight, int strength, List<FactionRank> ranks, EntityBoostConfig entityBoostConfig, IntRange waveRange, IntRange spawnedRange, IntRange omenRange, IntRange yRange, ResourceSet<Biome> biomeWhitelist, ResourceSet<Biome> biomeBlacklist) {
         this.entityType = entityType;
         this.tag = tag;
         this.weight = weight;
@@ -110,8 +110,8 @@ public class FactionEntityType {
         this.spawnedRange = new IntRange(minimumSpawned, maximumSpawned);
         this.omenRange = new IntRange(minimumOmen, maximumOmen);
         this.yRange = new IntRange(-64, 320);
-        this.biomeWhitelist = HolderSet.direct();
-        this.biomeBlacklist = HolderSet.direct();
+        this.biomeWhitelist = ResourceSet.getEmpty(Registry.BIOME_REGISTRY);
+        this.biomeBlacklist = ResourceSet.getEmpty(Registry.BIOME_REGISTRY);
     }
 
     public static FactionEntityType load(CompoundTag compoundNbt) {
@@ -149,8 +149,8 @@ public class FactionEntityType {
                     new IntRange(compoundNbt.getInt("minimumOmen"),
                             compoundNbt.getInt("maximumOmen")),
                     new IntRange(-64, 320),
-                    HolderSet.direct(),
-                    HolderSet.direct()
+                    ResourceSet.getEmpty(Registry.BIOME_REGISTRY),
+                    ResourceSet.getEmpty(Registry.BIOME_REGISTRY)
             );
         }
     }
@@ -191,11 +191,11 @@ public class FactionEntityType {
         return yRange;
     }
 
-    public HolderSet<Biome> getBiomeWhitelist() {
+    public ResourceSet<Biome> getBiomeWhitelist() {
         return biomeWhitelist;
     }
 
-    public HolderSet<Biome> getBiomeBlacklist() {
+    public ResourceSet<Biome> getBiomeBlacklist() {
         return biomeBlacklist;
     }
 
@@ -213,11 +213,13 @@ public class FactionEntityType {
 
     public boolean canSpawnForBiome(Biome biome) {
         if (biome == null) {
-            return this.getBiomeWhitelist().size() == 0;
-        } else if (getBiomeBlacklist().contains(Holder.direct(biome))) {
-            return false;
+            return this.getBiomeWhitelist().isEmpty();
         } else {
-            return this.getBiomeWhitelist().size() == 0 || this.getBiomeWhitelist().contains(Holder.direct(biome));
+            if (getBiomeBlacklist().contains(biome)) {
+                return false;
+            } else {
+                return this.getBiomeWhitelist().isEmpty() || this.getBiomeWhitelist().contains(biome);
+            }
         }
     }
 

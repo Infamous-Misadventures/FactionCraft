@@ -16,5 +16,5 @@
       }
     ]
   },
-  "biome_whitelist": "#forge:is_cold"
+  "biome_whitelist": ["#forge:is_cold"]
 }
