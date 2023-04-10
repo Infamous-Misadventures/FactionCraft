@@ -45,7 +45,7 @@ public class FactionPatrolCommand {
     private static int spawnPatrol(CommandSourceStack source, Faction faction, BlockPos blockPos) throws CommandSyntaxException {
         ServerLevel level = source.getLevel();
         int spawns = PatrolSpawner.spawnPatrol(level, level.getRandom(), faction, blockPos);
-        if (spawns < 0) {
+        if (spawns <= 0) {
             throw ERROR_START_FAILED.create();
         } else {
             source.sendSuccess(Component.translatable ("commands.patrol.success", spawns, blockPos), true);

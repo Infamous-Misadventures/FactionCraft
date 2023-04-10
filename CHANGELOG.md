@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.19.2-1.2.4] - 2023-XX-XX
+
+### Bugfixes / Tweaks
+- Fixed Patrols not spawning
+
 ## [1.19.2-1.2.3] - 2023-02-04
 #### Minor Features
 

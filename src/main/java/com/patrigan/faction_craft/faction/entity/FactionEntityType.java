@@ -208,7 +208,7 @@ public class FactionEntityType {
     }
 
     public boolean canSpawnForYPos(BlockPos blockPos) {
-        return blockPos != null && getYRange().isBetweenInclusive(blockPos.getY());
+        return blockPos == null || getYRange().isBetweenInclusive(blockPos.getY());
     }
 
     public boolean canSpawnForBiome(Biome biome) {

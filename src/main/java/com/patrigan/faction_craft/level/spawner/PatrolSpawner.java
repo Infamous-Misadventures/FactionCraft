@@ -6,8 +6,8 @@ import com.patrigan.faction_craft.capabilities.patroller.PatrollerHelper;
 import com.patrigan.faction_craft.config.FactionCraftConfig;
 import com.patrigan.faction_craft.faction.EntityWeightMapProperties;
 import com.patrigan.faction_craft.faction.Faction;
-import com.patrigan.faction_craft.registry.Factions;
 import com.patrigan.faction_craft.faction.entity.FactionEntityType;
+import com.patrigan.faction_craft.registry.Factions;
 import com.patrigan.faction_craft.util.GeneralUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
@@ -89,7 +89,6 @@ public class PatrolSpawner implements CustomSpawner {
       int j1 = (int)Math.ceil(pLevel.getCurrentDifficultyAt(mutableBlockPos).getEffectiveDifficulty()) + 1;
 
       for(int k1 = 0; k1 < j1; ++k1) {
-         ++i1;
          mutableBlockPos.setY(pLevel.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, mutableBlockPos).getY());
          if (k1 == 0) {
             if (!spawnPatrolMember(pLevel, mutableBlockPos, random, true, faction)) {
@@ -101,6 +100,7 @@ public class PatrolSpawner implements CustomSpawner {
 
          mutableBlockPos.setX(mutableBlockPos.getX() + random.nextInt(5) - random.nextInt(5));
          mutableBlockPos.setZ(mutableBlockPos.getZ() + random.nextInt(5) - random.nextInt(5));
+         ++i1;
       }
 
       return i1;
@@ -108,11 +108,12 @@ public class PatrolSpawner implements CustomSpawner {
 
    private static boolean spawnPatrolMember(ServerLevel pLevel, BlockPos pPos, RandomSource pRandom, boolean pLeader, Faction faction) {
       BlockState blockstate = pLevel.getBlockState(pPos);
-      EntityWeightMapProperties entityWeightMapProperties = new EntityWeightMapProperties();
+      Holder<Biome> biome = pLevel.getBiome(pPos);
+      EntityWeightMapProperties entityWeightMapProperties = new EntityWeightMapProperties().setBlockPos(pPos).setBiome(biome.get()).setWave(2);
       if(pLeader) {
-         entityWeightMapProperties.addAllowedRank(FactionEntityType.FactionRank.CAPTAIN);
+         entityWeightMapProperties.setAllowedRanks(List.of(FactionEntityType.FactionRank.CAPTAIN));
       } else {
-         entityWeightMapProperties.addAllowedRank(FactionEntityType.FactionRank.SOLDIER);
+         entityWeightMapProperties.setAllowedRanks(List.of(FactionEntityType.FactionRank.SOLDIER));
       }
       List<Pair<FactionEntityType, Integer>> weightMap = faction.getWeightMap(entityWeightMapProperties);
       if(weightMap.isEmpty()) {
