@@ -23,9 +23,25 @@ public class FactionArgument implements ArgumentType<Faction> {
     public static final DynamicCommandExceptionType ERROR_UNKNOWN_FACTION = new DynamicCommandExceptionType((p_208663_0_) -> {
         return Component.translatable ("commands.argument.factionNotFound", p_208663_0_);
     });
+    private final String enemyFactionArgName;
+    private final boolean loadEnemyFactions;
+
+    public FactionArgument(String enemyFactionArgName) {
+        this.enemyFactionArgName = enemyFactionArgName;
+        this.loadEnemyFactions = true;
+    }
+
+    public FactionArgument() {
+        this.enemyFactionArgName = "";
+        this.loadEnemyFactions = false;
+    }
 
     public static FactionArgument factions() {
         return new FactionArgument();
+    }
+
+    public static FactionArgument enemyFactions(String enemyFactionArgumentName) {
+        return new FactionArgument(enemyFactionArgumentName);
     }
 
     public static Faction getFaction(CommandContext<CommandSourceStack> source, String name) throws CommandSyntaxException {
@@ -41,8 +57,13 @@ public class FactionArgument implements ArgumentType<Faction> {
         }
     }
 
-    public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> p_listSuggestions_1_, SuggestionsBuilder p_listSuggestions_2_) {
-        return SharedSuggestionProvider.suggestResource(Factions.factionKeys(), p_listSuggestions_2_);
+    public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> commandContext, SuggestionsBuilder p_listSuggestions_2_) {
+        if(loadEnemyFactions) {
+            Faction enemyFaction = commandContext.getArgument(enemyFactionArgName, Faction.class);
+            return SharedSuggestionProvider.suggestResource(Factions.getEnemyFactionKeysOf(enemyFaction), p_listSuggestions_2_);
+        }else {
+            return SharedSuggestionProvider.suggestResource(Factions.factionKeys(), p_listSuggestions_2_);
+        }
     }
 
     public Collection<String> getExamples() {

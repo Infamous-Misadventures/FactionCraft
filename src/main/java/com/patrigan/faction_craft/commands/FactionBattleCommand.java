@@ -28,7 +28,7 @@ public class FactionBattleCommand {
         LiteralArgumentBuilder<CommandSourceStack> factionRaidCommand
                 = Commands.literal("factionbattle")
                 .requires(commandSource -> commandSource.hasPermission(2))
-                .then(Commands.argument("faction1", FactionArgument.factions()).then(Commands.argument("faction2", FactionArgument.factions()).executes(sourceCommandContext ->
+                .then(Commands.argument("faction1", FactionArgument.factions()).then(Commands.argument("faction2", FactionArgument.enemyFactions("faction1")).executes(sourceCommandContext ->
                     spawnBattle(sourceCommandContext.getSource(), FactionArgument.getFaction(sourceCommandContext, "faction1"), FactionArgument.getFaction(sourceCommandContext, "faction2"))
                 ).then(Commands.argument("location", BlockPosArgument.blockPos()).executes(sourceCommandContext ->
                     spawnBattle(sourceCommandContext.getSource(), FactionArgument.getFaction(sourceCommandContext, "faction1"), FactionArgument.getFaction(sourceCommandContext, "faction2"), BlockPosArgument.getLoadedBlockPos(sourceCommandContext, "location"))))

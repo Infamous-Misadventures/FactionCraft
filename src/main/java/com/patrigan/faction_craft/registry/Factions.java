@@ -125,7 +125,17 @@ public class Factions {
     public static Faction getRandomFactionWithEnemies(ServerLevel level, RandomSource random) {
         return GeneralUtils.getRandomItem(getActiveFactions(level).stream().filter(faction -> !faction.getRelations().getEnemies().isEmpty()).collect(Collectors.toList()), random);
     }
+
     public static ResourceLocation getKey(Faction faction){
         return FACTION_DATA.getData().entrySet().stream().filter(entry -> entry.getValue().equals(faction)).map(Map.Entry::getKey).findFirst().orElse(null);
+    }
+
+
+    public static Collection<ResourceLocation> getEnemyFactionKeysOf(Faction faction) {
+        if(faction == null) return Collections.emptyList();
+        return getFactionData().entrySet().stream()
+                .filter(entry -> entry.getValue().getRelations().getEnemies().contains(getKey(faction)))
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
     }
 }
