@@ -200,15 +200,15 @@ public class FactionEntityType {
     }
 
     public boolean canSpawnInWave(int wave) {
-        return getWaveRange().isBetween(wave);
+        return getWaveRange().isBetweenInclusive(wave);
     }
 
     public boolean canSpawnForOmen(int omen) {
-        return getOmenRange().isBetween(omen);
+        return getOmenRange().isBetweenInclusive(omen);
     }
 
     public boolean canSpawnForYPos(BlockPos blockPos) {
-        return blockPos != null && getYRange().isBetween(blockPos.getY());
+        return blockPos != null && getYRange().isBetweenInclusive(blockPos.getY());
     }
 
     public boolean canSpawnForBiome(Biome biome) {
