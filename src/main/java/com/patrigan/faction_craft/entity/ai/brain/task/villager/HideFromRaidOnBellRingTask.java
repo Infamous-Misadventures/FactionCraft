@@ -1,4 +1,4 @@
-package com.patrigan.faction_craft.entity.ai.brain.task;
+package com.patrigan.faction_craft.entity.ai.brain.task.villager;
 
 import com.google.common.collect.ImmutableMap;
 import com.patrigan.faction_craft.capabilities.raidmanager.RaidManager;

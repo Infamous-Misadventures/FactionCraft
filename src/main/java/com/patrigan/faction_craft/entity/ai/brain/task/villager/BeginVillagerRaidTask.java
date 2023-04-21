@@ -1,4 +1,4 @@
-package com.patrigan.faction_craft.entity.ai.brain.task;
+package com.patrigan.faction_craft.entity.ai.brain.task.villager;
 
 import com.google.common.collect.ImmutableMap;
 import com.patrigan.faction_craft.capabilities.raidmanager.RaidManager;
@@ -10,13 +10,14 @@ import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.behavior.Behavior;
 import net.minecraft.server.level.ServerLevel;
 
-public class BeginRaidTask extends Behavior<LivingEntity> {
-    public BeginRaidTask() {
+public class BeginVillagerRaidTask extends Behavior<LivingEntity> {
+    public BeginVillagerRaidTask() {
         super(ImmutableMap.of());
     }
 
     protected boolean checkExtraStartConditions(ServerLevel pLevel, LivingEntity pOwner) {
-        return pLevel.random.nextInt(20) == 0;
+        return pLevel.random.nextInt(
+                20) == 0;
     }
 
     protected void start(ServerLevel level, LivingEntity entity, long gameTime) {
