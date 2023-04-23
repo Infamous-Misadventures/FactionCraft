@@ -3,12 +3,18 @@ package com.patrigan.faction_craft.entity;
 import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
 import com.patrigan.faction_craft.entity.ai.brain.ModActivities;
+import com.patrigan.faction_craft.entity.ai.brain.task.raider.AcquireRaidTargetPosition;
 import com.patrigan.faction_craft.entity.ai.brain.task.raider.BeginRaiderRaidPrepTask;
+import com.patrigan.faction_craft.entity.ai.brain.task.raider.RaiderSetWalkTargetFromBlockMemory;
 import com.patrigan.faction_craft.entity.ai.brain.task.villager.*;
+import com.patrigan.faction_craft.entity.ai.target.FactionAllyHurtTargetGoal;
+import com.patrigan.faction_craft.entity.ai.target.NearestFactionEnemyTargetGoal;
+import com.patrigan.faction_craft.registry.ModMemoryModuleTypes;
 import com.patrigan.faction_craft.util.BrainHelper;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.behavior.*;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
@@ -20,7 +26,10 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
+import java.util.Optional;
+
 import static com.patrigan.faction_craft.FactionCraft.MODID;
+import static com.patrigan.faction_craft.registry.ModMemoryModuleTypes.RAID_WALK_TARGET;
 
 @Mod.EventBusSubscriber(modid = MODID)
 public class EntityAIEvents {
@@ -34,8 +43,14 @@ public class EntityAIEvents {
     public static void onEntityJoinLevel(EntityJoinLevelEvent event){
         if(event.getEntity() instanceof Villager){
             addVillagerTasks((Villager) event.getEntity());
-        }else if(event.getEntity() instanceof Mob mob && hasBrain(mob)){
-            addRaiderTasks(mob);
+        }else if(event.getEntity() instanceof Mob mob){
+            if(!hasBrain(mob)){
+                mob.targetSelector.addGoal(2, new NearestFactionEnemyTargetGoal(mob, 10, true, false));
+                mob.targetSelector.addGoal(2, new FactionAllyHurtTargetGoal(mob, 10, true, false));
+            }else {
+                // Add Brain faction targets
+                addRaiderTasks(mob);
+            }
         }
     }
 
@@ -46,8 +61,9 @@ public class EntityAIEvents {
     public static <E extends LivingEntity> void addRaiderTasks(E mob) {
         Brain<E> brain = (Brain<E>)mob.getBrain();
         ImmutableList<Pair<Integer, ? extends Behavior<? super E>>> prioritizedCoreTasks= ImmutableList.of(Pair.of(0, new BeginRaiderRaidPrepTask()));
+        BrainHelper.addMemory(brain, RAID_WALK_TARGET.get());
         BrainHelper.addPrioritizedBehaviors(Activity.CORE, prioritizedCoreTasks, brain);
-        BrainHelper.addPrioritizedBehaviors(ModActivities.FACTION_RAID.get(), getRaiderPackage(0.5F), brain);
+        BrainHelper.addPrioritizedBehaviors(ModActivities.FACTION_RAIDER_PREP.get(), getRaiderPackage(0.5F), brain);
     }
 
     public static void addVillagerTasks(Villager villagerEntity) {
@@ -66,7 +82,7 @@ public class EntityAIEvents {
         return ImmutableList.of(Pair.of(0, new RunOne<>(ImmutableList.of(Pair.of(new GoOutsideAfterRaidTask(p_220640_1_), 5), Pair.of(new FindWalkTargetAfterRaidVictoryTask(p_220640_1_ * 1.1F), 2)))), Pair.of(0, new CelebrateRaidVictoryTask(600, 600)), Pair.of(2, new FindHidingPlaceDuringRaidTask(24, p_220640_1_ * 1.4F)), getMinimalLookBehavior(), Pair.of(99, new ForgetRaidTask()));
     }
     private static  <E extends LivingEntity>  ImmutableList<Pair<Integer, ? extends Behavior<? super E>>> getRaiderPackage(float p_220640_1_) {
-        return ImmutableList.of();
+        return ImmutableList.of(Pair.of(0, new AcquireRaidTargetPosition<>(RAID_WALK_TARGET.get())), Pair.of(1, new RaiderSetWalkTargetFromBlockMemory<>(RAID_WALK_TARGET.get(), p_220640_1_ * 1.5F, 2, 150, 200)));
     }
 
     private static Pair<Integer, Behavior<LivingEntity>> getMinimalLookBehavior() {

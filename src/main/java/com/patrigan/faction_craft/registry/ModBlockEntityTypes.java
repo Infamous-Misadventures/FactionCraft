@@ -1,12 +1,13 @@
-package com.patrigan.faction_craft.blockentity;
+package com.patrigan.faction_craft.registry;
 
+import com.patrigan.faction_craft.blockentity.ReconstructBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
 import static com.patrigan.faction_craft.FactionCraft.MODID;
-import static com.patrigan.faction_craft.block.ModBlocks.RECONSTRUCT_BLOCK;
+import static com.patrigan.faction_craft.registry.ModBlocks.RECONSTRUCT_BLOCK;
 
 public class ModBlockEntityTypes {
 

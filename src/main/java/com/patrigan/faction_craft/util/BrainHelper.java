@@ -7,8 +7,12 @@ import com.mojang.datafixers.util.Pair;
 import com.patrigan.faction_craft.mixin.BrainAccessor;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.Brain;
+import net.minecraft.world.entity.ai.memory.ExpirableValue;
+import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.schedule.Activity;
 import net.minecraft.world.entity.ai.behavior.Behavior;
+
+import java.util.Optional;
 
 public class BrainHelper {
 
@@ -61,6 +65,13 @@ public class BrainHelper {
                     .computeIfAbsent(activity, (a) -> Sets.newLinkedHashSet())
                     .add(pair.getSecond());
         }
+    }
+
+    public static <E extends LivingEntity> void addMemory(Brain<E> brain, MemoryModuleType<?> memoryModuleType) {
+        if(brain.getMemories().containsKey(memoryModuleType)) {
+            return;
+        }
+        brain.getMemories().put(memoryModuleType, Optional.empty().map(ExpirableValue::of));
     }
 
     public static <E extends LivingEntity> BrainAccessor<E> castToAccessor(Brain<E> brain) {

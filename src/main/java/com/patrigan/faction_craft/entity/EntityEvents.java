@@ -18,6 +18,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
+import net.minecraft.world.entity.schedule.Activity;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.event.PlayLevelSoundEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
@@ -60,9 +61,11 @@ public class EntityEvents {
                     }
                 }
             }
-            mob.targetSelector.addGoal(2, new NearestFactionEnemyTargetGoal(mob, 10, true, false));
-            mob.targetSelector.addGoal(2, new FactionAllyHurtTargetGoal(mob, 10, true, false));
         }
+    }
+
+    private static boolean hasBrain(Mob mob) {
+        return mob.getBrain().isActive(Activity.CORE);
     }
 
     @SubscribeEvent

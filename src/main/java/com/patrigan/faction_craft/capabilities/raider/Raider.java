@@ -14,6 +14,7 @@ import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.util.GoalUtils;
 import net.minecraft.world.entity.npc.AbstractVillager;
+import net.minecraft.world.entity.schedule.Activity;
 import net.minecraftforge.common.util.INBTSerializable;
 
 import java.util.ArrayList;
@@ -88,7 +89,7 @@ public class Raider implements INBTSerializable<CompoundTag> {
     }
 
     private void updateRaidGoals(){
-        if(this.raid != null){
+        if(this.raid != null && !hasBrain(this.entity)){
             if(GoalUtils.hasGroundPathNavigation(this.entity)) {
                 addGoal(2, new RaidOpenDoorGoal(entity));
             }
@@ -99,6 +100,10 @@ public class Raider implements INBTSerializable<CompoundTag> {
             this.addedGoals.forEach(this.entity.goalSelector::removeGoal);
             addedGoals.clear();
         }
+    }
+
+    private static boolean hasBrain(Mob mob) {
+        return mob.getBrain().isActive(Activity.CORE);
     }
 
     private void addGoal(int priority, Goal goal) {

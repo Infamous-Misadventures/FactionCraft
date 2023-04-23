@@ -1,5 +1,6 @@
-package com.patrigan.faction_craft.block;
+package com.patrigan.faction_craft.registry;
 
+import com.patrigan.faction_craft.block.ReconstructBlock;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.world.level.block.Block;

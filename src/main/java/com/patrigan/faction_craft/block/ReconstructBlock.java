@@ -14,8 +14,8 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
-import static com.patrigan.faction_craft.block.ModBlocks.RECONSTRUCT_BLOCK;
-import static com.patrigan.faction_craft.blockentity.ModBlockEntityTypes.RECONSTRUCT_BLOCK_ENTITY;
+import static com.patrigan.faction_craft.registry.ModBlocks.RECONSTRUCT_BLOCK;
+import static com.patrigan.faction_craft.registry.ModBlockEntityTypes.RECONSTRUCT_BLOCK_ENTITY;
 import static com.patrigan.faction_craft.config.FactionCraftConfig.ENABLE_RECONSTRUCT_BLOCKS;
 
 public class ReconstructBlock extends Block implements EntityBlock {

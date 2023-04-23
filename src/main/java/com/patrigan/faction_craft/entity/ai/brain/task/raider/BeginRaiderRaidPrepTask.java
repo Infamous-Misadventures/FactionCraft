@@ -18,7 +18,7 @@ public class BeginRaiderRaidPrepTask extends Behavior<LivingEntity> {
 
     protected boolean checkExtraStartConditions(ServerLevel pLevel, LivingEntity entity) {
         if (entity instanceof Mob mob) {
-            return RaiderHelper.getRaiderCapability(mob).hasActiveRaid();
+            return RaiderHelper.getRaiderCapability(mob).hasActiveRaid() && (!entity.getBrain().isActive(ModActivities.FACTION_RAIDER_PREP.get()) || !entity.getBrain().isActive(ModActivities.FACTION_RAIDER_VILLAGE.get()));
         }
         return false;
     }

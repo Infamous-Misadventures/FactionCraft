@@ -6,7 +6,7 @@ import net.minecraftforge.client.model.generators.BlockStateProvider;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
 import static com.patrigan.faction_craft.FactionCraft.MODID;
-import static com.patrigan.faction_craft.block.ModBlocks.RECONSTRUCT_BLOCK;
+import static com.patrigan.faction_craft.registry.ModBlocks.RECONSTRUCT_BLOCK;
 
 public class ModBlockStateProvider extends BlockStateProvider {
 
