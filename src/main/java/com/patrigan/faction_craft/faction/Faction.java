@@ -126,4 +126,10 @@ public class Faction {
         entityTypes = new ArrayList<>(entityTypes);
         entityTypes.addAll(factionEntityTypes);
     }
+
+    public boolean isEnemyOf(Faction entityFaction) {
+        if (entityFaction == null)
+            return false;
+        return relations.isEnemyOf(entityFaction);
+    }
 }

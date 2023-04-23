@@ -4,11 +4,13 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.mojang.datafixers.util.Pair;
+import com.patrigan.faction_craft.entity.ai.brain.sensor.FactionSpecificSensor;
 import com.patrigan.faction_craft.mixin.BrainAccessor;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.memory.ExpirableValue;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
+import net.minecraft.world.entity.ai.sensing.SensorType;
 import net.minecraft.world.entity.schedule.Activity;
 import net.minecraft.world.entity.ai.behavior.Behavior;
 
@@ -72,6 +74,11 @@ public class BrainHelper {
             return;
         }
         brain.getMemories().put(memoryModuleType, Optional.empty().map(ExpirableValue::of));
+    }
+
+    public static void addSensor(Brain<?> brain, SensorType<FactionSpecificSensor> factionSpecificSensorSensorType) {
+        BrainAccessor<?> brainAccessor = castToAccessor(brain);
+        brainAccessor.getSensors().put(factionSpecificSensorSensorType, factionSpecificSensorSensorType.create());
     }
 
     public static <E extends LivingEntity> BrainAccessor<E> castToAccessor(Brain<E> brain) {

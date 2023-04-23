@@ -33,4 +33,8 @@ public class FactionRelations {
     public List<ResourceLocation> getEnemies() {
         return enemies;
     }
+
+    public boolean isEnemyOf(Faction otherFaction) {
+        return enemies.contains(otherFaction.getName());
+    }
 }

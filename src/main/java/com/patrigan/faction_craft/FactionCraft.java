@@ -10,6 +10,7 @@ import com.patrigan.faction_craft.effect.ModMobEffects;
 import com.patrigan.faction_craft.entity.ai.brain.ModActivities;
 import com.patrigan.faction_craft.network.NetworkHandler;
 import com.patrigan.faction_craft.registry.ModMemoryModuleTypes;
+import com.patrigan.faction_craft.registry.ModSensorTypes;
 import com.patrigan.faction_craft.tags.EntityTags;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -43,6 +44,7 @@ public class FactionCraft
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
 
+        ModSensorTypes.SENSOR_TYPES.register(modEventBus);
         ModMemoryModuleTypes.MEMORY_MODULE_TYPES.register(modEventBus);
         ModActivities.ACTIVITIES.register(modEventBus);
         ModBlocks.BLOCKS.register(modEventBus);
