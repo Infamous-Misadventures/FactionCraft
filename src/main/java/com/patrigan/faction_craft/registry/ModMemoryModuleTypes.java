@@ -1,5 +1,6 @@
 package com.patrigan.faction_craft.registry;
 
+import com.patrigan.faction_craft.raid.Raid;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
@@ -28,8 +29,10 @@ public class ModMemoryModuleTypes {
     public static final RegistryObject<MemoryModuleType<LivingEntity>> NEAREST_VISIBLE_DAMAGED_FACTION_ALLY = MEMORY_MODULE_TYPES.register("nearest_visible_damaged_faction_ally",
             () -> new MemoryModuleType<>(Optional.empty()));
 
-
     public static final RegistryObject<MemoryModuleType<List<GlobalPos>>> RAIDED_VILLAGE_POI = MEMORY_MODULE_TYPES.register("raided_village_poi",
+            () -> new MemoryModuleType<>(Optional.empty()));
+
+    public static final RegistryObject<MemoryModuleType<Raid>> RAID = MEMORY_MODULE_TYPES.register("faction_raid",
             () -> new MemoryModuleType<>(Optional.empty()));
 
 }

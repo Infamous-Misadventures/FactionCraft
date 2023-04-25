@@ -18,6 +18,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
+import net.minecraft.world.entity.monster.piglin.AbstractPiglin;
 import net.minecraft.world.entity.schedule.Activity;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.event.PlayLevelSoundEvent;
@@ -51,14 +52,21 @@ public class EntityEvents {
         if (event.getLevel().isClientSide()) return;
         Entity entity = event.getEntity();
         if (entity instanceof Mob mob) {
+            FactionEntity factionEntity = FactionEntityHelper.getFactionEntityCapability(mob);
             if(FactionCraftConfig.ENABLE_DEFAULT_FACTION.get()) {
-                FactionEntity factionEntity = FactionEntityHelper.getFactionEntityCapability(mob);
                 if (factionEntity.getFaction() == null) {
                     List<Faction> factions = Factions.getFactionData().values().stream().filter(faction -> faction.getDefaultEntities().contains(entity.getType())).toList();
                     if (!factions.isEmpty()) {
                         RandomSource randomSource = RandomSource.create(event.getLevel().getChunkAt(mob.blockPosition()).getPos().toLong());
                         factionEntity.setFaction(factions.get(randomSource.nextInt(factions.size())));
                     }
+                }
+            }
+            Raider raiderCap = RaiderHelper.getRaiderCapability(mob);
+            Patroller patrollerCap = PatrollerHelper.getPatrollerCapability(mob);
+            if (raiderCap.hasActiveRaid() || patrollerCap.isPatrolling()) {
+                if(mob instanceof AbstractPiglin piglin){
+                    piglin.setImmuneToZombification(true);
                 }
             }
         }

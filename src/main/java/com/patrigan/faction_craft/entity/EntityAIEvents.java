@@ -17,6 +17,7 @@ import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.behavior.*;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
+import net.minecraft.world.entity.ai.memory.MemoryStatus;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.schedule.Activity;
@@ -26,6 +27,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 import java.util.Optional;
+import java.util.Set;
 
 import static com.patrigan.faction_craft.FactionCraft.MODID;
 import static com.patrigan.faction_craft.registry.ModMemoryModuleTypes.RAID_WALK_TARGET;
@@ -63,12 +65,12 @@ public class EntityAIEvents {
 
     public static <E extends LivingEntity> void addRaiderTasks(E mob) {
         Brain<E> brain = (Brain<E>)mob.getBrain();
-        ImmutableList<Pair<Integer, ? extends Behavior<? super E>>> prioritizedCoreTasks= ImmutableList.of(Pair.of(0, new BeginRaiderRaidPrepTask()));
         BrainHelper.addMemory(brain, RAID_WALK_TARGET.get());
         BrainHelper.addMemory(brain, ModMemoryModuleTypes.RAIDED_VILLAGE_POI.get());
-        BrainHelper.addPrioritizedBehaviors(Activity.CORE, prioritizedCoreTasks, brain);
+        BrainHelper.addMemory(brain, ModMemoryModuleTypes.RAID.get());
+        brain.addActivityWithConditions(ModActivities.FACTION_RAIDER_PREP.get(), getRaiderPackage(0.5F), Set.of(Pair.of(ModMemoryModuleTypes.RAID.get(), MemoryStatus.VALUE_PRESENT)));
         BrainHelper.addPrioritizedBehaviors(ModActivities.FACTION_RAIDER_PREP.get(), getRaiderPackage(0.5F), brain);
-        BrainHelper.addPrioritizedBehaviors(ModActivities.FACTION_RAIDER_VILLAGE.get(), getVillageRaiderPackage(0.5F), brain);
+        brain.addActivity(ModActivities.FACTION_RAIDER_VILLAGE.get(), getVillageRaiderPackage(0.5F));
     }
 
     public static void addVillagerTasks(Villager villagerEntity) {

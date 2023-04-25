@@ -5,8 +5,8 @@
   "minVersion": "0.8",
   "refmap": "faction_craft.refmap.json",
   "mixins": [
-    "BellTileEntityMixin", "BrainAccessor", "FireBlockMixin", "GoalSelectorAccessor", "LivingEntityAccessor",
-    "ServerLevelAccessor"
+    "BellTileEntityMixin", "BrainAccessor", "BrainMixin", "FireBlockMixin", "GoalSelectorAccessor",
+    "LivingEntityAccessor", "ServerLevelAccessor"
   ],
   "client": [
   ],

@@ -7,6 +7,7 @@ import com.patrigan.faction_craft.entity.ai.goal.MoveTowardsRaidGoal;
 import com.patrigan.faction_craft.entity.ai.goal.RaidOpenDoorGoal;
 import com.patrigan.faction_craft.entity.ai.goal.RaiderMoveThroughVillageGoal;
 import com.patrigan.faction_craft.raid.Raid;
+import com.patrigan.faction_craft.registry.ModMemoryModuleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Mob;
@@ -42,7 +43,7 @@ public class Raider implements INBTSerializable<CompoundTag> {
 
     public void setRaid(Raid raid) {
         this.raid = raid;
-        updateRaidGoals();
+        updateRaidAI();
     }
 
     public boolean hasActiveRaid() {
@@ -88,8 +89,24 @@ public class Raider implements INBTSerializable<CompoundTag> {
         this.waveLeader = waveLeader;
     }
 
-    private void updateRaidGoals(){
-        if(this.raid != null && !hasBrain(this.entity)){
+    private void updateRaidAI(){
+        if(hasBrain(this.entity)){
+            updateRaidBrain();
+        }else {
+            updateRaidGoals();
+        }
+    }
+
+    private void updateRaidBrain() {
+        if(this.raid != null){
+            this.entity.getBrain().setMemory(ModMemoryModuleTypes.RAID.get(), this.raid);
+        }else{
+            this.entity.getBrain().eraseMemory(ModMemoryModuleTypes.RAID.get());
+        }
+    }
+
+    private void updateRaidGoals() {
+        if(this.raid != null){
             if(GoalUtils.hasGroundPathNavigation(this.entity)) {
                 addGoal(2, new RaidOpenDoorGoal(entity));
             }
@@ -135,7 +152,7 @@ public class Raider implements INBTSerializable<CompoundTag> {
                 ServerLevel level = (ServerLevel) this.entity.level;
                 RaidManager raidManagerCapability = RaidManagerHelper.getRaidManagerCapability(level);
                 this.raid = raidManagerCapability.getRaids().get(tag.getInt("RaidId"));
-                updateRaidGoals();
+                updateRaidAI();
             }
 
             if (this.raid != null) {

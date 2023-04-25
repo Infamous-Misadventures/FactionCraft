@@ -62,7 +62,11 @@ public class FactionSpecificSensor extends Sensor<LivingEntity> {
       brain.setMemory(ModMemoryModuleTypes.NEAREST_VISIBLE_FACTION_ALLY.get(), optional);
       brain.setMemory(ModMemoryModuleTypes.NEAREST_VISIBLE_DAMAGED_FACTION_ALLY.get(), optional1);
       brain.setMemory(ModMemoryModuleTypes.NEAREST_VISIBLE_FACTION_ENEMY.get(), optional2);
-      brain.setMemory(MemoryModuleType.NEAREST_VISIBLE_NEMESIS, optional3);
+      if (optional3.isPresent()) {
+         brain.setMemory(MemoryModuleType.NEAREST_VISIBLE_NEMESIS, optional3);
+         brain.setMemory(MemoryModuleType.NEAREST_ATTACKABLE, optional3);
+         brain.setMemory(MemoryModuleType.NEAREST_HOSTILE, optional3);
+      }
    }
 
 }
