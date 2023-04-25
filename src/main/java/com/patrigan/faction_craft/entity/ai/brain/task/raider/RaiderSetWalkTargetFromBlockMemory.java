@@ -35,14 +35,14 @@ public class RaiderSetWalkTargetFromBlockMemory<E extends LivingEntity> extends 
    protected void start(ServerLevel pLevel, E livingEntity, long pGameTime) {
       if(livingEntity instanceof PathfinderMob pathfinderMob) {
          Brain<?> brain = pathfinderMob.getBrain();
-         brain.getMemory(this.memoryType).ifPresent((p_24067_) -> {
-            if (!this.wrongDimension(pLevel, p_24067_) && !this.tiredOfTryingToFindTarget(pLevel, pathfinderMob)) {
-               if (this.tooFar(pathfinderMob, p_24067_)) {
+         brain.getMemory(this.memoryType).ifPresent((destination) -> {
+            if (!this.wrongDimension(pLevel, destination) && !this.tiredOfTryingToFindTarget(pLevel, pathfinderMob)) {
+               if (this.tooFar(pathfinderMob, destination)) {
                   Vec3 vec3 = null;
                   int i = 0;
 
                   for (int j = 1000; i < 1000 && (vec3 == null || this.tooFar(pathfinderMob, GlobalPos.of(pLevel.dimension(), new BlockPos(vec3)))); ++i) {
-                     vec3 = DefaultRandomPos.getPosTowards(pathfinderMob, 15, 7, Vec3.atBottomCenterOf(p_24067_.pos()), (double) ((float) Math.PI / 2F));
+                     vec3 = DefaultRandomPos.getPosTowards(pathfinderMob, 15, 7, Vec3.atBottomCenterOf(destination.pos()), (double) ((float) Math.PI / 2F));
                   }
 
                   if (i == 1000) {
@@ -51,8 +51,8 @@ public class RaiderSetWalkTargetFromBlockMemory<E extends LivingEntity> extends 
                   }
 
                   brain.setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(vec3, this.speedModifier, this.closeEnoughDist));
-               } else if (!this.closeEnough(pLevel, pathfinderMob, p_24067_)) {
-                  brain.setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(p_24067_.pos(), this.speedModifier, this.closeEnoughDist));
+               } else if (!this.closeEnough(pLevel, pathfinderMob, destination)) {
+                  brain.setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(destination.pos(), this.speedModifier, this.closeEnoughDist));
                }
             } else {
                this.dropPOI(pathfinderMob, pGameTime);

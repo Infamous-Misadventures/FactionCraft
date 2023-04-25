@@ -68,9 +68,9 @@ public class EntityAIEvents {
         BrainHelper.addMemory(brain, RAID_WALK_TARGET.get());
         BrainHelper.addMemory(brain, ModMemoryModuleTypes.RAIDED_VILLAGE_POI.get());
         BrainHelper.addMemory(brain, ModMemoryModuleTypes.RAID.get());
-        brain.addActivityWithConditions(ModActivities.FACTION_RAIDER_PREP.get(), getRaiderPackage(0.5F), Set.of(Pair.of(ModMemoryModuleTypes.RAID.get(), MemoryStatus.VALUE_PRESENT)));
-        BrainHelper.addPrioritizedBehaviors(ModActivities.FACTION_RAIDER_PREP.get(), getRaiderPackage(0.5F), brain);
-        brain.addActivity(ModActivities.FACTION_RAIDER_VILLAGE.get(), getVillageRaiderPackage(0.5F));
+        Behavior<? super E> attackTask = BrainHelper.getAttackTask(brain);
+        brain.addActivityWithConditions(ModActivities.FACTION_RAIDER_PREP.get(), getRaiderPackage(0.5F, attackTask), Set.of(Pair.of(ModMemoryModuleTypes.RAID.get(), MemoryStatus.VALUE_PRESENT)));
+        brain.addActivityWithConditions(ModActivities.FACTION_RAIDER_VILLAGE.get(), getVillageRaiderPackage(0.5F, attackTask), Set.of(Pair.of(ModMemoryModuleTypes.RAIDED_VILLAGE_POI.get(), MemoryStatus.VALUE_PRESENT)));
     }
 
     public static void addVillagerTasks(Villager villagerEntity) {
@@ -89,12 +89,12 @@ public class EntityAIEvents {
         return ImmutableList.of(Pair.of(0, new RunOne<>(ImmutableList.of(Pair.of(new GoOutsideAfterRaidTask(p_220640_1_), 5), Pair.of(new FindWalkTargetAfterRaidVictoryTask(p_220640_1_ * 1.1F), 2)))), Pair.of(0, new CelebrateRaidVictoryTask(600, 600)), Pair.of(2, new FindHidingPlaceDuringRaidTask(24, p_220640_1_ * 1.4F)), getMinimalLookBehavior(), Pair.of(99, new ForgetRaidTask()));
     }
 
-    private static  <E extends LivingEntity>  ImmutableList<Pair<Integer, ? extends Behavior<? super E>>> getRaiderPackage(float p_220640_1_) {
-        return ImmutableList.of(Pair.of(0, new AcquireRaidTargetPosition<>(RAID_WALK_TARGET.get())), Pair.of(1, new BeginRaiderRaidVillageTask()), Pair.of(2, new RaiderSetWalkTargetFromBlockMemory<>(RAID_WALK_TARGET.get(), p_220640_1_ * 1.5F, 2, 150, 200)));
+    private static  <E extends LivingEntity>  ImmutableList<Pair<Integer, ? extends Behavior<? super E>>> getRaiderPackage(float p_220640_1_, Behavior<? super E> attackTask) {
+        return ImmutableList.of(Pair.of(0, new AcquireRaidTargetPosition<>(RAID_WALK_TARGET.get())), Pair.of(1, new BeginRaiderRaidVillageTask()), Pair.of(1, attackTask), Pair.of(2, new RaiderSetWalkTargetFromBlockMemory<>(RAID_WALK_TARGET.get(), p_220640_1_ * 1.5F, 2, 150, 200)));
     }
 
-    private static <E extends LivingEntity>  ImmutableList<Pair<Integer, ? extends Behavior<? super E>>> getVillageRaiderPackage(float p_220640_1_) {
-        return ImmutableList.of(Pair.of(0, new AcquireVillageRaidTarget<>(RAID_WALK_TARGET.get(), 1)), Pair.of(1, new RaiderSetWalkTargetFromBlockMemory<>(RAID_WALK_TARGET.get(), p_220640_1_ * 1.5F, 2, 150, 200)));
+    private static <E extends LivingEntity>  ImmutableList<Pair<Integer, ? extends Behavior<? super E>>> getVillageRaiderPackage(float p_220640_1_, Behavior<? super E> attackTask) {
+        return ImmutableList.of(Pair.of(0, new AcquireVillageRaidTarget<>(RAID_WALK_TARGET.get(), 1)), Pair.of(1, attackTask), Pair.of(2, new RaiderSetWalkTargetFromBlockMemory<>(RAID_WALK_TARGET.get(), p_220640_1_ * 1.5F, 2, 150, 200)));
     }
 
     private static Pair<Integer, Behavior<LivingEntity>> getMinimalLookBehavior() {

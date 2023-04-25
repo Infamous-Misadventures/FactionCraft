@@ -8,12 +8,14 @@ import com.patrigan.faction_craft.entity.ai.brain.sensor.FactionSpecificSensor;
 import com.patrigan.faction_craft.mixin.BrainAccessor;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.Brain;
+import net.minecraft.world.entity.ai.behavior.StartAttacking;
 import net.minecraft.world.entity.ai.memory.ExpirableValue;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.sensing.SensorType;
 import net.minecraft.world.entity.schedule.Activity;
 import net.minecraft.world.entity.ai.behavior.Behavior;
 
+import java.util.Collection;
 import java.util.Optional;
 
 public class BrainHelper {
@@ -84,5 +86,15 @@ public class BrainHelper {
     public static <E extends LivingEntity> BrainAccessor<E> castToAccessor(Brain<E> brain) {
         //noinspection unchecked
         return (BrainAccessor<E>)brain;
+    }
+
+    public static <E extends LivingEntity> Behavior<? super E> getAttackTask(Brain<E> brain) {
+        BrainAccessor<E> brainAccessor = castToAccessor(brain);
+        Optional<Behavior<? super E>> first = brainAccessor.getAvailableBehaviorsByPriority().values().stream()
+                .flatMap(activitySetMap -> activitySetMap.values().stream())
+                .flatMap(Collection::stream)
+                .filter(behavior -> behavior instanceof StartAttacking)
+                .findFirst();
+        return first.orElse(null);
     }
 }

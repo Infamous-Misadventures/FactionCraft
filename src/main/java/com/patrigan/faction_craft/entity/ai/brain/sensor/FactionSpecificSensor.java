@@ -66,6 +66,7 @@ public class FactionSpecificSensor extends Sensor<LivingEntity> {
          brain.setMemory(MemoryModuleType.NEAREST_VISIBLE_NEMESIS, optional3);
          brain.setMemory(MemoryModuleType.NEAREST_ATTACKABLE, optional3);
          brain.setMemory(MemoryModuleType.NEAREST_HOSTILE, optional3);
+         brain.setMemory(MemoryModuleType.ATTACK_TARGET, optional3);
       }
    }
 

@@ -49,16 +49,18 @@ public class AcquireVillageRaidTarget<E extends LivingEntity> extends Behavior<E
     protected void start(ServerLevel pLevel, E pEntity, long pGameTime) {
         if (pEntity instanceof Mob mob) {
             Raid raid = RaiderHelper.getRaiderCapability(mob).getRaid();
-            if (raid != null) {
+            if (raid != null && pLevel.isVillage(pEntity.blockPosition())) {
                 Optional<GlobalPos> memoryToAcquireOptional = pEntity.getBrain().getMemory(memoryToAcquire);
                 if(memoryToAcquireOptional.isPresent() && closeEnough(pLevel, pEntity, memoryToAcquireOptional.get())) {
                     Optional<List<GlobalPos>> memory = pEntity.getBrain().getMemory(ModMemoryModuleTypes.RAIDED_VILLAGE_POI.get());
-                    memory.get().add(GlobalPos.of(pLevel.dimension(), raid.getRaidTarget().getTargetBlockPos()));
+                    memory.get().add(GlobalPos.of(pLevel.dimension(), memoryToAcquireOptional.get().pos()));
                     pEntity.getBrain().eraseMemory(memoryToAcquire);
                 }
                 if (memoryToAcquireOptional.isEmpty()) {
                     getNewRaidPoi(pLevel, pEntity, raid);
                 }
+            }else{
+                pEntity.getBrain().eraseMemory(ModMemoryModuleTypes.RAIDED_VILLAGE_POI.get());
             }
         }
         super.start(pLevel, pEntity, pGameTime);
@@ -67,7 +69,7 @@ public class AcquireVillageRaidTarget<E extends LivingEntity> extends Behavior<E
     private void getNewRaidPoi(ServerLevel pLevel, E pEntity, Raid raid) {
         BlockPos blockpos = pEntity.blockPosition();
         Optional<BlockPos> optional = pLevel.getPoiManager().getRandom(poiType -> poiType.is(PoiTypes.HOME), getHasNotVisited(pEntity), PoiManager.Occupancy.ANY, blockpos, 48, pEntity.getRandom());
-        optional.ifPresent(blockPos -> pEntity.getBrain().setMemory(this.memoryToAcquire, GlobalPos.of(pLevel.dimension(), raid.getRaidTarget().getTargetBlockPos())));
+        optional.ifPresent(blockPos -> pEntity.getBrain().setMemory(this.memoryToAcquire, GlobalPos.of(pLevel.dimension(), blockPos)));
     }
 
     private Predicate<BlockPos> getHasNotVisited(E pEntity) {

@@ -6,6 +6,7 @@ import com.patrigan.faction_craft.entity.ai.brain.ModActivities;
 import com.patrigan.faction_craft.raid.Raid;
 import com.patrigan.faction_craft.raid.target.RaidTarget;
 import com.patrigan.faction_craft.registry.ModMemoryModuleTypes;
+import net.minecraft.core.GlobalPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -13,6 +14,7 @@ import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.behavior.Behavior;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class BeginRaiderRaidVillageTask extends Behavior<LivingEntity> {
     public BeginRaiderRaidVillageTask() {
@@ -35,9 +37,10 @@ public class BeginRaiderRaidVillageTask extends Behavior<LivingEntity> {
             Raid raid = RaiderHelper.getRaiderCapability(mob).getRaid();
             if (raid != null) {
                 if(raid.getRaidTarget().getRaidType() == RaidTarget.Type.VILLAGE) {
+                    brain.setMemory(ModMemoryModuleTypes.RAIDED_VILLAGE_POI.get(), new ArrayList<>(List.of(GlobalPos.of(level.dimension(), raid.getRaidTarget().getTargetBlockPos()))));
+                    brain.eraseMemory(ModMemoryModuleTypes.RAID_WALK_TARGET.get());
                     brain.setDefaultActivity(ModActivities.FACTION_RAIDER_VILLAGE.get());
                     brain.setActiveActivityIfPossible(ModActivities.FACTION_RAIDER_VILLAGE.get());
-                    brain.setMemory(ModMemoryModuleTypes.RAIDED_VILLAGE_POI.get(), new ArrayList<>());
                 }
             }
         }

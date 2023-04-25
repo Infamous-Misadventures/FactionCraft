@@ -20,8 +20,10 @@ public class BrainMixin {
         int index = result.indexOf(Activity.FIGHT);
         if (index == -1) {
             result.add(0, ModActivities.FACTION_RAIDER_PREP.get());
+            result.add(0, ModActivities.FACTION_RAIDER_VILLAGE.get());
         } else {
             result.add(index + 1, ModActivities.FACTION_RAIDER_PREP.get());
+            result.add(index + 1, ModActivities.FACTION_RAIDER_VILLAGE.get());
         }
         return result;
     }
