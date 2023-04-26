@@ -14,6 +14,7 @@ public class ModActivities {
     public static final RegistryObject<Activity> PRE_FACTION_RAID = register("faction_pre_raid");
     public static final RegistryObject<Activity> FACTION_RAIDER_PREP = register("faction_raider_prep");
     public static final RegistryObject<Activity> FACTION_RAIDER_VILLAGE = register("faction_raider_village");
+    public static final RegistryObject<Activity> FACTION_PATROL = register("faction_patrol");
 
 
     private static RegistryObject<Activity> register(String pKey) {

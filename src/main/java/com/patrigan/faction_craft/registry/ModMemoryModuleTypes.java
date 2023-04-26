@@ -1,5 +1,6 @@
 package com.patrigan.faction_craft.registry;
 
+import com.electronwill.nightconfig.core.ConfigSpec;
 import com.patrigan.faction_craft.raid.Raid;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.world.entity.LivingEntity;
@@ -35,4 +36,6 @@ public class ModMemoryModuleTypes {
     public static final RegistryObject<MemoryModuleType<Raid>> RAID = MEMORY_MODULE_TYPES.register("faction_raid",
             () -> new MemoryModuleType<>(Optional.empty()));
 
+    public static final RegistryObject<MemoryModuleType<Boolean>> PATROLLER = MEMORY_MODULE_TYPES.register("patroller",
+            () -> new MemoryModuleType<>(Optional.empty()));
 }

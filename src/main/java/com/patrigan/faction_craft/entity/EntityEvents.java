@@ -7,8 +7,6 @@ import com.patrigan.faction_craft.capabilities.patroller.PatrollerHelper;
 import com.patrigan.faction_craft.capabilities.raider.Raider;
 import com.patrigan.faction_craft.capabilities.raider.RaiderHelper;
 import com.patrigan.faction_craft.config.FactionCraftConfig;
-import com.patrigan.faction_craft.entity.ai.target.FactionAllyHurtTargetGoal;
-import com.patrigan.faction_craft.entity.ai.target.NearestFactionEnemyTargetGoal;
 import com.patrigan.faction_craft.faction.Faction;
 import com.patrigan.faction_craft.mixin.LivingEntityAccessor;
 import com.patrigan.faction_craft.registry.Factions;
@@ -19,7 +17,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.monster.piglin.AbstractPiglin;
-import net.minecraft.world.entity.schedule.Activity;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.event.PlayLevelSoundEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
@@ -70,10 +67,6 @@ public class EntityEvents {
                 }
             }
         }
-    }
-
-    private static boolean hasBrain(Mob mob) {
-        return mob.getBrain().isActive(Activity.CORE);
     }
 
     @SubscribeEvent

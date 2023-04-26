@@ -4,14 +4,17 @@ package com.patrigan.faction_craft.capabilities.patroller;
 import com.patrigan.faction_craft.capabilities.factionentity.FactionEntityHelper;
 import com.patrigan.faction_craft.capabilities.factionentity.FactionEntity;
 import com.patrigan.faction_craft.entity.ai.goal.PatrolGoal;
+import com.patrigan.faction_craft.registry.ModMemoryModuleTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraftforge.common.util.INBTSerializable;
 
 import static com.patrigan.faction_craft.capabilities.ModCapabilities.PATROLLER_CAPABILITY;
+import static com.patrigan.faction_craft.util.BrainHelper.hasBrain;
 
 public class Patroller implements INBTSerializable<CompoundTag> {
 
@@ -48,7 +51,7 @@ public class Patroller implements INBTSerializable<CompoundTag> {
 
     public void setPatrolling(boolean patrolling) {
         this.patrolling = patrolling;
-        updatePatrolGoals();
+        updatePatrolAI();
     }
 
     public boolean hasPatrolTarget() {
@@ -63,7 +66,6 @@ public class Patroller implements INBTSerializable<CompoundTag> {
     public boolean canJoinPatrol(Mob mob) {
         FactionEntity thisCap = FactionEntityHelper.getFactionEntityCapability(this.entity);
         FactionEntity otherCap = FactionEntityHelper.getFactionEntityCapability(mob);
-        if(thisCap == null || otherCap == null) return false;
         return thisCap.getFaction() != null && thisCap.getFaction().equals(otherCap.getFaction());
     }
 
@@ -84,6 +86,18 @@ public class Patroller implements INBTSerializable<CompoundTag> {
         this.patrolLeader = compoundNbt.getBoolean("PatrolLeader");
         this.patrolling = compoundNbt.getBoolean("Patrolling");
         updatePatrolGoals();
+    }
+
+    private void updatePatrolAI() {
+        if(hasBrain(this.entity)){
+            updatePatrolBrain();
+        }else {
+            updatePatrolGoals();
+        }
+    }
+
+    private void updatePatrolBrain() {
+        this.entity.getBrain().setMemory(ModMemoryModuleTypes.PATROLLER.get(), this.patrolling);
     }
 
     private void updatePatrolGoals(){

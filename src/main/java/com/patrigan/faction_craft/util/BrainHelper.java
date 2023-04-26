@@ -7,6 +7,7 @@ import com.mojang.datafixers.util.Pair;
 import com.patrigan.faction_craft.entity.ai.brain.sensor.FactionSpecificSensor;
 import com.patrigan.faction_craft.mixin.BrainAccessor;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.behavior.StartAttacking;
 import net.minecraft.world.entity.ai.memory.ExpirableValue;
@@ -96,5 +97,9 @@ public class BrainHelper {
                 .filter(behavior -> behavior instanceof StartAttacking)
                 .findFirst();
         return first.orElse(null);
+    }
+
+    public static boolean hasBrain(Mob mob) {
+        return mob.getBrain().isActive(Activity.CORE);
     }
 }

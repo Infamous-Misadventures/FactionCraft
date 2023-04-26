@@ -12,4 +12,9 @@ public class PatrollerHelper {
     {
         return mobEntity.getCapability(PATROLLER_CAPABILITY).orElse(new Patroller(mobEntity));
     }
+
+    public static float getPatrollerWalkSpeed(Mob mobEntity)
+    {
+        return getPatrollerCapability(mobEntity).isPatrolLeader() ? 0.595F : 0.7F;
+    }
 }

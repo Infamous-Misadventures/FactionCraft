@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.patrigan.faction_craft.capabilities.ModCapabilities.RAIDER_CAPABILITY;
+import static com.patrigan.faction_craft.util.BrainHelper.hasBrain;
 
 public class Raider implements INBTSerializable<CompoundTag> {
 
@@ -117,10 +118,6 @@ public class Raider implements INBTSerializable<CompoundTag> {
             this.addedGoals.forEach(this.entity.goalSelector::removeGoal);
             addedGoals.clear();
         }
-    }
-
-    private static boolean hasBrain(Mob mob) {
-        return mob.getBrain().isActive(Activity.CORE);
     }
 
     private void addGoal(int priority, Goal goal) {
