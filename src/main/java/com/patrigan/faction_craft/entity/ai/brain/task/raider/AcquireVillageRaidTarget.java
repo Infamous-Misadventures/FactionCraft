@@ -32,7 +32,7 @@ public class AcquireVillageRaidTarget<E extends LivingEntity> extends Behavior<E
 
     private static ImmutableMap<MemoryModuleType<?>, MemoryStatus> constructEntryConditionMap(MemoryModuleType<GlobalPos> pMemoryToAcquire) {
         ImmutableMap.Builder<MemoryModuleType<?>, MemoryStatus> builder = ImmutableMap.builder();
-        builder.put(pMemoryToAcquire, MemoryStatus.VALUE_ABSENT);
+        builder.put(pMemoryToAcquire, MemoryStatus.REGISTERED);
         builder.put(ModMemoryModuleTypes.RAIDED_VILLAGE_POI.get(), MemoryStatus.VALUE_PRESENT);
 
         return builder.build();

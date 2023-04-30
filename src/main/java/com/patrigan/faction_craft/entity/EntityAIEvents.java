@@ -102,7 +102,7 @@ public class EntityAIEvents {
     }
 
     private static <E extends LivingEntity>  ImmutableList<Pair<Integer, ? extends Behavior<? super E>>> getVillageRaiderPackage(float speedModifier, Behavior<? super E> attackTask) {
-        return ImmutableList.of(Pair.of(0, new AcquireVillageRaidTarget<>(1)), Pair.of(1, attackTask), Pair.of(2, new RaiderSetWalkTargetFromBlockMemory<>(speedModifier, 2, 150, 200)));
+        return ImmutableList.of(Pair.of(0, new AcquireVillageRaidTarget<>(2)), Pair.of(1, attackTask), Pair.of(2, new RaiderSetWalkTargetFromBlockMemory<>(speedModifier, 2, 150, 200)));
     }
 
     private static <E extends LivingEntity> ImmutableList<? extends Pair<Integer, ? extends Behavior<? super E>>> getPatrollerPackage(float speedModifier, Behavior<? super E> attackTask) {
