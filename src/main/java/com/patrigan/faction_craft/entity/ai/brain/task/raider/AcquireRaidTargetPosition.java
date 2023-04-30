@@ -3,6 +3,7 @@ package com.patrigan.faction_craft.entity.ai.brain.task.raider;
 import com.google.common.collect.ImmutableMap;
 import com.patrigan.faction_craft.capabilities.raider.RaiderHelper;
 import com.patrigan.faction_craft.raid.Raid;
+import com.patrigan.faction_craft.registry.ModMemoryModuleTypes;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
@@ -14,12 +15,9 @@ import net.minecraft.world.entity.ai.memory.MemoryStatus;
 
 public class AcquireRaidTargetPosition<E extends LivingEntity> extends Behavior<E> {
 
-   private MemoryModuleType<GlobalPos> memoryToAcquire;
+   public AcquireRaidTargetPosition() {
+      super(constructEntryConditionMap(ModMemoryModuleTypes.RAID_WALK_TARGET.get()));
 
-   public AcquireRaidTargetPosition(MemoryModuleType<GlobalPos> memoryToAcquire) {
-      super(constructEntryConditionMap(memoryToAcquire));
-
-      this.memoryToAcquire = memoryToAcquire;
    }
 
    private static ImmutableMap<MemoryModuleType<?>, MemoryStatus> constructEntryConditionMap(MemoryModuleType<GlobalPos> pMemoryToAcquire) {
@@ -39,7 +37,7 @@ public class AcquireRaidTargetPosition<E extends LivingEntity> extends Behavior<
       if (pEntity instanceof Mob mob) {
          Raid raid = RaiderHelper.getRaiderCapability(mob).getRaid();
          if (raid != null) {
-            pEntity.getBrain().setMemory(this.memoryToAcquire, GlobalPos.of(pLevel.dimension(), raid.getRaidTarget().getTargetBlockPos()));
+            pEntity.getBrain().setMemory(ModMemoryModuleTypes.RAID_WALK_TARGET.get(), GlobalPos.of(pLevel.dimension(), raid.getRaidTarget().getTargetBlockPos()));
          }
       }
       super.start(pLevel, pEntity, pGameTime);

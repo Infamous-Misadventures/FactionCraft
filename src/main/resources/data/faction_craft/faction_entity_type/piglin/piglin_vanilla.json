@@ -1,6 +1,0 @@
-{
-  "entity_type": "minecraft:piglin",
-  "weight": 100,
-  "strength": 4,
-  "ranks": ["soldier","captain", "general", "leader"]
-}

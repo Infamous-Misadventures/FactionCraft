@@ -9,7 +9,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Difficulty;
-import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -22,7 +22,7 @@ public class ReconstructBlockEntity extends BlockEntity {
     private int raidId = 0;
     private Raid raid = null;
     private int timer = -1000;
-    private Mob mob = null;
+    private LivingEntity entity = null;
 
     public ReconstructBlockEntity(BlockPos p_155229_, BlockState p_155230_) {
         super(ModBlockEntityTypes.RECONSTRUCT_BLOCK_ENTITY.get(), p_155229_, p_155230_);
@@ -60,8 +60,8 @@ public class ReconstructBlockEntity extends BlockEntity {
                     level.removeBlock(this.worldPosition, false);
                 }
             }
-        }else if(mob != null){
-            if(mob.isDeadOrDying()){
+        }else if(entity != null){
+            if(entity.isDeadOrDying()){
                 timer--;
             }
         }else{
@@ -103,12 +103,12 @@ public class ReconstructBlockEntity extends BlockEntity {
         this.raid = raid;
     }
 
-    public Mob getMob() {
-        return mob;
+    public LivingEntity getEntity() {
+        return entity;
     }
 
-    public void setMob(Mob mob) {
-        this.mob = mob;
+    public void setEntity(LivingEntity entity) {
+        this.entity = entity;
     }
 
     @Override

@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
 import com.patrigan.faction_craft.capabilities.patroller.Patroller;
 import com.patrigan.faction_craft.capabilities.patroller.PatrollerHelper;
+import com.patrigan.faction_craft.capabilities.raider.RaiderHelper;
 import com.patrigan.faction_craft.entity.ai.brain.ModActivities;
 import com.patrigan.faction_craft.entity.ai.brain.task.raider.*;
 import com.patrigan.faction_craft.entity.ai.brain.task.villager.*;
@@ -72,10 +73,12 @@ public class EntityAIEvents {
         BrainHelper.addMemory(brain, RAID_WALK_TARGET.get());
         BrainHelper.addMemory(brain, ModMemoryModuleTypes.RAIDED_VILLAGE_POI.get());
         BrainHelper.addMemory(brain, ModMemoryModuleTypes.RAID.get());
+        BrainHelper.addMemory(brain, ModMemoryModuleTypes.IS_STUCK.get());
         Behavior<? super E> attackTask = BrainHelper.getAttackTask(brain);
         brain.addActivityWithConditions(ModActivities.FACTION_RAIDER_PREP.get(), getRaiderPackage(1.1F, attackTask), Set.of(Pair.of(ModMemoryModuleTypes.RAID.get(), MemoryStatus.VALUE_PRESENT)));
         brain.addActivityWithConditions(ModActivities.FACTION_RAIDER_VILLAGE.get(), getVillageRaiderPackage(0.8F, attackTask), Set.of(Pair.of(ModMemoryModuleTypes.RAIDED_VILLAGE_POI.get(), MemoryStatus.VALUE_PRESENT)));
         brain.addActivityWithConditions(ModActivities.FACTION_PATROL.get(), getPatrollerPackage(PatrollerHelper.getPatrollerWalkSpeed(mob), attackTask), Set.of(Pair.of(ModMemoryModuleTypes.PATROLLER.get(), MemoryStatus.VALUE_PRESENT)));
+        RaiderHelper.getRaiderCapability(mob).updateRaidAI();
     }
 
     public static void addVillagerTasks(Villager villagerEntity) {
@@ -95,15 +98,15 @@ public class EntityAIEvents {
     }
 
     private static  <E extends LivingEntity>  ImmutableList<Pair<Integer, ? extends Behavior<? super E>>> getRaiderPackage(float speedModifier, Behavior<? super E> attackTask) {
-        return ImmutableList.of(Pair.of(0, new AcquireRaidTargetPosition<>(RAID_WALK_TARGET.get())), Pair.of(1, new BeginRaiderRaidVillageTask()), Pair.of(1, attackTask), Pair.of(2, new RaiderSetWalkTargetFromBlockMemory<>(RAID_WALK_TARGET.get(), speedModifier * 1.5F, 2, 150, 200)));
+        return ImmutableList.of(Pair.of(0, new AcquireRaidTargetPosition<>()), Pair.of(1, new BeginRaiderRaidVillageTask()), Pair.of(1, attackTask), Pair.of(2, new RaiderSetWalkTargetFromBlockMemory<>(speedModifier, 2, 150, 200)));
     }
 
     private static <E extends LivingEntity>  ImmutableList<Pair<Integer, ? extends Behavior<? super E>>> getVillageRaiderPackage(float speedModifier, Behavior<? super E> attackTask) {
-        return ImmutableList.of(Pair.of(0, new AcquireVillageRaidTarget<>(RAID_WALK_TARGET.get(), 1)), Pair.of(1, attackTask), Pair.of(2, new RaiderSetWalkTargetFromBlockMemory<>(RAID_WALK_TARGET.get(), speedModifier * 1.5F, 2, 150, 200)));
+        return ImmutableList.of(Pair.of(0, new AcquireVillageRaidTarget<>(1)), Pair.of(1, attackTask), Pair.of(2, new RaiderSetWalkTargetFromBlockMemory<>(speedModifier, 2, 150, 200)));
     }
 
     private static <E extends LivingEntity> ImmutableList<? extends Pair<Integer, ? extends Behavior<? super E>>> getPatrollerPackage(float speedModifier, Behavior<? super E> attackTask) {
-        return ImmutableList.of(Pair.of(0, new AcquirePatrolTarget<>(RAID_WALK_TARGET.get(), 5)), Pair.of(1, attackTask), Pair.of(2, new RaiderSetWalkTargetFromBlockMemory<>(RAID_WALK_TARGET.get(), speedModifier, 2, 150, 200)));
+        return ImmutableList.of(Pair.of(0, new AcquirePatrolTarget<>(RAID_WALK_TARGET.get(), 5)), Pair.of(1, attackTask), Pair.of(2, new RaiderSetWalkTargetFromBlockMemory<>(speedModifier, 2, 150, 200)));
     }
 
     private static Pair<Integer, Behavior<LivingEntity>> getMinimalLookBehavior() {

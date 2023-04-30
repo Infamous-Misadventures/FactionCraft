@@ -37,8 +37,8 @@ public class BeginRaiderRaidVillageTask extends Behavior<LivingEntity> {
             Raid raid = RaiderHelper.getRaiderCapability(mob).getRaid();
             if (raid != null) {
                 if(raid.getRaidTarget().getRaidType() == RaidTarget.Type.VILLAGE) {
-                    brain.setMemory(ModMemoryModuleTypes.RAIDED_VILLAGE_POI.get(), new ArrayList<>(List.of(GlobalPos.of(level.dimension(), raid.getRaidTarget().getTargetBlockPos()))));
                     brain.eraseMemory(ModMemoryModuleTypes.RAID_WALK_TARGET.get());
+                    brain.setMemory(ModMemoryModuleTypes.RAIDED_VILLAGE_POI.get(), new ArrayList<>(List.of(GlobalPos.of(level.dimension(), raid.getRaidTarget().getTargetBlockPos()))));
                     brain.setDefaultActivity(ModActivities.FACTION_RAIDER_VILLAGE.get());
                     brain.setActiveActivityIfPossible(ModActivities.FACTION_RAIDER_VILLAGE.get());
                 }

@@ -1,17 +1,31 @@
 package com.patrigan.faction_craft.boost.ai;
 
+import com.google.common.collect.ImmutableList;
+import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.patrigan.faction_craft.boost.Boost;
 import com.patrigan.faction_craft.config.FactionCraftConfig;
+import com.patrigan.faction_craft.entity.ai.brain.ModActivities;
+import com.patrigan.faction_craft.entity.ai.brain.task.raider.AcquirePatrolTarget;
+import com.patrigan.faction_craft.entity.ai.brain.task.raider.DigTask;
+import com.patrigan.faction_craft.entity.ai.brain.task.raider.RaiderSetWalkTargetFromBlockMemory;
 import com.patrigan.faction_craft.entity.ai.goal.FactionDigGoal;
+import com.patrigan.faction_craft.registry.ModMemoryModuleTypes;
+import com.patrigan.faction_craft.util.BrainHelper;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.PathfinderMob;
+import net.minecraft.world.entity.ai.Brain;
+import net.minecraft.world.entity.ai.behavior.Behavior;
+import net.minecraft.world.entity.ai.memory.MemoryStatus;
+
+import java.util.Set;
 
 import static com.patrigan.faction_craft.boost.Boost.BoostType.SPECIAL;
 import static com.patrigan.faction_craft.boost.Boost.Rarity.NONE;
+import static com.patrigan.faction_craft.registry.ModMemoryModuleTypes.RAID_WALK_TARGET;
 
 public class DiggerBoost extends Boost {
 
@@ -92,8 +106,21 @@ public class DiggerBoost extends Boost {
     @Override
     public void applyAIChanges(Mob mobEntity) {
         if (mobEntity instanceof PathfinderMob pathfinder && FactionCraftConfig.ENABLE_DIGGER_AI.get()) {
-            FactionDigGoal meleeGoal = new FactionDigGoal(pathfinder, requiresTool, requiresProperTool, getHand());
-            mobEntity.goalSelector.addGoal(2, meleeGoal);
+            if(BrainHelper.hasBrain(mobEntity)){
+                mobEntity.getBrain().addActivityWithConditions(ModActivities.DIG.get(), getDiggerPackage(1.1F, mobEntity), Set.of(Pair.of(ModMemoryModuleTypes.IS_STUCK.get(), MemoryStatus.VALUE_PRESENT)));
+            }else {
+                FactionDigGoal meleeGoal = new FactionDigGoal(pathfinder, requiresTool, requiresProperTool, getHand());
+                mobEntity.goalSelector.addGoal(2, meleeGoal);
+            }
         }
+    }
+
+    private <E extends LivingEntity> ImmutableList<? extends Pair<Integer, ? extends Behavior<? super E>>> getDiggerPackage(float speedModifier, E mobEntity) {
+        if (!(mobEntity instanceof Mob)) {
+            return ImmutableList.of();
+        }
+        Brain<E> brain = (Brain<E>)mobEntity.getBrain();
+//        Behavior<? super E> attackTask = BrainHelper.getAttackTask(brain);
+        return ImmutableList.of(Pair.of(0, new DigTask((Mob) mobEntity, requiresTool, requiresProperTool, getHand())));
     }
 }

@@ -78,7 +78,7 @@ public class VillageRaidTarget implements RaidTarget {
     }
 
     @Override
-    public boolean checkLossCondition(Raid raid, ServerLevel level) {
+    public boolean isDefeat(Raid raid, ServerLevel level) {
         if(level.getGameTime() % 20 == 0) {
             if (level.getEntitiesOfClass(AbstractVillager.class,
                     new AABB(blockPos).inflate(100),

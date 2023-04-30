@@ -61,7 +61,7 @@ public class PlayerRaidTarget implements RaidTarget {
     }
 
     @Override
-    public boolean checkLossCondition(Raid raid, ServerLevel level) {
+    public boolean isDefeat(Raid raid, ServerLevel level) {
         return !player.isAlive();
     }
 

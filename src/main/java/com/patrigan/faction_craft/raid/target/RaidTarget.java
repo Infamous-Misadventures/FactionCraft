@@ -18,7 +18,7 @@ public interface RaidTarget {
 
     int getAdditionalWaves();
 
-    boolean checkLossCondition(Raid raid, ServerLevel level);
+    boolean isDefeat(Raid raid, ServerLevel level);
 
     CompoundTag save(CompoundTag compoundNbt);
 

@@ -44,7 +44,6 @@ import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.MinecraftForge;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -180,7 +179,7 @@ public class Raid {
 
                 raidTarget.updateTargetBlockPos(level);
 
-                if (raidTarget.checkLossCondition(this, level)) {
+                if (raidTarget.isDefeat(this, level)) {
                     if (this.groupsSpawned > 0) {
                         FactionRaidEvent.Defeat event = new FactionRaidEvent.Defeat(this);
                         net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event);

@@ -1,6 +1,9 @@
 package com.patrigan.faction_craft.entity.ai.brain.task.raider;
 
 import com.google.common.collect.ImmutableMap;
+import com.patrigan.faction_craft.capabilities.factionentity.FactionEntity;
+import com.patrigan.faction_craft.capabilities.factionentity.FactionEntityHelper;
+import com.patrigan.faction_craft.registry.ModMemoryModuleTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.server.level.ServerLevel;
@@ -17,15 +20,13 @@ import net.minecraft.world.phys.Vec3;
 import java.util.Optional;
 
 public class RaiderSetWalkTargetFromBlockMemory<E extends LivingEntity> extends Behavior<E> {
-   private final MemoryModuleType<GlobalPos> memoryType;
    private final float speedModifier;
    private final int closeEnoughDist;
    private final int tooFarDistance;
    private final int tooLongUnreachableDuration;
 
-   public RaiderSetWalkTargetFromBlockMemory(MemoryModuleType<GlobalPos> pMemoryType, float pSpeedModifier, int pCloseEnoughDist, int pTooFarDistance, int pTooLongUnreachableDuration) {
-      super(ImmutableMap.of(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryStatus.REGISTERED, MemoryModuleType.WALK_TARGET, MemoryStatus.VALUE_ABSENT, pMemoryType, MemoryStatus.VALUE_PRESENT));
-      this.memoryType = pMemoryType;
+   public RaiderSetWalkTargetFromBlockMemory(float pSpeedModifier, int pCloseEnoughDist, int pTooFarDistance, int pTooLongUnreachableDuration) {
+      super(ImmutableMap.of(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryStatus.REGISTERED, MemoryModuleType.WALK_TARGET, MemoryStatus.VALUE_ABSENT, ModMemoryModuleTypes.RAID_WALK_TARGET.get(), MemoryStatus.VALUE_PRESENT));
       this.speedModifier = pSpeedModifier;
       this.closeEnoughDist = pCloseEnoughDist;
       this.tooFarDistance = pTooFarDistance;
@@ -35,7 +36,7 @@ public class RaiderSetWalkTargetFromBlockMemory<E extends LivingEntity> extends 
    protected void start(ServerLevel pLevel, E livingEntity, long pGameTime) {
       if(livingEntity instanceof PathfinderMob pathfinderMob) {
          Brain<?> brain = pathfinderMob.getBrain();
-         brain.getMemory(this.memoryType).ifPresent((destination) -> {
+         brain.getMemory(ModMemoryModuleTypes.RAID_WALK_TARGET.get()).ifPresent((destination) -> {
             if (!this.wrongDimension(pLevel, destination) && !this.tiredOfTryingToFindTarget(pLevel, pathfinderMob)) {
                if (this.tooFar(pathfinderMob, destination)) {
                   Vec3 vec3 = null;
@@ -46,7 +47,7 @@ public class RaiderSetWalkTargetFromBlockMemory<E extends LivingEntity> extends 
                   }
 
                   if (i == 1000) {
-                     this.dropPOI(pathfinderMob, pGameTime);
+                     this.isStuck(pathfinderMob, pGameTime);
                      return;
                   }
 
@@ -55,16 +56,18 @@ public class RaiderSetWalkTargetFromBlockMemory<E extends LivingEntity> extends 
                   brain.setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(destination.pos(), this.speedModifier, this.closeEnoughDist));
                }
             } else {
-               this.dropPOI(pathfinderMob, pGameTime);
+               this.isStuck(pathfinderMob, pGameTime);
             }
 
          });
       }
    }
 
-   private void dropPOI(PathfinderMob pathfinderMob, long pTime) {
+   private void isStuck(PathfinderMob pathfinderMob, long pTime) {
+      FactionEntity factionEntityCapability = FactionEntityHelper.getFactionEntityCapability(pathfinderMob);
+      factionEntityCapability.setStuck(true);
       Brain<?> brain = pathfinderMob.getBrain();
-      brain.eraseMemory(this.memoryType);
+      pathfinderMob.getBrain().setMemory(ModMemoryModuleTypes.IS_STUCK.get(), true);
       brain.setMemory(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, pTime);
    }
 

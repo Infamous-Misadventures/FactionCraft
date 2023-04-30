@@ -90,7 +90,7 @@ public class Raider implements INBTSerializable<CompoundTag> {
         this.waveLeader = waveLeader;
     }
 
-    private void updateRaidAI(){
+    public void updateRaidAI(){
         if(hasBrain(this.entity)){
             updateRaidBrain();
         }else {
@@ -148,8 +148,7 @@ public class Raider implements INBTSerializable<CompoundTag> {
             if (this.entity.level instanceof ServerLevel) {
                 ServerLevel level = (ServerLevel) this.entity.level;
                 RaidManager raidManagerCapability = RaidManagerHelper.getRaidManagerCapability(level);
-                this.raid = raidManagerCapability.getRaids().get(tag.getInt("RaidId"));
-                updateRaidAI();
+                this.setRaid(raidManagerCapability.getRaids().get(tag.getInt("RaidId")));
             }
 
             if (this.raid != null) {

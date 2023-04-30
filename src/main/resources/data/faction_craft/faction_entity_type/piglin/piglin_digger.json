@@ -1,0 +1,9 @@
+{
+  "entity_type": "minecraft:piglin",
+  "weight": 30,
+  "strength": 8,
+  "ranks": ["digger"],
+  "boosts": {
+    "mandatory": ["faction_craft:special/ai/barehanded_digger_ai", "minecraft:hand/stone_pickaxe"]
+  }
+}

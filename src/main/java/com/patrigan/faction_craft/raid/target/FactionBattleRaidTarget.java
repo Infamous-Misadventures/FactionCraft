@@ -80,7 +80,7 @@ public class FactionBattleRaidTarget implements RaidTarget {
     }
 
     @Override
-    public boolean checkLossCondition(Raid raid, ServerLevel level) {
+    public boolean isDefeat(Raid raid, ServerLevel level) {
         if(raid.getGroupsSpawned() <= getStartingWave()){
             return false;
         }
