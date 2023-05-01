@@ -1,19 +1,37 @@
 # Changelog
 
+## [1.19.2-1.3.1] - 2023-05-01
+### Bugfixes / Tweaks
+- Fixed crashes with brain mobs that can not attack
+- made an adjustment to the check to see if a mob has a brain.
+
+## [1.19.2-1.3.0] - 2023-05-01
+### Major Features
+#### Brain AI
+There is now facion AI for mobs with a brain, like piglins
+#### New Faction: piglin
+With brain AI available, FactionCraft now supports the Piglin Faction
+#### New Faction: villager
+To properly support piglins finding villagers a bad entity to fight, villagers have moved into their own faction. This plays into the faction targetting system and should fix issues with all mobs not targetting villagers.
+### Minor Features
+- There is a new `max_spawned_per_x` field on faction entity types. This field allows the spawned range max to grow dynamically with the size of the wave.
+### Bugfixes / Tweaks
+- Default entities are now on by default
+
 ## [1.19.2-1.2.4] - 2023-XX-XX
 
 ### Bugfixes / Tweaks
 - Fixed Patrols not spawning
 
 ## [1.19.2-1.2.3] - 2023-02-04
-#### Minor Features
+### Minor Features
 
 ### Bugfixes / Tweaks
 - Added missing Default factions
 - Fixed Biome Spawning not working properly.
 
 ## [1.19.2-1.2.2] - 2023-31-03
-#### Minor Features
+### Minor Features
 - Moved the wither faction also into the new faction entity type system.
 - Faction battles now have more randomized starting waves. Config updated to reflect this. 
 
