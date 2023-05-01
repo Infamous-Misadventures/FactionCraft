@@ -255,9 +255,7 @@ public class Raid {
                         this.status = Status.VICTORY;
                         FactionRaidEvent.Victory event = new FactionRaidEvent.Victory(this);
                         net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event);
-                        if (factions.get(0).getRaidConfig().getVictorySoundEvent() != null) {
-                            this.playSound(raidTarget.getTargetBlockPos(), factions.get(0).getRaidConfig().getVictorySoundEvent());
-                        }
+                        this.playSound(raidTarget.getTargetBlockPos(), factions.get(0).getRaidConfig().getVictorySoundEvent());
                         this.raidEvent.setName(getRaidEventNameVictory(raidTarget));
 
                         for (UUID uuid : this.heroesOfTheVillage) {
@@ -295,7 +293,8 @@ public class Raid {
         }
     }
 
-    private void playSound(BlockPos p_221293_1_, SoundEvent soundEvent) {
+    private void playSound(BlockPos p_221293_1_, Optional<SoundEvent> soundEvent) {
+        if(soundEvent.isEmpty()) return;
         float f = 13.0F;
         int i = 64;
         Collection<ServerPlayer> collection = this.raidEvent.getPlayers();
@@ -307,7 +306,7 @@ public class Raid {
             double d0 = vector3d.x + (double) (13.0F / f1) * (vector3d1.x - vector3d.x);
             double d1 = vector3d.z + (double) (13.0F / f1) * (vector3d1.z - vector3d.z);
             if (f1 <= 64.0F || collection.contains(serverplayerentity)) {
-                serverplayerentity.connection.send(new ClientboundSoundPacket(soundEvent, SoundSource.NEUTRAL, d0, serverplayerentity.getY(), d1, 64.0F, 1.0F, serverplayerentity.getRandom().nextLong()));
+                serverplayerentity.connection.send(new ClientboundSoundPacket(soundEvent.get(), SoundSource.NEUTRAL, d0, serverplayerentity.getY(), d1, 64.0F, 1.0F, serverplayerentity.getRandom().nextLong()));
             }
         }
     }

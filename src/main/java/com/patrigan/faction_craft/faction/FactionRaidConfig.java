@@ -6,9 +6,11 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 
+import java.util.Optional;
+
 public class FactionRaidConfig {
     public static final float DEFAULT_MOBS_FRACTION = 0.7F;
-    public static final FactionRaidConfig DEFAULT = new FactionRaidConfig(false, "event.minecraft.raid", "event.minecraft.raid.victory", "event.minecraft.raid.defeat", DEFAULT_MOBS_FRACTION, SoundEvents.RAID_HORN, null, SoundEvents.RAID_HORN);
+    public static final FactionRaidConfig DEFAULT = new FactionRaidConfig(false, "event.minecraft.raid", "event.minecraft.raid.victory", "event.minecraft.raid.defeat", DEFAULT_MOBS_FRACTION, Optional.of(SoundEvents.RAID_HORN), null, Optional.of(SoundEvents.RAID_HORN));
 
     public static final Codec<FactionRaidConfig> CODEC = RecordCodecBuilder.create(builder ->
             builder.group(
@@ -17,9 +19,9 @@ public class FactionRaidConfig {
                     Codec.STRING.optionalFieldOf("victory_alt", "event.minecraft.raid.victory").forGetter(FactionRaidConfig::getVictoryAlt),
                     Codec.STRING.optionalFieldOf("defeat_alt", "event.minecraft.raid.defeat").forGetter(FactionRaidConfig::getDefeatAlt),
                     Codec.FLOAT.optionalFieldOf("mobs_fraction", DEFAULT_MOBS_FRACTION).forGetter(FactionRaidConfig::getMobsFraction),
-                    SoundEvent.CODEC.optionalFieldOf("wave_sound", SoundEvents.RAID_HORN).forGetter(FactionRaidConfig::getWaveSoundEvent),
-                    SoundEvent.CODEC.optionalFieldOf("victory_sound", null).forGetter(FactionRaidConfig::getVictorySoundEvent),
-                    SoundEvent.CODEC.optionalFieldOf("defeat_sound", SoundEvents.RAID_HORN).forGetter(FactionRaidConfig::getDefeatSoundEvent)
+                    SoundEvent.CODEC.optionalFieldOf("wave_sound").forGetter(FactionRaidConfig::getWaveSoundEvent),
+                    SoundEvent.CODEC.optionalFieldOf("victory_sound").forGetter(FactionRaidConfig::getVictorySoundEvent),
+                    SoundEvent.CODEC.optionalFieldOf("defeat_sound").forGetter(FactionRaidConfig::getDefeatSoundEvent)
             ).apply(builder, FactionRaidConfig::new));
 
     private final boolean enabled;
@@ -32,11 +34,11 @@ public class FactionRaidConfig {
     private final Component raidBarVictoryComponent;
     private final Component raidBarDefeatComponent;
     private final float mobsFraction;
-    private final SoundEvent waveSoundEvent;
-    private final SoundEvent victorySoundEvent;
-    private final SoundEvent defeatSoundEvent;
+    private final Optional<SoundEvent> waveSoundEvent;
+    private final Optional<SoundEvent> victorySoundEvent;
+    private final Optional<SoundEvent> defeatSoundEvent;
 
-    public FactionRaidConfig(boolean enabled, String name, String victoryAlt, String defeatAlt, float mobsFraction, SoundEvent waveSoundEvent, SoundEvent victorySoundEvent, SoundEvent defeatSoundEvent) {
+    public FactionRaidConfig(boolean enabled, String name, String victoryAlt, String defeatAlt, float mobsFraction, Optional<SoundEvent> waveSoundEvent, Optional<SoundEvent> victorySoundEvent, Optional<SoundEvent> defeatSoundEvent) {
         this.enabled = enabled;
         this.name = name;
         this.victoryAlt = victoryAlt;
@@ -84,15 +86,15 @@ public class FactionRaidConfig {
         return mobsFraction;
     }
 
-    public SoundEvent getWaveSoundEvent() {
+    public Optional<SoundEvent> getWaveSoundEvent() {
         return waveSoundEvent;
     }
 
-    public SoundEvent getVictorySoundEvent() {
+    public Optional<SoundEvent> getVictorySoundEvent() {
         return victorySoundEvent;
     }
 
-    public SoundEvent getDefeatSoundEvent() {
+    public Optional<SoundEvent> getDefeatSoundEvent() {
         return defeatSoundEvent;
     }
 }
