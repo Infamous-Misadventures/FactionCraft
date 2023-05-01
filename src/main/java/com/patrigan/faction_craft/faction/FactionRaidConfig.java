@@ -8,10 +8,11 @@ import net.minecraft.sounds.SoundEvents;
 
 public class FactionRaidConfig {
     public static final float DEFAULT_MOBS_FRACTION = 0.7F;
-    public static final FactionRaidConfig DEFAULT = new FactionRaidConfig("event.minecraft.raid", "event.minecraft.raid.victory", "event.minecraft.raid.defeat", DEFAULT_MOBS_FRACTION, SoundEvents.RAID_HORN, null, SoundEvents.RAID_HORN);
+    public static final FactionRaidConfig DEFAULT = new FactionRaidConfig(false, "event.minecraft.raid", "event.minecraft.raid.victory", "event.minecraft.raid.defeat", DEFAULT_MOBS_FRACTION, SoundEvents.RAID_HORN, null, SoundEvents.RAID_HORN);
 
     public static final Codec<FactionRaidConfig> CODEC = RecordCodecBuilder.create(builder ->
             builder.group(
+                    Codec.BOOL.optionalFieldOf("enabled", true).forGetter(FactionRaidConfig::isEnabled),
                     Codec.STRING.optionalFieldOf("name_alt", "event.minecraft.raid").forGetter(FactionRaidConfig::getName),
                     Codec.STRING.optionalFieldOf("victory_alt", "event.minecraft.raid.victory").forGetter(FactionRaidConfig::getVictoryAlt),
                     Codec.STRING.optionalFieldOf("defeat_alt", "event.minecraft.raid.defeat").forGetter(FactionRaidConfig::getDefeatAlt),
@@ -21,6 +22,7 @@ public class FactionRaidConfig {
                     SoundEvent.CODEC.optionalFieldOf("defeat_sound", SoundEvents.RAID_HORN).forGetter(FactionRaidConfig::getDefeatSoundEvent)
             ).apply(builder, FactionRaidConfig::new));
 
+    private final boolean enabled;
     private final String name;
     private final String victoryAlt;
     private final String defeatAlt;
@@ -34,7 +36,8 @@ public class FactionRaidConfig {
     private final SoundEvent victorySoundEvent;
     private final SoundEvent defeatSoundEvent;
 
-    public FactionRaidConfig(String name, String victoryAlt, String defeatAlt, float mobsFraction, SoundEvent waveSoundEvent, SoundEvent victorySoundEvent, SoundEvent defeatSoundEvent) {
+    public FactionRaidConfig(boolean enabled, String name, String victoryAlt, String defeatAlt, float mobsFraction, SoundEvent waveSoundEvent, SoundEvent victorySoundEvent, SoundEvent defeatSoundEvent) {
+        this.enabled = enabled;
         this.name = name;
         this.victoryAlt = victoryAlt;
         this.defeatAlt = defeatAlt;
@@ -47,6 +50,10 @@ public class FactionRaidConfig {
         this.waveSoundEvent = waveSoundEvent;
         this.victorySoundEvent = victorySoundEvent;
         this.defeatSoundEvent = defeatSoundEvent;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
     }
 
     public String getName() {

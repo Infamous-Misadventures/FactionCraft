@@ -1,19 +1,12 @@
 {
-  "name": "minecraft:illager",
+  "name": "minecraft:village",
   "replace": false,
   "banner": {"id":"minecraft:white_banner","Count":1,"tag":{"HideFlags":32,"BlockEntityTag":{"Patterns":[{"Pattern":"mr","Color":9},{"Pattern":"bs","Color":8},{"Pattern":"cs","Color":7},{"Pattern":"bo","Color":8},{"Pattern":"ms","Color":15},{"Pattern":"hh","Color":8},{"Pattern":"mc","Color":8},{"Pattern":"bo","Color":15}]},"display":{"Name":{"color":"gold","translate":"block.minecraft.ominous_banner"}}}},
   "relations": {
-    "enemies": ["faction_craft:undead", "faction_craft:wither", "faction_craft:piglin", "minecraft:village"]
-  },
-  "raid_config": {
-    "enabled": true
+    "enemies": ["faction_craft:undead", "faction_craft:piglin", "minecraft:illager"]
   },
   "default_entities": [
-    "minecraft:pillager",
-    "minecraft:evoker",
-    "minecraft:vindicator",
-    "minecraft:witch",
-    "minecraft:illusioner",
-    "minecraft:ravager"
+    "minecraft:villager",
+    "minecraft:iron_golem"
   ]
 }

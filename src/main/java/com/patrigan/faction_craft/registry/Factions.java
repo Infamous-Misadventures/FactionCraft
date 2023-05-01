@@ -21,6 +21,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.EntityType;
 
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -118,12 +119,15 @@ public class Factions {
         return FACTION_DATA.getData().get(new ResourceLocation("illager"));
     }
 
-    public static Faction getRandomFaction(ServerLevel level, RandomSource random) {
-        return GeneralUtils.getRandomItem(new ArrayList<>(getActiveFactions(level)), random);
+    public static Faction getRandomFaction(ServerLevel level, RandomSource random, Predicate<Faction> predicate) {
+        List<Faction> possibleFactions = getActiveFactions(level).stream().filter(predicate).collect(Collectors.toList());
+        return GeneralUtils.getRandomItem(possibleFactions, random);
     }
 
-    public static Faction getRandomFactionWithEnemies(ServerLevel level, RandomSource random) {
-        return GeneralUtils.getRandomItem(getActiveFactions(level).stream().filter(faction -> !faction.getRelations().getEnemies().isEmpty()).collect(Collectors.toList()), random);
+
+    public static Faction getRandomFactionWithEnemies(ServerLevel level, RandomSource random, Predicate<Faction> predicate) {
+        List<Faction> possibleFactions = getActiveFactions(level).stream().filter(predicate).collect(Collectors.toList());
+        return GeneralUtils.getRandomItem(possibleFactions.stream().filter(faction -> !faction.getRelations().getEnemies().isEmpty()).collect(Collectors.toList()), random);
     }
 
     public static ResourceLocation getKey(Faction faction){

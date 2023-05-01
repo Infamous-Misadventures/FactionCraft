@@ -3,7 +3,10 @@
   "replace": false,
   "banner": {"id":"minecraft:black_banner","Count":1,"tag":{"HideFlags":32,"BlockEntityTag":{"Patterns":[{"Color":0,"Pattern":"sc"},{"Color":0,"Pattern":"cr"},{"Color":0,"Pattern":"tts"},{"Color":0,"Pattern":"gru"},{"Color":8,"Pattern":"sku"}]},"display":{"Name":{"color":"gold","translate":"block.faction_raid.undead_banner"}}}},
   "relations": {
-    "enemies": ["minecraft:illager"]
+    "enemies": ["minecraft:illager", "minecraft:village"]
+  },
+  "raid_config": {
+    "enabled": true
   },
   "activation_advancement": "minecraft:nether/root",
   "default_entities": [
