@@ -1,0 +1,11 @@
+{
+  "type":"faction_craft:wear_hands_boost",
+  "item":
+    {
+      "id": "minecraft:golden_sword",
+      "Count": 1
+    },
+  "strength_adjustment": 2,
+  "boost_type":"mainhand",
+  "rarity": "rare"
+}

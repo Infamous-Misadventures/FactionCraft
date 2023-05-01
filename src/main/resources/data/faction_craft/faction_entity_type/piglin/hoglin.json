@@ -1,0 +1,10 @@
+    {
+      "entity_type": "minecraft:hoglin",
+      "weight": 30,
+      "strength": 12,
+      "ranks": ["support"],
+	  "tag": {
+        "IsBaby": 0
+	  },
+      "wave_range": {"min": 3}
+    }

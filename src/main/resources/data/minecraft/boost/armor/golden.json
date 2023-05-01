@@ -1,0 +1,23 @@
+{
+  "type":"faction_craft:wear_armor_boost",
+  "item_stacks": [
+    {
+      "id": "minecraft:golden_helmet",
+      "Count": 1
+    },
+    {
+      "id": "minecraft:golden_chestplate",
+      "Count": 1
+    },
+    {
+      "id": "minecraft:golden_leggings",
+      "Count": 1
+    },
+    {
+      "id": "minecraft:golden_boots",
+      "Count": 1
+    }
+  ],
+  "strength_adjustment": 4,
+  "rarity": "rare"
+}

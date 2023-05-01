@@ -1,0 +1,11 @@
+{
+  "type":"faction_craft:wear_hands_boost",
+  "item":
+    {
+      "id": "minecraft:golden_axe",
+      "Count": 1
+    },
+  "strength_adjustment": 3,
+  "boost_type":"mainhand",
+  "rarity": "rare"
+}

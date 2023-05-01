@@ -1,0 +1,20 @@
+    {
+      "entity_type": "minecraft:piglin",
+      "weight": 100,
+      "strength": 8,
+      "ranks": ["soldier","captain"],
+	  "tag": {
+        "IsBaby": 0
+	  },
+      "wave_range": {"min": 1},
+      "boosts": {
+        "mandatory": ["minecraft:hand/golden_sword"],
+
+        "rarity_overrides": [
+          {
+            "boost": "minecraft:armor/golden",
+            "rarity": "common"
+          }
+        ]
+      }
+    }
