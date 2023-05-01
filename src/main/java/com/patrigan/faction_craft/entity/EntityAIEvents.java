@@ -98,15 +98,27 @@ public class EntityAIEvents {
     }
 
     private static  <E extends LivingEntity>  ImmutableList<Pair<Integer, ? extends Behavior<? super E>>> getRaiderPackage(float speedModifier, Behavior<? super E> attackTask) {
-        return ImmutableList.of(Pair.of(0, new AcquireRaidTargetPosition<>()), Pair.of(1, new BeginRaiderRaidVillageTask()), Pair.of(1, attackTask), Pair.of(2, new RaiderSetWalkTargetFromBlockMemory<>(speedModifier, 2, 150, 200)));
+        if(attackTask != null) {
+            return ImmutableList.of(Pair.of(0, new AcquireRaidTargetPosition<>()), Pair.of(1, new BeginRaiderRaidVillageTask()), Pair.of(1, attackTask), Pair.of(2, new RaiderSetWalkTargetFromBlockMemory<>(speedModifier, 2, 150, 200)));
+        }else{
+            return ImmutableList.of(Pair.of(0, new AcquireRaidTargetPosition<>()), Pair.of(1, new BeginRaiderRaidVillageTask()), Pair.of(2, new RaiderSetWalkTargetFromBlockMemory<>(speedModifier, 2, 150, 200)));
+        }
     }
 
     private static <E extends LivingEntity>  ImmutableList<Pair<Integer, ? extends Behavior<? super E>>> getVillageRaiderPackage(float speedModifier, Behavior<? super E> attackTask) {
-        return ImmutableList.of(Pair.of(0, new AcquireVillageRaidTarget<>(2)), Pair.of(1, attackTask), Pair.of(2, new RaiderSetWalkTargetFromBlockMemory<>(speedModifier, 2, 150, 200)));
+        if(attackTask != null){
+            return ImmutableList.of(Pair.of(0, new AcquireVillageRaidTarget<>(2)), Pair.of(1, attackTask), Pair.of(2, new RaiderSetWalkTargetFromBlockMemory<>(speedModifier, 2, 150, 200)));
+        }else{
+            return ImmutableList.of(Pair.of(0, new AcquireVillageRaidTarget<>(2)), Pair.of(2, new RaiderSetWalkTargetFromBlockMemory<>(speedModifier, 2, 150, 200)));
+        }
     }
 
     private static <E extends LivingEntity> ImmutableList<? extends Pair<Integer, ? extends Behavior<? super E>>> getPatrollerPackage(float speedModifier, Behavior<? super E> attackTask) {
-        return ImmutableList.of(Pair.of(0, new AcquirePatrolTarget<>(RAID_WALK_TARGET.get(), 5)), Pair.of(1, attackTask), Pair.of(2, new RaiderSetWalkTargetFromBlockMemory<>(speedModifier, 2, 150, 200)));
+        if(attackTask != null) {
+            return ImmutableList.of(Pair.of(0, new AcquirePatrolTarget<>(RAID_WALK_TARGET.get(), 5)), Pair.of(1, attackTask), Pair.of(2, new RaiderSetWalkTargetFromBlockMemory<>(speedModifier, 2, 150, 200)));
+        }else{
+            return ImmutableList.of(Pair.of(0, new AcquirePatrolTarget<>(RAID_WALK_TARGET.get(), 5)), Pair.of(2, new RaiderSetWalkTargetFromBlockMemory<>(speedModifier, 2, 150, 200)));
+        }
     }
 
     private static Pair<Integer, Behavior<LivingEntity>> getMinimalLookBehavior() {

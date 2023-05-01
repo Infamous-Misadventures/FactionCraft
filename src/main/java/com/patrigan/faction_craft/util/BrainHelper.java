@@ -100,6 +100,7 @@ public class BrainHelper {
     }
 
     public static boolean hasBrain(Mob mob) {
-        return mob.getBrain().isActive(Activity.CORE);
+        BrainAccessor<?> brainAccessor = castToAccessor(mob.getBrain());
+        return brainAccessor.getAvailableBehaviorsByPriority().size() > 0;
     }
 }
