@@ -14,6 +14,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
@@ -29,7 +30,7 @@ import static net.minecraftforge.registries.ForgeRegistries.ENTITY_TYPES;
 
 
 public class FactionEntityType {
-    public static final FactionEntityType DEFAULT = new FactionEntityType(new ResourceLocation("minecraft:pig"), new CompoundTag(), 1, 1, List.of(FactionRank.SOLDIER), EntityBoostConfig.DEFAULT, new IntRange(0, 10000), new IntRange(0, 10000), new IntRange(0, 10000), new IntRange(-64, 320), ResourceSet.getEmpty(Registry.BIOME_REGISTRY), ResourceSet.getEmpty(Registry.BIOME_REGISTRY));
+    public static final FactionEntityType DEFAULT = new FactionEntityType(new ResourceLocation("minecraft:pig"), new CompoundTag(), 1, 1, List.of(FactionRank.SOLDIER), EntityBoostConfig.DEFAULT, new IntRange(0, 10000), new IntRange(0, 10000), Integer.MAX_VALUE, new IntRange(0, 10000), new IntRange(-64, 320), ResourceSet.getEmpty(Registry.BIOME_REGISTRY), ResourceSet.getEmpty(Registry.BIOME_REGISTRY));
     public static final Codec<FactionEntityType> CODEC = RecordCodecBuilder.create(builder ->
             builder.group(
                     ResourceLocation.CODEC.fieldOf("entity_type").forGetter(data -> data.entityType),
@@ -40,6 +41,7 @@ public class FactionEntityType {
                     EntityBoostConfig.CODEC.optionalFieldOf("boosts", EntityBoostConfig.DEFAULT).forGetter(data -> data.entityBoostConfig),
                     IntRange.getCodec(0, 10000).optionalFieldOf("wave_range", new IntRange(1, 10000)).forGetter(data -> data.waveRange),
                     IntRange.getCodec(0, 10000).optionalFieldOf("spawned_range", new IntRange(0, 10000)).forGetter(data -> data.spawnedRange),
+                    Codec.INT.optionalFieldOf("max_spawned_per_x", Integer.MAX_VALUE).forGetter(data -> data.maxSpawnedPerX),
                     IntRange.getCodec(0, 10000).optionalFieldOf("omen_range", new IntRange(0, 10000)).forGetter(data -> data.omenRange),
                     IntRange.getCodec(-10000, 10000).optionalFieldOf("y_range", new IntRange(-64, 320)).forGetter(data -> data.yRange),
                     ResourceSet.getCodec(Registry.BIOME_REGISTRY).optionalFieldOf("biome_whitelist", ResourceSet.getEmpty(Registry.BIOME_REGISTRY)).forGetter(data -> data.biomeWhitelist),
@@ -71,12 +73,13 @@ public class FactionEntityType {
     private final EntityBoostConfig entityBoostConfig;
     private final IntRange waveRange;
     private final IntRange spawnedRange;
+    private final int maxSpawnedPerX;
     private final IntRange omenRange;
     private final IntRange yRange;
     private final ResourceSet<Biome> biomeWhitelist;
     private final ResourceSet<Biome> biomeBlacklist;
 
-    public FactionEntityType(ResourceLocation entityType, CompoundTag tag, int weight, int strength, List<FactionRank> ranks, EntityBoostConfig entityBoostConfig, IntRange waveRange, IntRange spawnedRange, IntRange omenRange, IntRange yRange, ResourceSet<Biome> biomeWhitelist, ResourceSet<Biome> biomeBlacklist) {
+    public FactionEntityType(ResourceLocation entityType, CompoundTag tag, int weight, int strength, List<FactionRank> ranks, EntityBoostConfig entityBoostConfig, IntRange waveRange, IntRange spawnedRange, int maxSpawnedPerX, IntRange omenRange, IntRange yRange, ResourceSet<Biome> biomeWhitelist, ResourceSet<Biome> biomeBlacklist) {
         this.entityType = entityType;
         this.tag = tag;
         this.weight = weight;
@@ -85,6 +88,7 @@ public class FactionEntityType {
         this.entityBoostConfig = entityBoostConfig;
         this.waveRange = waveRange;
         this.spawnedRange = spawnedRange;
+        this.maxSpawnedPerX = maxSpawnedPerX <= 0 ? Integer.MAX_VALUE : maxSpawnedPerX;
         this.omenRange = omenRange;
         this.yRange = yRange;
         this.biomeWhitelist = biomeWhitelist;
@@ -108,6 +112,7 @@ public class FactionEntityType {
         this.entityBoostConfig = entityBoostConfig;
         this.waveRange = new IntRange(minimumWave, maximumWave);
         this.spawnedRange = new IntRange(minimumSpawned, maximumSpawned);
+        this.maxSpawnedPerX = Integer.MAX_VALUE;
         this.omenRange = new IntRange(minimumOmen, maximumOmen);
         this.yRange = new IntRange(-64, 320);
         this.biomeWhitelist = ResourceSet.getEmpty(Registry.BIOME_REGISTRY);
@@ -146,6 +151,7 @@ public class FactionEntityType {
                             compoundNbt.getInt("maximumWave")),
                     new IntRange(compoundNbt.getInt("minimumSpawned"),
                             compoundNbt.getInt("maximumSpawned")),
+                    Integer.MAX_VALUE,
                     new IntRange(compoundNbt.getInt("minimumOmen"),
                             compoundNbt.getInt("maximumOmen")),
                     new IntRange(-64, 320),
@@ -181,6 +187,10 @@ public class FactionEntityType {
 
     public IntRange getSpawnedRange() {
         return spawnedRange;
+    }
+
+    public int getMaxSpawnedPerX() {
+        return maxSpawnedPerX;
     }
 
     public IntRange getOmenRange() {
@@ -244,6 +254,9 @@ public class FactionEntityType {
     public boolean hasRanks(List<FactionRank> requiredRanks) {
         List<FactionRank> possibleRanks = getRanks();
         return requiredRanks.stream().anyMatch(possibleRanks::contains);
+    }
+    public int getMaxSpawned(int totalSpawned) {
+        return getSpawnedRange().getMax() * Mth.ceil(totalSpawned / (float) getMaxSpawnedPerX());
     }
 
     public Entity createEntity(ServerLevel level, Faction faction, BlockPos spawnBlockPos, boolean bannerHolder, MobSpawnType spawnReason) {

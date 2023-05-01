@@ -68,10 +68,10 @@ public class FactionMountBoost extends Boost {
             } else {
                 List<Pair<FactionEntityType, Integer>> weightMap = cap.getFaction().getWeightMapForRank(FactionEntityType.FactionRank.MOUNT).stream().filter(pair -> pair.getFirst().getEntityType().equals(entityTypeLocation)).collect(Collectors.toList());
                 Raider raiderCap = RaiderHelper.getRaiderCapability(mob);
-                if (raiderCap != null && raiderCap.hasActiveRaid()) {
+                if (raiderCap.hasActiveRaid()) {
                     weightMap = weightMap.stream()
                             .filter(pair -> pair.getFirst().canSpawnInWave(raiderCap.getWave()))
-                            .filter(pair -> pair.getFirst().getSpawnedRange().max() > raiderCap.getRaid().getRaidersInWave(raiderCap.getWave()).stream()
+                            .filter(pair -> pair.getFirst().getMaxSpawned(raiderCap.getRaid().getRaidersInWave(raiderCap.getWave()).size()) > raiderCap.getRaid().getRaidersInWave(raiderCap.getWave()).stream()
                                     .filter(entity -> FactionEntityHelper.getFactionEntityCapability(entity).getFactionEntityType() != null && FactionEntityHelper.getFactionEntityCapability(entity).getFactionEntityType().equals(pair.getFirst()))
                                     .count())
                             .collect(Collectors.toList());
@@ -81,7 +81,7 @@ public class FactionMountBoost extends Boost {
                 }
                 FactionEntityType randomEntry = GeneralUtils.getRandomEntry(weightMap, mob.getRandom());
                 Entity entity = randomEntry.createEntity(level, cap.getFaction(), livingEntity.blockPosition(), false, MobSpawnType.JOCKEY);
-                if(raiderCap != null && raiderCap.hasActiveRaid() && entity instanceof Mob mountMob){
+                if(raiderCap.hasActiveRaid() && entity instanceof Mob mountMob){
                     raiderCap.getRaid().addWaveMob(raiderCap.getWave(), mountMob, true);
                 }
                 if(entity instanceof AbstractHorse horse) {
@@ -109,10 +109,10 @@ public class FactionMountBoost extends Boost {
             }
             List<Pair<FactionEntityType, Integer>> weightMap = cap.getFaction().getWeightMapForRank(FactionEntityType.FactionRank.MOUNT).stream().filter(pair -> pair.getFirst().getEntityType().equals(entityTypeLocation)).collect(Collectors.toList());
             Raider raiderCap = RaiderHelper.getRaiderCapability(mob);
-            if (raiderCap != null && raiderCap.hasActiveRaid()) {
+            if (raiderCap.hasActiveRaid()) {
                 weightMap = weightMap.stream()
                         .filter(pair -> pair.getFirst().canSpawnInWave(raiderCap.getWave()))
-                        .filter(pair -> pair.getFirst().getSpawnedRange().getMax() > raiderCap.getRaid().getRaidersInWave(raiderCap.getWave()).stream()
+                        .filter(pair -> pair.getFirst().getMaxSpawned(raiderCap.getRaid().getRaidersInWave(raiderCap.getWave()).size()) > raiderCap.getRaid().getRaidersInWave(raiderCap.getWave()).stream()
                                 .filter(entity -> FactionEntityHelper.getFactionEntityCapability(entity).getFactionEntityType() != null && FactionEntityHelper.getFactionEntityCapability(entity).getFactionEntityType().equals(pair.getFirst()))
                                 .count())
                         .collect(Collectors.toList());
