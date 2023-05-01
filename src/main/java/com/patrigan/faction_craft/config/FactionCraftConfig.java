@@ -92,9 +92,9 @@ public class FactionCraftConfig {
                             "Default: The internal skeleton test faction. ")
                     .defineList("disabledFactions", Arrays.asList(MODID+":skeleton_test", MODID+":slime_test"), o -> o instanceof String);
             ENABLE_DEFAULT_FACTION = builder
-                    .comment("Enables default faction for entities \n" +
-                            "Default false")
-                    .define("enableDefaultFaction", false);
+                    .comment("Enables default faction for entities. Turning this off might cause some mobs to no longer attack villagers. \n" +
+                            "Default true")
+                    .define("enableDefaultFaction", true);
             builder.pop();
         }
 
