@@ -46,7 +46,7 @@ public class PatrolSpawner implements CustomSpawner {
          } else {
             this.nextTick += FactionCraftConfig.PATROL_TICK_DELAY_BETWEEN_SPAWN_ATTEMPTS.get() + random.nextInt(FactionCraftConfig.PATROL_VARIABLE_TICK_DELAY_BETWEEN_SPAWN_ATTEMPTS.get());
             if (pLevel.getDayTime() >= FactionCraftConfig.PATROL_DAYTIME_BEFORE_SPAWNING.get() && pLevel.isDay()) {
-               if (random.nextFloat() <= FactionCraftConfig.PATROL_SPAWN_CHANCE_ON_SPAWN_ATTEMPT.get()) {
+               if (random.nextFloat() > FactionCraftConfig.PATROL_SPAWN_CHANCE_ON_SPAWN_ATTEMPT.get()) {
                   return 0;
                } else {
                   int j = pLevel.players().size();
@@ -84,6 +84,7 @@ public class PatrolSpawner implements CustomSpawner {
    }
 
    public static int spawnPatrol(ServerLevel pLevel, RandomSource random, Faction faction, BlockPos blockpos) {
+      if(faction == null) return 0;
       BlockPos.MutableBlockPos mutableBlockPos = blockpos.mutable();
       int i1 = 0;
       int j1 = (int)Math.ceil(pLevel.getCurrentDifficultyAt(mutableBlockPos).getEffectiveDifficulty()) + 1;

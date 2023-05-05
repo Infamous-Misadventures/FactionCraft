@@ -1,4 +1,9 @@
 # Changelog
+## [1.19.2-1.3.2] - 2023-05-01
+### Bugfixes / Tweaks
+- Fixed crash due to null sound event
+- Fixed crashes when there are no avaialble factions
+- Changed default for raid config to enabled
 
 ## [1.19.2-1.3.1] - 2023-05-01
 ### Bugfixes / Tweaks

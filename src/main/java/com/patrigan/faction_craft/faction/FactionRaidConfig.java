@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public class FactionRaidConfig {
     public static final float DEFAULT_MOBS_FRACTION = 0.7F;
-    public static final FactionRaidConfig DEFAULT = new FactionRaidConfig(false, "event.minecraft.raid", "event.minecraft.raid.victory", "event.minecraft.raid.defeat", DEFAULT_MOBS_FRACTION, Optional.of(SoundEvents.RAID_HORN), null, Optional.of(SoundEvents.RAID_HORN));
+    public static final FactionRaidConfig DEFAULT = new FactionRaidConfig(true, "event.minecraft.raid", "event.minecraft.raid.victory", "event.minecraft.raid.defeat", DEFAULT_MOBS_FRACTION, Optional.of(SoundEvents.RAID_HORN), Optional.empty(), Optional.of(SoundEvents.RAID_HORN));
 
     public static final Codec<FactionRaidConfig> CODEC = RecordCodecBuilder.create(builder ->
             builder.group(
