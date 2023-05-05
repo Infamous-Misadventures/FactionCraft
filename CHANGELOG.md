@@ -1,5 +1,9 @@
 # Changelog
-## [1.19.2-1.3.2] - 2023-05-01
+## [1.19.2-1.3.2] - 2023-05-XX
+### Bugfixes / Tweaks
+- Made ReconstructBlocks only collidable when creative and crouching.
+
+## [1.19.2-1.3.2] - 2023-05-05
 ### Bugfixes / Tweaks
 - Fixed crash due to null sound event
 - Fixed crashes when there are no avaialble factions
