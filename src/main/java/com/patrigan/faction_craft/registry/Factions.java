@@ -90,7 +90,7 @@ public class Factions {
 
 
     public static Faction getFaction(ResourceLocation factionResourceLocation){
-        return getFactionData().getOrDefault(factionResourceLocation, Faction.DEFAULT);
+        return getFactionData().getOrDefault(factionResourceLocation, Faction.GAIA);
     }
 
     public static boolean factionExists(ResourceLocation factionResourceLocation){
@@ -115,10 +115,6 @@ public class Factions {
         return level.getServer().getPlayerList().getPlayers().stream().anyMatch(serverPlayerEntity -> serverPlayerEntity.getAdvancements().getOrStartProgress(advancement).isDone());
     }
 
-    public static Faction getDefaultFaction(){
-        return FACTION_DATA.getData().get(new ResourceLocation("illager"));
-    }
-
     public static Faction getRandomFaction(ServerLevel level, RandomSource random, Predicate<Faction> predicate) {
         List<Faction> possibleFactions = getActiveFactions(level).stream().filter(predicate).collect(Collectors.toList());
         return GeneralUtils.getRandomItem(possibleFactions, random);
@@ -131,6 +127,7 @@ public class Factions {
     }
 
     public static ResourceLocation getKey(Faction faction){
+        if(Faction.GAIA.equals(faction)) return Faction.GAIA.getName();
         return FACTION_DATA.getData().entrySet().stream().filter(entry -> entry.getValue().equals(faction)).map(Map.Entry::getKey).findFirst().orElse(null);
     }
 

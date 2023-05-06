@@ -80,9 +80,6 @@ public class Raid {
     public Raid(int uniqueId, List<Faction> factions, ServerLevel level, RaidTarget raidTarget) {
         this.id = uniqueId;
         this.factions = factions;
-        if (this.factions.isEmpty()) {
-            this.factions.add(Factions.getDefaultFaction());
-        }
         this.level = level;
         this.raidTarget = raidTarget;
         this.numGroups = this.getNumGroups(level.getDifficulty(), raidTarget);
@@ -105,9 +102,6 @@ public class Raid {
                 Faction faction = Factions.getFaction(factionName);
                 this.factions.add(faction);
             }
-        }
-        if (this.factions.isEmpty()) {
-            this.factions.add(Factions.getDefaultFaction());
         }
         this.raidTarget = RaidTargetHelper.load(level, compoundNBT.getCompound("RaidTarget"));
         this.raidEvent.setName(getRaidEventName(this.raidTarget));
@@ -163,6 +157,9 @@ public class Raid {
 
     public void tick() {
         if (!this.isStopped()) {
+            if(this.factions.isEmpty()){
+                this.stop();
+            }
             if (this.status == Status.ONGOING) {
                 boolean flag = this.active;
                 this.active = this.level.hasChunkAt(this.raidTarget.getTargetBlockPos());

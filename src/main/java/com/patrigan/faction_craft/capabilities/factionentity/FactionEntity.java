@@ -16,7 +16,7 @@ import static com.patrigan.faction_craft.capabilities.ModCapabilities.FACTION_EN
 public class FactionEntity implements INBTSerializable<CompoundTag> {
 
     private Mob entity;
-    private Faction faction = null;
+    private Faction faction = Faction.GAIA;
     private FactionEntityType factionEntityType;
     private BlockPos targetPosition = null;
     private LivingEntity nearestDamagedFactionAlly;

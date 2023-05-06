@@ -22,6 +22,7 @@ import static com.patrigan.faction_craft.FactionCraft.MODID;
 
 public class Faction {
     public static final Faction DEFAULT = new Faction(new ResourceLocation("faction/default"), false, new CompoundTag(), FactionRaidConfig.DEFAULT, FactionBoostConfig.DEFAULT, FactionRelations.DEFAULT, Collections.emptyList(), new ResourceLocation(MODID, "default"), ResourceSet.getEmpty(Registry.ENTITY_TYPE_REGISTRY));
+    public static final Faction GAIA = new Faction(new ResourceLocation("faction/gaia"), false, new CompoundTag(), FactionRaidConfig.DEFAULT, FactionBoostConfig.DEFAULT, FactionRelations.DEFAULT, Collections.emptyList(), new ResourceLocation(MODID, "default"), ResourceSet.getEmpty(Registry.ENTITY_TYPE_REGISTRY));
 
     public static final Codec<Faction> CODEC = RecordCodecBuilder.create(builder ->
             builder.group(
