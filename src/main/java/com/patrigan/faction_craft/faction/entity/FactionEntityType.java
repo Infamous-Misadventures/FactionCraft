@@ -30,11 +30,13 @@ import static net.minecraftforge.registries.ForgeRegistries.ENTITY_TYPES;
 
 
 public class FactionEntityType {
-    public static final FactionEntityType DEFAULT = new FactionEntityType(new ResourceLocation("minecraft:pig"), new CompoundTag(), 1, 1, List.of(FactionRank.SOLDIER), EntityBoostConfig.DEFAULT, new IntRange(0, 10000), new IntRange(0, 10000), Integer.MAX_VALUE, new IntRange(0, 10000), new IntRange(-64, 320), ResourceSet.getEmpty(Registry.BIOME_REGISTRY), ResourceSet.getEmpty(Registry.BIOME_REGISTRY));
+    public static final FactionEntityType DEFAULT = new FactionEntityType(new ResourceLocation("minecraft:pig"), new CompoundTag(), false, true, 1, 1, List.of(FactionRank.SOLDIER), EntityBoostConfig.DEFAULT, new IntRange(0, 10000), new IntRange(0, 10000), Integer.MAX_VALUE, new IntRange(0, 10000), new IntRange(-64, 320), ResourceSet.getEmpty(Registry.BIOME_REGISTRY), ResourceSet.getEmpty(Registry.BIOME_REGISTRY));
     public static final Codec<FactionEntityType> CODEC = RecordCodecBuilder.create(builder ->
             builder.group(
                     ResourceLocation.CODEC.fieldOf("entity_type").forGetter(data -> data.entityType),
                     CompoundTag.CODEC.optionalFieldOf("tag", new CompoundTag()).forGetter(data -> data.tag),
+                    Codec.BOOL.optionalFieldOf("tag_first", false).forGetter(data -> data.tagFirst),
+                    Codec.BOOL.optionalFieldOf("should_finalize_spawn", true).forGetter(data -> data.shouldFinalizeSpawn),
                     Codec.INT.fieldOf("weight").forGetter(data -> data.weight),
                     Codec.INT.fieldOf("strength").forGetter(data -> data.strength),
                     FactionRank.CODEC.listOf().fieldOf("ranks").forGetter(data -> data.ranks),
@@ -67,6 +69,8 @@ public class FactionEntityType {
 
     private final ResourceLocation entityType;
     private final CompoundTag tag;
+    private final boolean tagFirst;
+    private final boolean shouldFinalizeSpawn;
     private final int weight;
     private final int strength;
     private final List<FactionRank> ranks;
@@ -79,9 +83,11 @@ public class FactionEntityType {
     private final ResourceSet<Biome> biomeWhitelist;
     private final ResourceSet<Biome> biomeBlacklist;
 
-    public FactionEntityType(ResourceLocation entityType, CompoundTag tag, int weight, int strength, List<FactionRank> ranks, EntityBoostConfig entityBoostConfig, IntRange waveRange, IntRange spawnedRange, int maxSpawnedPerX, IntRange omenRange, IntRange yRange, ResourceSet<Biome> biomeWhitelist, ResourceSet<Biome> biomeBlacklist) {
+    public FactionEntityType(ResourceLocation entityType, CompoundTag tag, boolean tagFirst, boolean shouldFinalizeSpawn, int weight, int strength, List<FactionRank> ranks, EntityBoostConfig entityBoostConfig, IntRange waveRange, IntRange spawnedRange, int maxSpawnedPerX, IntRange omenRange, IntRange yRange, ResourceSet<Biome> biomeWhitelist, ResourceSet<Biome> biomeBlacklist) {
         this.entityType = entityType;
         this.tag = tag;
+        this.tagFirst = tagFirst;
+        this.shouldFinalizeSpawn = shouldFinalizeSpawn;
         this.weight = weight;
         this.strength = strength;
         this.ranks = ranks;
@@ -98,6 +104,8 @@ public class FactionEntityType {
     public FactionEntityType(ResourceLocation entityType, CompoundTag tag, int weight, int strength, FactionRank rank, FactionRank maximumRank, EntityBoostConfig entityBoostConfig, int minimumWave, int maximumWave, int minimumSpawned, int maximumSpawned, int minimumOmen, int maximumOmen) {
         this.entityType = entityType;
         this.tag = tag;
+        this.tagFirst = false;
+        this.shouldFinalizeSpawn = true;
         this.weight = weight;
         this.strength = strength;
         this.ranks = new ArrayList<>();
@@ -143,6 +151,8 @@ public class FactionEntityType {
             return new FactionEntityType(
                     new ResourceLocation(compoundNbt.getString("entityType")),
                     compoundNbt.getCompound("tag"),
+                    false,
+                    true,
                     compoundNbt.getInt("weight"),
                     compoundNbt.getInt("strength"),
                     ranks,
@@ -262,13 +272,7 @@ public class FactionEntityType {
     public Entity createEntity(ServerLevel level, Faction faction, BlockPos spawnBlockPos, boolean bannerHolder, MobSpawnType spawnReason) {
         EntityType<?> entityType = ENTITY_TYPES.getValue(this.getEntityType());
         Entity entity;
-        if (!this.getTag().isEmpty()) {
-            CompoundTag compoundnbt = this.getTag().copy();
-            compoundnbt.putString("id", this.getEntityType().toString());
-            entity = EntityType.loadEntityRecursive(compoundnbt, level, createdEntity -> createdEntity);
-        } else {
-            entity = entityType.create(level);
-        }
+        entity = entityType.create(level);
         if (entity == null) {
             return null;
         }
@@ -279,9 +283,9 @@ public class FactionEntityType {
             }
             if (net.minecraftforge.common.ForgeHooks.canEntitySpawn(mobEntity, level, spawnBlockPos.getX(), spawnBlockPos.getY(), spawnBlockPos.getZ(), null, spawnReason) == -1)
                 return null;
-            if (this.getTag().isEmpty()) {
-                mobEntity.finalizeSpawn(level, level.getCurrentDifficultyAt(spawnBlockPos), MobSpawnType.EVENT, null, null);
-            }
+            if(tagFirst) mergeTag(entity, this.getTag());
+            if(shouldFinalizeSpawn)  mobEntity.finalizeSpawn(level, level.getCurrentDifficultyAt(spawnBlockPos), MobSpawnType.EVENT, null, null);
+            if(!tagFirst) mergeTag(entity, this.getTag());
             if(mobEntity.getNavigation() instanceof GroundPathNavigation groundPathNavigation) {
                 groundPathNavigation.setCanOpenDoors(true);
             }
@@ -300,6 +304,14 @@ public class FactionEntityType {
 
         level.addFreshEntityWithPassengers(entity.getRootVehicle());
         return entity;
+    }
+
+    private void mergeTag(Entity entity, CompoundTag tag) {
+        if(tag.isEmpty()) return;
+        CompoundTag toLoad = new CompoundTag();
+        entity.save(toLoad);
+        toLoad = toLoad.merge(tag);
+        entity.load(toLoad);
     }
 
     public CompoundTag save(CompoundTag compoundNbt) {
