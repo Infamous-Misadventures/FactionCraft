@@ -11,6 +11,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.util.INBTSerializable;
 
+import java.util.Objects;
+
 import static com.patrigan.faction_craft.capabilities.ModCapabilities.FACTION_ENTITY_CAPABILITY;
 
 public class FactionEntity implements INBTSerializable<CompoundTag> {
@@ -51,7 +53,7 @@ public class FactionEntity implements INBTSerializable<CompoundTag> {
     }
 
     public void setFaction(Faction faction) {
-        this.faction = faction;
+        this.faction = Objects.requireNonNullElse(faction, Faction.GAIA);
     }
 
     public BlockPos getTargetPosition() {

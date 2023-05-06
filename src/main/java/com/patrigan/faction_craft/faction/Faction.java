@@ -31,7 +31,7 @@ public class Faction {
                     CompoundTag.CODEC.fieldOf("banner").forGetter(Faction::getBanner),
                     FactionRaidConfig.CODEC.optionalFieldOf("raid_config", FactionRaidConfig.DEFAULT).forGetter(Faction::getRaidConfig),
                     FactionBoostConfig.CODEC.optionalFieldOf("boosts", FactionBoostConfig.DEFAULT).forGetter(Faction::getBoostConfig),
-                    FactionRelations.CODEC.optionalFieldOf("relations", FactionRelations.DEFAULT).forGetter(Faction::getRelations),
+                    FactionRelations.CODEC_OLD.optionalFieldOf("relations", FactionRelations.DEFAULT).forGetter(Faction::getRelations),
                     FactionEntityType.CODEC_OLD.listOf().optionalFieldOf("entities", new ArrayList<>()).forGetter(Faction::getEntityTypes),
                     ResourceLocation.CODEC.optionalFieldOf("activation_advancement", new ResourceLocation(MODID, "activation_advancement")).forGetter(Faction::getActivationAdvancement),
                     ResourceSet.getCodec(Registry.ENTITY_TYPE_REGISTRY).optionalFieldOf("default_entities", ResourceSet.getEmpty(Registry.ENTITY_TYPE_REGISTRY)).forGetter(data -> data.defaultEntities)
@@ -126,6 +126,12 @@ public class Faction {
     public void addEntityTypes(Collection<FactionEntityType> factionEntityTypes) {
         entityTypes = new ArrayList<>(entityTypes);
         entityTypes.addAll(factionEntityTypes);
+    }
+
+    public boolean isAllyOf(Faction entityFaction) {
+        if (entityFaction == null)
+            return false;
+        return relations.isAllyOf(entityFaction);
     }
 
     public boolean isEnemyOf(Faction entityFaction) {
