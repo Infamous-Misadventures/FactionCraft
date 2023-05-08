@@ -3,8 +3,10 @@ package com.patrigan.faction_craft.faction;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.patrigan.faction_craft.capabilities.savedfactiondata.FactionData;
 import com.patrigan.faction_craft.data.ResourceSet;
 import com.patrigan.faction_craft.faction.entity.FactionEntityType;
+import com.patrigan.faction_craft.faction.relations.FactionRelations;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -138,5 +140,9 @@ public class Faction {
         if (entityFaction == null)
             return false;
         return relations.isEnemyOf(entityFaction);
+    }
+
+    public FactionData toFactionData() {
+        return new FactionData(name, relations);
     }
 }

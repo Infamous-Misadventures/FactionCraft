@@ -6,12 +6,14 @@ import com.patrigan.faction_craft.capabilities.factionentity.AttacherFactionEnti
 import com.patrigan.faction_craft.capabilities.factionentity.FactionEntity;
 import com.patrigan.faction_craft.capabilities.factioninteraction.AttacherFactionInteraction;
 import com.patrigan.faction_craft.capabilities.factioninteraction.FactionInteraction;
+import com.patrigan.faction_craft.capabilities.savedfactiondata.AttacherSavedFactionData;
 import com.patrigan.faction_craft.capabilities.patroller.AttacherPatroller;
 import com.patrigan.faction_craft.capabilities.patroller.Patroller;
 import com.patrigan.faction_craft.capabilities.raider.AttacherRaider;
 import com.patrigan.faction_craft.capabilities.raider.Raider;
 import com.patrigan.faction_craft.capabilities.raidmanager.AttacherRaidManager;
 import com.patrigan.faction_craft.capabilities.raidmanager.RaidManager;
+import com.patrigan.faction_craft.capabilities.savedfactiondata.SavedFactionData;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.MinecraftForge;
@@ -34,6 +36,7 @@ public class ModCapabilities {
     public static final Capability<Patroller> PATROLLER_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {});
     public static final Capability<Raider> RAIDER_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {});
     public static final Capability<RaidManager> RAID_MANAGER_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {});
+    public static final Capability<SavedFactionData> SAVED_FACTION_DATA_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {});
 
 
     public static void setupCapabilities() {
@@ -44,6 +47,7 @@ public class ModCapabilities {
         forgeBus.addGenericListener(Entity.class, AttacherPatroller::attach);
         forgeBus.addGenericListener(Entity.class, AttacherRaider::attach);
         forgeBus.addGenericListener(Level.class, AttacherRaidManager::attach);
+        forgeBus.addGenericListener(Level.class, AttacherSavedFactionData::attach);
     }
 
     @SubscribeEvent
@@ -54,5 +58,6 @@ public class ModCapabilities {
         event.register(Patroller.class);
         event.register(Raider.class);
         event.register(RaidManager.class);
+        event.register(SavedFactionData.class);
     }
 }

@@ -7,12 +7,10 @@ import com.patrigan.faction_craft.data.util.MergeableCodecDataManager;
 import com.patrigan.faction_craft.faction.Faction;
 import com.patrigan.faction_craft.faction.FactionBoostConfig;
 import com.patrigan.faction_craft.faction.FactionRaidConfig;
-import com.patrigan.faction_craft.faction.FactionRelations;
+import com.patrigan.faction_craft.faction.relations.FactionRelations;
 import com.patrigan.faction_craft.faction.entity.FactionEntityType;
 import com.patrigan.faction_craft.util.GeneralUtils;
 import net.minecraft.advancements.Advancement;
-import net.minecraft.core.Holder;
-import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -26,11 +24,13 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.patrigan.faction_craft.FactionCraft.LOGGER;
+import static com.patrigan.faction_craft.FactionCraft.MODID;
 import static com.patrigan.faction_craft.config.FactionCraftConfig.DISABLED_FACTIONS;
 
 public class Factions {
 
     public static final MergeableCodecDataManager<Faction, Faction> FACTION_DATA = new MergeableCodecDataManager<>("faction", Faction.CODEC, Factions::factionMerger);
+    public static final Map<UUID, Faction> PLAYER_FACTIONS = new HashMap<>();
 
     public static Faction factionMerger(List<Faction> raws, ResourceLocation id){
         ResourceLocation name = null;
@@ -138,5 +138,9 @@ public class Factions {
                 .filter(entry -> entry.getValue().getRelations().getEnemies().contains(getKey(faction)))
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
+    }
+
+    public static void addPlayerFactions() {
+        PLAYER_FACTIONS.forEach((uuid, faction) -> FACTION_DATA.getData().put(new ResourceLocation(MODID, uuid.toString()), faction));
     }
 }
