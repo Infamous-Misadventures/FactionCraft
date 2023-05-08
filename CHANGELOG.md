@@ -1,7 +1,10 @@
 # Changelog
-## [1.19.2-1.3.2] - 2023-05-XX
+## [1.19.2-1.3.3] - 2023-05-XX
+### Minor Features
+- Implemented a rudimentary Reputation system in factions. Currently without any way to influence it.
 ### Bugfixes / Tweaks
 - Made ReconstructBlocks only collidable when creative and crouching.
+- Made Armor and hand boosts support a ResourceSet of applicable entities
 
 ## [1.19.2-1.3.2] - 2023-05-05
 ### Bugfixes / Tweaks
