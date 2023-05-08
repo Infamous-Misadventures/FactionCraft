@@ -2,11 +2,10 @@ package com.patrigan.faction_craft.boost;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.patrigan.faction_craft.data.ResourceSet;
+import net.minecraft.core.Registry;
 import net.minecraft.world.Difficulty;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.PathfinderMob;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.world.entity.ai.goal.RangedBowAttackGoal;
@@ -30,20 +29,23 @@ public class WearHandsBoost extends Boost {
             ItemStack.CODEC.optionalFieldOf("item", null).forGetter(WearHandsBoost::getItem),
             Codec.INT.optionalFieldOf("strength_adjustment", 1).forGetter(WearHandsBoost::getStrengthAdjustment),
             BoostType.CODEC.optionalFieldOf("boost_type", MAINHAND).forGetter(WearHandsBoost::getType),
-            Rarity.CODEC.fieldOf("rarity").forGetter(WearHandsBoost::getRarity)
+            Rarity.CODEC.fieldOf("rarity").forGetter(WearHandsBoost::getRarity),
+            ResourceSet.getCodec(Registry.ENTITY_TYPE_REGISTRY).optionalFieldOf("allowed_entities", ResourceSet.getEmpty(Registry.ENTITY_TYPE_REGISTRY)).forGetter(WearHandsBoost::getAllowedEntities)
     ).apply(instance, WearHandsBoost::new));
 
     private final ItemStack item;
     private final int strengthAdjustment;
     private final BoostType boostType;
     private final Rarity rarity;
+    private final ResourceSet<EntityType<?>> allowedEntities;
 
-    public WearHandsBoost(ItemStack item, int strengthAdjustment, BoostType boostType, Rarity rarity) {
+    public WearHandsBoost(ItemStack item, int strengthAdjustment, BoostType boostType, Rarity rarity, ResourceSet<EntityType<?>> allowedEntities) {
         super();
         this.item = item;
         this.strengthAdjustment = strengthAdjustment;
         this.boostType = boostType;
         this.rarity = rarity;
+        this.allowedEntities = allowedEntities;
     }
 
     public ItemStack getItem() {
@@ -69,6 +71,10 @@ public class WearHandsBoost extends Boost {
         return rarity;
     }
 
+    public ResourceSet<EntityType<?>> getAllowedEntities() {
+        return allowedEntities;
+    }
+
     @Override
     public int apply(LivingEntity livingEntity) {
         if (!canApply(livingEntity)) {
@@ -88,7 +94,7 @@ public class WearHandsBoost extends Boost {
 
     @Override
     public boolean canApply(LivingEntity livingEntity) {
-        return livingEntity instanceof Mob;
+        return livingEntity instanceof Mob && allowedEntities.emptyOrContains(livingEntity.getType());
     }
 
     @Override

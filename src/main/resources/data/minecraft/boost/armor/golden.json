@@ -19,5 +19,6 @@
     }
   ],
   "strength_adjustment": 4,
-  "rarity": "rare"
+  "rarity": "rare",
+  "allowed_entities": ["#faction_craft:can_wear_armor"]
 }

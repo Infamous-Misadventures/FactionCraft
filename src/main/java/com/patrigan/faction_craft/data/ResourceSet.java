@@ -58,6 +58,10 @@ public class ResourceSet<T> {
         return this.getObjects().contains(object) || this.getTags().stream().anyMatch(tag -> TagHelper.isTaggedAs(object, tag, currentServer.registryAccess()));
     }
 
+    public boolean emptyOrContains(T object) {
+        return this.isEmpty() || this.contains(object);
+    }
+
     private List<T> getObjects() {
         MinecraftServer currentServer = ServerLifecycleHooks.getCurrentServer();
         if (this.objects == null && currentServer != null) {

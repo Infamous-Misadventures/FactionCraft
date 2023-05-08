@@ -7,5 +7,6 @@
     },
   "strength_adjustment": 5,
   "boost_type":"mainhand",
-  "rarity": "very_rare"
+  "rarity": "very_rare",
+  "allowed_entities": ["#faction_craft:can_use_melee_weapon"]
 }
