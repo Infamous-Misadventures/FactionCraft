@@ -177,4 +177,8 @@ public class MergeableCodecDataManager<RAW, FINE> extends SimplePreparableReload
             channel.send(target, packet);
         };
     }
+
+    public void addData(ResourceLocation name, FINE faction) {
+        this.data = ImmutableMap.<ResourceLocation, FINE>builder().putAll(this.data).put(name, faction).build();
+    }
 }

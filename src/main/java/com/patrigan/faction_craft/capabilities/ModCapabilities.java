@@ -6,6 +6,8 @@ import com.patrigan.faction_craft.capabilities.factionentity.AttacherFactionEnti
 import com.patrigan.faction_craft.capabilities.factionentity.FactionEntity;
 import com.patrigan.faction_craft.capabilities.factioninteraction.AttacherFactionInteraction;
 import com.patrigan.faction_craft.capabilities.factioninteraction.FactionInteraction;
+import com.patrigan.faction_craft.capabilities.playerfactions.AttacherPlayerFactions;
+import com.patrigan.faction_craft.capabilities.playerfactions.PlayerFactions;
 import com.patrigan.faction_craft.capabilities.savedfactiondata.AttacherSavedFactionData;
 import com.patrigan.faction_craft.capabilities.patroller.AttacherPatroller;
 import com.patrigan.faction_craft.capabilities.patroller.Patroller;
@@ -37,6 +39,7 @@ public class ModCapabilities {
     public static final Capability<Raider> RAIDER_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {});
     public static final Capability<RaidManager> RAID_MANAGER_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {});
     public static final Capability<SavedFactionData> SAVED_FACTION_DATA_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {});
+    public static final Capability<PlayerFactions> PLAYER_FACTIONS_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {});
 
 
     public static void setupCapabilities() {
@@ -48,6 +51,7 @@ public class ModCapabilities {
         forgeBus.addGenericListener(Entity.class, AttacherRaider::attach);
         forgeBus.addGenericListener(Level.class, AttacherRaidManager::attach);
         forgeBus.addGenericListener(Level.class, AttacherSavedFactionData::attach);
+        forgeBus.addGenericListener(Level.class, AttacherPlayerFactions::attach);
     }
 
     @SubscribeEvent
@@ -59,5 +63,6 @@ public class ModCapabilities {
         event.register(Raider.class);
         event.register(RaidManager.class);
         event.register(SavedFactionData.class);
+        event.register(PlayerFactions.class);
     }
 }

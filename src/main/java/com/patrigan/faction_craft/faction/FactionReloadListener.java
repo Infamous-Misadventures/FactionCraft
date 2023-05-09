@@ -1,10 +1,13 @@
 package com.patrigan.faction_craft.faction;
 
 import com.patrigan.faction_craft.FactionCraft;
+import com.patrigan.faction_craft.capabilities.playerfactions.PlayerFactions;
+import com.patrigan.faction_craft.capabilities.playerfactions.PlayerFactionsHelper;
 import com.patrigan.faction_craft.capabilities.savedfactiondata.SavedFactionData;
 import com.patrigan.faction_craft.capabilities.savedfactiondata.SavedFactionDataHelper;
 import com.patrigan.faction_craft.faction.entity.FactionEntityType;
 import com.patrigan.faction_craft.registry.FactionEntityTypes;
+import com.patrigan.faction_craft.registry.Factions;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -39,7 +42,12 @@ public class FactionReloadListener implements ResourceManagerReloadListener {
             updateInitialRelationships(faction);
             updateActualRelationships(faction);
         });
-//        Factions.addPlayerFactions();
+        addPlayerFactions();
+    }
+
+    private void addPlayerFactions() {
+        PlayerFactions playerFactions = PlayerFactionsHelper.getPlayerFactions();
+        playerFactions.getPlayerFactions().forEach((uuid, playerFaction) -> Factions.addPlayerFaction(playerFaction.getFaction()));
     }
 
     private void updateActualRelationships(Faction faction) {

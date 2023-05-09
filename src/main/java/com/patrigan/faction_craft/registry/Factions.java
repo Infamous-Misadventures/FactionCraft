@@ -17,6 +17,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.player.Player;
 
 import java.util.*;
 import java.util.function.Predicate;
@@ -140,7 +141,13 @@ public class Factions {
                 .collect(Collectors.toList());
     }
 
-    public static void addPlayerFactions() {
-        PLAYER_FACTIONS.forEach((uuid, faction) -> FACTION_DATA.getData().put(new ResourceLocation(MODID, uuid.toString()), faction));
+    public static void addPlayerFaction(Faction faction) {
+        FACTION_DATA.addData(faction.getName(), faction);
+    }
+
+    public static Faction createPlayerFaction(Player player){
+        Faction faction = new Faction(new ResourceLocation(MODID, "player/" + player.getName().getString().toLowerCase()), false, new CompoundTag(), FactionRaidConfig.PLAYER, FactionBoostConfig.DEFAULT, FactionRelations.DEFAULT, Collections.emptyList(), new ResourceLocation(MODID, "default"), ResourceSet.getEmpty(Registry.ENTITY_TYPE_REGISTRY));
+        addPlayerFaction(faction);
+        return faction;
     }
 }
