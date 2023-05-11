@@ -72,4 +72,8 @@ public class PlayerFactions implements INBTSerializable<CompoundTag> {
             dataresult.resultOrPartial(FactionCraft.LOGGER::error).ifPresent(playerFactions -> this.setPlayerFactions(playerFactions.getPlayerFactions()));
         }
     }
+
+    public Faction getPlayerFaction(Player player) {
+        return this.playerFactions.get(player.getUUID()).getFaction();
+    }
 }

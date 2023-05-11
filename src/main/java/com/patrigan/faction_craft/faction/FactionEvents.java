@@ -8,12 +8,17 @@ import com.patrigan.faction_craft.registry.Factions;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 import static com.patrigan.faction_craft.FactionCraft.MODID;
+import static com.patrigan.faction_craft.registry.Factions.reloadPlayerFactions;
+import static net.minecraft.world.level.Level.OVERWORLD;
 
 @Mod.EventBusSubscriber(modid = MODID)
 public class FactionEvents {
@@ -40,6 +45,18 @@ public class FactionEvents {
             Faction faction = Factions.createPlayerFaction(player);
             playerFactions.addPlayerFaction(player, faction);
         }
-//        FactionEntityHelper.getFactionEntityCapability(player).setFaction(playerFactions.getPlayerFaction(player));
+        FactionEntity factionEntityCapability = FactionEntityHelper.getFactionEntityCapability(player);
+        if(!factionEntityCapability.hasFaction()) {
+            factionEntityCapability.setFaction(playerFactions.getPlayerFaction(player));
+        }
+    }
+
+    @SubscribeEvent
+    public static void onLevelLoad(LevelEvent.Load event) {
+        LevelAccessor levelAccessor = event.getLevel();
+        if(levelAccessor.isClientSide()) return;
+        if(levelAccessor instanceof Level && ((Level) levelAccessor).dimension().equals(OVERWORLD)) {
+            reloadPlayerFactions();
+        }
     }
 }

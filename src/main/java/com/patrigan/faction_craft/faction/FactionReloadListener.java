@@ -23,6 +23,7 @@ import static com.patrigan.faction_craft.faction.relations.FactionRelation.ALLY_
 import static com.patrigan.faction_craft.faction.relations.FactionRelation.ENEMY_MAX;
 import static com.patrigan.faction_craft.registry.FactionEntityTypes.FACTION_ENTITY_TYPE_DATA;
 import static com.patrigan.faction_craft.registry.Factions.FACTION_DATA;
+import static com.patrigan.faction_craft.registry.Factions.reloadPlayerFactions;
 
 @Mod.EventBusSubscriber(modid = FactionCraft.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class FactionReloadListener implements ResourceManagerReloadListener {
@@ -42,12 +43,7 @@ public class FactionReloadListener implements ResourceManagerReloadListener {
             updateInitialRelationships(faction);
             updateActualRelationships(faction);
         });
-        addPlayerFactions();
-    }
-
-    private void addPlayerFactions() {
-        PlayerFactions playerFactions = PlayerFactionsHelper.getPlayerFactions();
-        playerFactions.getPlayerFactions().forEach((uuid, playerFaction) -> Factions.addPlayerFaction(playerFaction.getFaction()));
+        reloadPlayerFactions();
     }
 
     private void updateActualRelationships(Faction faction) {

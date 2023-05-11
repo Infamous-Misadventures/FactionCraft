@@ -17,7 +17,7 @@ import static com.patrigan.faction_craft.capabilities.ModCapabilities.FACTION_EN
 
 public class FactionEntity implements INBTSerializable<CompoundTag> {
 
-    private Mob entity;
+    private LivingEntity entity;
     private Faction faction = Faction.GAIA;
     private FactionEntityType factionEntityType;
     private BlockPos targetPosition = null;
@@ -28,15 +28,15 @@ public class FactionEntity implements INBTSerializable<CompoundTag> {
         this.entity = null;
     }
 
-    public FactionEntity(Mob entity) {
+    public FactionEntity(LivingEntity entity) {
         this.entity = entity;
     }
 
-    public Mob getEntity() {
+    public LivingEntity getEntity() {
         return entity;
     }
 
-    public void setEntity(Mob entity) {
+    public void setEntity(LivingEntity entity) {
         this.entity = entity;
     }
 
@@ -115,5 +115,9 @@ public class FactionEntity implements INBTSerializable<CompoundTag> {
 
     public void setNearestDamagedFactionAlly(LivingEntity nearestDamagedFactionAlly) {
         this.nearestDamagedFactionAlly = nearestDamagedFactionAlly;
+    }
+
+    public boolean hasFaction() {
+        return faction != null && faction != Faction.GAIA;
     }
 }

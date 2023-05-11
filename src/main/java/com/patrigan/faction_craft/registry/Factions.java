@@ -2,6 +2,8 @@ package com.patrigan.faction_craft.registry;
 
 import com.mojang.datafixers.util.Pair;
 import com.patrigan.faction_craft.boost.Boost;
+import com.patrigan.faction_craft.capabilities.playerfactions.PlayerFactions;
+import com.patrigan.faction_craft.capabilities.playerfactions.PlayerFactionsHelper;
 import com.patrigan.faction_craft.data.ResourceSet;
 import com.patrigan.faction_craft.data.util.MergeableCodecDataManager;
 import com.patrigan.faction_craft.faction.Faction;
@@ -142,12 +144,19 @@ public class Factions {
     }
 
     public static void addPlayerFaction(Faction faction) {
-        FACTION_DATA.addData(faction.getName(), faction);
+        if (!factionExists(faction.getName())) {
+            FACTION_DATA.addData(faction.getName(), faction);
+        }
     }
 
     public static Faction createPlayerFaction(Player player){
         Faction faction = new Faction(new ResourceLocation(MODID, "player/" + player.getName().getString().toLowerCase()), false, new CompoundTag(), FactionRaidConfig.PLAYER, FactionBoostConfig.DEFAULT, FactionRelations.DEFAULT, Collections.emptyList(), new ResourceLocation(MODID, "default"), ResourceSet.getEmpty(Registry.ENTITY_TYPE_REGISTRY));
         addPlayerFaction(faction);
         return faction;
+    }
+
+    public static void reloadPlayerFactions() {
+        PlayerFactions playerFactions = PlayerFactionsHelper.getPlayerFactions();
+        playerFactions.getPlayerFactions().forEach((uuid, playerFaction) -> Factions.addPlayerFaction(playerFaction.getFaction()));
     }
 }

@@ -5,6 +5,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
@@ -23,7 +24,7 @@ public class AttacherFactionEntity {
         private final FactionEntity backend;
         private final LazyOptional<FactionEntity> optionalData;
 
-        public FactionEntityProvider(Mob entity) {
+        public FactionEntityProvider(LivingEntity entity) {
             backend = new FactionEntity(entity);
             optionalData = LazyOptional.of(() -> backend);
         }
@@ -47,8 +48,8 @@ public class AttacherFactionEntity {
     // attach only to Mob entities
     public static void attach(final AttachCapabilitiesEvent<Entity> event) {
         Entity entity = event.getObject();
-        if (entity instanceof Mob) {
-            final AttacherFactionEntity.FactionEntityProvider provider = new AttacherFactionEntity.FactionEntityProvider((Mob) entity);
+        if (entity instanceof LivingEntity) {
+            final AttacherFactionEntity.FactionEntityProvider provider = new AttacherFactionEntity.FactionEntityProvider((LivingEntity) entity);
             event.addCapability(AttacherFactionEntity.FactionEntityProvider.IDENTIFIER, provider);
         }
     }
