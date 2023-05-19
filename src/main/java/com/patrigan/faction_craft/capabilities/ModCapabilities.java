@@ -2,6 +2,8 @@ package com.patrigan.faction_craft.capabilities;
 
 import com.patrigan.faction_craft.capabilities.appliedboosts.AppliedBoosts;
 import com.patrigan.faction_craft.capabilities.appliedboosts.AttacherAppliedBoosts;
+import com.patrigan.faction_craft.capabilities.dominion.AttacherDominion;
+import com.patrigan.faction_craft.capabilities.dominion.Dominion;
 import com.patrigan.faction_craft.capabilities.factionentity.AttacherFactionEntity;
 import com.patrigan.faction_craft.capabilities.factionentity.FactionEntity;
 import com.patrigan.faction_craft.capabilities.factioninteraction.AttacherFactionInteraction;
@@ -39,6 +41,7 @@ public class ModCapabilities {
     public static final Capability<Raider> RAIDER_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {});
     public static final Capability<RaidManager> RAID_MANAGER_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {});
     public static final Capability<SavedFactionData> SAVED_FACTION_DATA_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {});
+    public static final Capability<Dominion> DOMINION_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {});
     public static final Capability<PlayerFactions> PLAYER_FACTIONS_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {});
 
 
@@ -52,6 +55,7 @@ public class ModCapabilities {
         forgeBus.addGenericListener(Level.class, AttacherRaidManager::attach);
         forgeBus.addGenericListener(Level.class, AttacherSavedFactionData::attach);
         forgeBus.addGenericListener(Level.class, AttacherPlayerFactions::attach);
+        forgeBus.addGenericListener(Level.class, AttacherDominion::attach);
     }
 
     @SubscribeEvent
@@ -64,5 +68,6 @@ public class ModCapabilities {
         event.register(RaidManager.class);
         event.register(SavedFactionData.class);
         event.register(PlayerFactions.class);
+        event.register(Dominion.class);
     }
 }
