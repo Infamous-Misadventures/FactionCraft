@@ -23,13 +23,14 @@ import java.util.List;
 import static com.patrigan.faction_craft.FactionCraft.MODID;
 
 public class Faction {
-    public static final Faction DEFAULT = new Faction(new ResourceLocation("faction/default"), false, new CompoundTag(), FactionRaidConfig.DEFAULT, FactionBoostConfig.DEFAULT, FactionRelations.DEFAULT, Collections.emptyList(), new ResourceLocation(MODID, "default"), ResourceSet.getEmpty(Registry.ENTITY_TYPE_REGISTRY));
-    public static final Faction GAIA = new Faction(new ResourceLocation("faction/gaia"), false, new CompoundTag(), FactionRaidConfig.DEFAULT, FactionBoostConfig.DEFAULT, FactionRelations.DEFAULT, Collections.emptyList(), new ResourceLocation(MODID, "default"), ResourceSet.getEmpty(Registry.ENTITY_TYPE_REGISTRY));
+    public static final Faction DEFAULT = new Faction(new ResourceLocation("faction/default"), false, FactionType.MONSTER, new CompoundTag(), FactionRaidConfig.DEFAULT, FactionBoostConfig.DEFAULT, FactionRelations.DEFAULT, Collections.emptyList(), new ResourceLocation(MODID, "default"), ResourceSet.getEmpty(Registry.ENTITY_TYPE_REGISTRY));
+    public static final Faction GAIA = new Faction(new ResourceLocation("faction/gaia"), false, FactionType.GAIA, new CompoundTag(), FactionRaidConfig.DEFAULT, FactionBoostConfig.DEFAULT, FactionRelations.DEFAULT, Collections.emptyList(), new ResourceLocation(MODID, "default"), ResourceSet.getEmpty(Registry.ENTITY_TYPE_REGISTRY));
 
     public static final Codec<Faction> CODEC = RecordCodecBuilder.create(builder ->
             builder.group(
                     ResourceLocation.CODEC.fieldOf("name").forGetter(Faction::getName),
                     Codec.BOOL.optionalFieldOf("replace", false).forGetter(data -> data.replace),
+                    FactionType.CODEC.optionalFieldOf("type", FactionType.MONSTER).forGetter(Faction::getFactionType),
                     CompoundTag.CODEC.fieldOf("banner").forGetter(Faction::getBanner),
                     FactionRaidConfig.CODEC.optionalFieldOf("raid_config", FactionRaidConfig.DEFAULT).forGetter(Faction::getRaidConfig),
                     FactionBoostConfig.CODEC.optionalFieldOf("boosts", FactionBoostConfig.DEFAULT).forGetter(Faction::getBoostConfig),
@@ -41,6 +42,7 @@ public class Faction {
 
     private final ResourceLocation name;
     private final boolean replace;
+    private final FactionType factionType;
     private final CompoundTag banner;
     private final FactionRaidConfig raidConfig;
     private final FactionBoostConfig boostConfig;
@@ -49,9 +51,10 @@ public class Faction {
     private final ResourceLocation activationAdvancement;
     private final ResourceSet<EntityType<?>> defaultEntities;
 
-    public Faction(ResourceLocation name, boolean replace, CompoundTag banner, FactionRaidConfig raidConfig, FactionBoostConfig boostConfig, FactionRelations relations, List<FactionEntityType> entityTypes, ResourceLocation activationAdvancement, ResourceSet<EntityType<?>> defaultEntities) {
+    public Faction(ResourceLocation name, boolean replace, FactionType factionType, CompoundTag banner, FactionRaidConfig raidConfig, FactionBoostConfig boostConfig, FactionRelations relations, List<FactionEntityType> entityTypes, ResourceLocation activationAdvancement, ResourceSet<EntityType<?>> defaultEntities) {
         this.name = name;
         this.replace = replace;
+        this.factionType = factionType;
         this.banner = banner;
         this.raidConfig = raidConfig;
         this.boostConfig = boostConfig;
@@ -67,6 +70,10 @@ public class Faction {
 
     public boolean isReplace() {
         return replace;
+    }
+
+    public FactionType getFactionType() {
+        return factionType;
     }
 
     public CompoundTag getBanner() {

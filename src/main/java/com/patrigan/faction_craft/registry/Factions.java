@@ -2,6 +2,7 @@ package com.patrigan.faction_craft.registry;
 
 import com.mojang.datafixers.util.Pair;
 import com.patrigan.faction_craft.boost.Boost;
+import com.patrigan.faction_craft.capabilities.playerfactions.PlayerFaction;
 import com.patrigan.faction_craft.capabilities.playerfactions.PlayerFactions;
 import com.patrigan.faction_craft.capabilities.playerfactions.PlayerFactionsHelper;
 import com.patrigan.faction_craft.data.ResourceSet;
@@ -9,6 +10,7 @@ import com.patrigan.faction_craft.data.util.MergeableCodecDataManager;
 import com.patrigan.faction_craft.faction.Faction;
 import com.patrigan.faction_craft.faction.FactionBoostConfig;
 import com.patrigan.faction_craft.faction.FactionRaidConfig;
+import com.patrigan.faction_craft.faction.FactionType;
 import com.patrigan.faction_craft.faction.relations.FactionRelations;
 import com.patrigan.faction_craft.faction.entity.FactionEntityType;
 import com.patrigan.faction_craft.util.GeneralUtils;
@@ -29,6 +31,8 @@ import java.util.stream.Stream;
 import static com.patrigan.faction_craft.FactionCraft.LOGGER;
 import static com.patrigan.faction_craft.FactionCraft.MODID;
 import static com.patrigan.faction_craft.config.FactionCraftConfig.DISABLED_FACTIONS;
+import static com.patrigan.faction_craft.faction.relations.FactionRelation.ENEMY_THRESHOLD;
+import static com.patrigan.faction_craft.faction.relations.FactionRelation.NEUTRAL;
 
 public class Factions {
 
@@ -37,6 +41,7 @@ public class Factions {
 
     public static Faction factionMerger(List<Faction> raws, ResourceLocation id){
         ResourceLocation name = null;
+        FactionType factionType = null;
         CompoundTag banner = null;
         FactionRaidConfig factionRaidConfig = null;
         FactionBoostConfig boostConfig = null;
@@ -46,6 +51,7 @@ public class Factions {
         ResourceSet<EntityType<?>> defaultEntities = new ResourceSet<>(Registry.ENTITY_TYPE_REGISTRY, new ArrayList<>());
         for (Faction raw : raws) {
             if (raw.isReplace()) {
+                factionType = raw.getFactionType();
                 banner = raw.getBanner();
                 name = raw.getName();
                 factionRaidConfig = raw.getRaidConfig();
@@ -88,7 +94,7 @@ public class Factions {
         if(!entities.isEmpty()){
             LOGGER.info("Entity types within the faction file is deprecated. They should now be in separate files in the faction_entity_type/<factionname>/ folder. For faction: " + id);
         }
-        return new Faction(name,false, banner, factionRaidConfig, boostConfig, factionRelations, new ArrayList<>(entities), activationAdvancement, defaultEntities);
+        return new Faction(name,false, factionType, banner, factionRaidConfig, boostConfig, factionRelations, new ArrayList<>(entities), activationAdvancement, defaultEntities);
     }
 
 
@@ -150,13 +156,40 @@ public class Factions {
     }
 
     public static Faction createPlayerFaction(Player player){
-        Faction faction = new Faction(new ResourceLocation(MODID, "player/" + player.getName().getString().toLowerCase()), false, new CompoundTag(), FactionRaidConfig.PLAYER, FactionBoostConfig.DEFAULT, FactionRelations.DEFAULT, Collections.emptyList(), new ResourceLocation(MODID, "default"), ResourceSet.getEmpty(Registry.ENTITY_TYPE_REGISTRY));
+        Faction faction = new Faction(new ResourceLocation(MODID, "player/" + player.getName().getString().toLowerCase()), false, FactionType.PLAYER, new CompoundTag(), FactionRaidConfig.PLAYER, FactionBoostConfig.DEFAULT, FactionRelations.DEFAULT, Collections.emptyList(), new ResourceLocation(MODID, "default"), ResourceSet.getEmpty(Registry.ENTITY_TYPE_REGISTRY));
+        for (Faction faction1 : getFactionData().values()) {
+            if(!faction.getRelations().getEnemies().contains(getKey(faction))){
+                if(faction1.getFactionType().equals(FactionType.MONSTER)) {
+                    faction.getRelations().adjustRelation(faction1, ENEMY_THRESHOLD);
+                    faction1.getRelations().adjustRelation(faction, ENEMY_THRESHOLD);
+                }
+            }else {
+                faction.getRelations().adjustRelation(faction1, NEUTRAL);
+                faction1.getRelations().adjustRelation(faction, NEUTRAL);
+            }
+        }
         addPlayerFaction(faction);
         return faction;
     }
 
     public static void reloadPlayerFactions() {
         PlayerFactions playerFactions = PlayerFactionsHelper.getPlayerFactions();
-        playerFactions.getPlayerFactions().forEach((uuid, playerFaction) -> Factions.addPlayerFaction(playerFaction.getFaction()));
+        playerFactions.getPlayerFactions().forEach((uuid, playerFaction) -> reloadPlayerFaction(playerFaction));
+    }
+
+    private static void reloadPlayerFaction(PlayerFaction playerFaction) {
+        Faction faction = playerFaction.getFaction();
+        Factions.addPlayerFaction(faction);
+        for (Faction faction1 : getFactionData().values()) {
+            if(!faction.getRelations().getEnemies().contains(getKey(faction))){
+                if(faction1.getFactionType().equals(FactionType.MONSTER)) {
+                    faction.getRelations().adjustRelation(faction1, ENEMY_THRESHOLD);
+                    faction1.getRelations().adjustRelation(faction, ENEMY_THRESHOLD);
+                }
+            }else {
+                faction.getRelations().adjustRelation(faction1, NEUTRAL);
+                faction1.getRelations().adjustRelation(faction, NEUTRAL);
+            }
+        }
     }
 }

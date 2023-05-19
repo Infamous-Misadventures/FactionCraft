@@ -22,7 +22,7 @@ public class FactionRelations {
 
     public static final Codec<FactionRelations> CODEC = RecordCodecBuilder.create(builder ->
             builder.group(
-                    FactionRelation.CODEC.listOf().fieldOf("retlaions").forGetter(data -> new ArrayList<>(data.getRelations().values()))
+                    FactionRelation.CODEC.listOf().fieldOf("relations").forGetter(data -> new ArrayList<>(data.getRelations().values()))
             ).apply(builder, FactionRelations::new));
 
     private final Map<ResourceLocation, FactionRelation> originalRelations = new HashMap<>();

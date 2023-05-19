@@ -2,10 +2,7 @@ package com.patrigan.faction_craft.capabilities.playerfactions;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import com.patrigan.faction_craft.capabilities.savedfactiondata.FactionData;
 import com.patrigan.faction_craft.faction.Faction;
-import com.patrigan.faction_craft.faction.relations.FactionRelations;
-import net.minecraft.resources.ResourceLocation;
 
 import java.util.UUID;
 
@@ -24,6 +21,7 @@ public class PlayerFaction {
         this.player = UUID.fromString(player);
         this.faction = faction;
     }
+
     public PlayerFaction(UUID player, Faction faction) {
         this.player = player;
         this.faction = faction;
