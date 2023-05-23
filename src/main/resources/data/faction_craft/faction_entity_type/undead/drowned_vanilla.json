@@ -8,7 +8,7 @@
     "min": 3
   },
   "boosts": {
-    "mandatory": ["minecraft:special/leather_daylight_protection"],
+    "mandatory": ["minecraft:special/leather_daylight_protection"]
   },
   "biome_whitelist": ["#minecraft:is_ocean"]
 }

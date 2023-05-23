@@ -19,7 +19,7 @@ public class AttacherDominion {
 
     private static class DominionProvider implements ICapabilityProvider, INBTSerializable<CompoundTag> {
 
-        public static final ResourceLocation IDENTIFIER = new ResourceLocation(MODID, "faction_data");
+        public static final ResourceLocation IDENTIFIER = new ResourceLocation(MODID, "dominion");
         private final Dominion backend;
         private final LazyOptional<Dominion> optionalData;
 

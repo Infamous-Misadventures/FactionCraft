@@ -48,6 +48,7 @@ public class Factions {
         FactionRelations factionRelations = null;
         Set<FactionEntityType> entities = new HashSet<>();
         ResourceLocation activationAdvancement = null;
+        List<ResourceLocation> homeDimensions = new ArrayList<>();
         ResourceSet<EntityType<?>> defaultEntities = new ResourceSet<>(Registry.ENTITY_TYPE_REGISTRY, new ArrayList<>());
         for (Faction raw : raws) {
             if (raw.isReplace()) {
@@ -58,7 +59,11 @@ public class Factions {
                 boostConfig = null;
                 factionRelations = null;
                 entities = new HashSet<>();
+                homeDimensions.clear();
                 activationAdvancement = raw.getActivationAdvancement();
+            }
+            if(factionType == null){
+                factionType = raw.getFactionType();
             }
             if(banner == null){
                 banner = raw.getBanner();
@@ -89,12 +94,13 @@ public class Factions {
                 factionRelations = new FactionRelations(allies, enemies);
             }
             entities.addAll(raw.getEntityTypes());
+            homeDimensions.addAll(raw.getHomeDimensions());
             defaultEntities = defaultEntities.merge(raw.getDefaultEntities());
         }
         if(!entities.isEmpty()){
             LOGGER.info("Entity types within the faction file is deprecated. They should now be in separate files in the faction_entity_type/<factionname>/ folder. For faction: " + id);
         }
-        return new Faction(name,false, factionType, banner, factionRaidConfig, boostConfig, factionRelations, new ArrayList<>(entities), activationAdvancement, defaultEntities);
+        return new Faction(name,false, factionType, banner, factionRaidConfig, boostConfig, factionRelations, new ArrayList<>(entities), activationAdvancement, homeDimensions, defaultEntities);
     }
 
 
@@ -156,7 +162,7 @@ public class Factions {
     }
 
     public static Faction createPlayerFaction(Player player){
-        Faction faction = new Faction(new ResourceLocation(MODID, "player/" + player.getName().getString().toLowerCase()), false, FactionType.PLAYER, new CompoundTag(), FactionRaidConfig.PLAYER, FactionBoostConfig.DEFAULT, FactionRelations.DEFAULT, Collections.emptyList(), new ResourceLocation(MODID, "default"), ResourceSet.getEmpty(Registry.ENTITY_TYPE_REGISTRY));
+        Faction faction = new Faction(new ResourceLocation(MODID, "player/" + player.getName().getString().toLowerCase()), false, FactionType.PLAYER, new CompoundTag(), FactionRaidConfig.PLAYER, FactionBoostConfig.DEFAULT, FactionRelations.DEFAULT, Collections.emptyList(), new ResourceLocation(MODID, "default"), new ArrayList<>(), ResourceSet.getEmpty(Registry.ENTITY_TYPE_REGISTRY));
         for (Faction faction1 : getFactionData().values()) {
             if(!faction.getRelations().getEnemies().contains(getKey(faction))){
                 if(faction1.getFactionType().equals(FactionType.MONSTER)) {
