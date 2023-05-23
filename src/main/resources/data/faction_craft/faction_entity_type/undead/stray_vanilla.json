@@ -1,11 +1,11 @@
 
 {
   "entity_type": "minecraft:stray",
-  "weight": 50,
-  "strength": 9,
+  "weight": 90,
+  "strength": 7,
   "ranks": ["soldier","captain", "general", "leader"],
   "wave_range": {
-    "min": 3
+    "min": 1
   },
   "boosts": {
     "mandatory": ["minecraft:special/leather_daylight_protection"],
@@ -16,5 +16,5 @@
       }
     ]
   },
-  "biome_whitelist": ["#forge:is_cold"]
+  "biome_whitelist": ["#forge:is_snowy"]
 }

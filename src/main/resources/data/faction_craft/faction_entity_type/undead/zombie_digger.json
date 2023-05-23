@@ -1,0 +1,9 @@
+{
+  "entity_type": "minecraft:zombie",
+  "weight": 20,
+  "strength": 4,
+  "ranks": ["digger"],
+  "boosts": {
+    "mandatory": ["minecraft:special/leather_daylight_protection","faction_craft:special/ai/barehanded_digger_ai", "minecraft:hand/iron_pickaxe"],
+  }
+}

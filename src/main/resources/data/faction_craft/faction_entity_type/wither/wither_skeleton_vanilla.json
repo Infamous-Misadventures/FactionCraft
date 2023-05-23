@@ -1,19 +1,9 @@
 {
   "entity_type": "minecraft:wither_skeleton",
-  "weight": 100,
+  "weight": 30,
   "strength": 8,
-  "ranks": ["soldier","captain", "general", "leader"],
+  "ranks": ["digger"],
   "boosts": {
-    "mandatory": ["minecraft:special/leather_daylight_protection"],
-    "rarity_overrides": [
-      {
-        "boost": "minecraft:mount/skeleton_horse",
-        "rarity": "common"
-      },
-      {
-        "boost": "faction_craft:mount/faction_spider",
-        "rarity": "rare"
-      }
-    ]
+    "mandatory": ["minecraft:special/leather_daylight_protection", "faction_craft:special/ai/barehanded_digger_ai", "minecraft:hand/stone_pickaxe"]
   }
 }

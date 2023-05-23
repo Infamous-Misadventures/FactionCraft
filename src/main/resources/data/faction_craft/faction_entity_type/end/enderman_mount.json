@@ -1,0 +1,6 @@
+    {
+      "entity_type": "minecraft:enderman",
+      "weight": 50,
+      "strength": 12,
+      "ranks": ["mount"]
+    }

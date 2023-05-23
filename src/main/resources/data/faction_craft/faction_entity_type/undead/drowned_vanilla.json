@@ -1,0 +1,14 @@
+
+{
+  "entity_type": "minecraft:drowned",
+  "weight": 100,
+  "strength": 9,
+  "ranks": ["soldier","captain", "general", "leader"],
+  "wave_range": {
+    "min": 3
+  },
+  "boosts": {
+    "mandatory": ["minecraft:special/leather_daylight_protection"],
+  },
+  "biome_whitelist": ["#minecraft:is_ocean"]
+}

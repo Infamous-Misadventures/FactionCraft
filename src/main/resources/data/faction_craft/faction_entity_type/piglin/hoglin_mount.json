@@ -6,5 +6,9 @@
 	  "tag": {
         "IsBaby": 0
 	  },
-      "wave_range": {"min": 4}
+      "wave_range": {"min": 4},
+	  "spawned_range": {
+        "max": 1
+		},
+      "max_spawned_per_x": 4
     }

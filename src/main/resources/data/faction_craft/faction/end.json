@@ -1,0 +1,18 @@
+{
+  "name": "faction_craft:end",
+  "replace": false,
+  "banner": {"id":"minecraft:purple_banner","Count":1,"tag":{"HideFlags":32,"BlockEntityTag":{"Patterns":[{"Color":2,"Pattern":"ss"},{"Color":2,"Pattern":"ss"},{"Color":15,"Pattern":"sc"},{"Color":15,"Pattern":"hhb"},{"Color":15,"Pattern":"ts"},{"Color":15,"Pattern":"ms"}]},"display":{"Name":{"color":"gold","translate":"block.faction_raid.undead_banner"}}}},
+  "raid_config": {
+    "enabled": true
+  },
+  "relations": {
+    "enemies": ["minecraft:village", "faction_craft:piglin", "faction_craft:undead", "faction_craft:wither"],
+	"allies": ["minecraft:illager"]
+  },
+  "default_entities": [
+    "minecraft:enderman",
+	"minecraft:shulker",
+	"minecraft:endermite"
+  ],
+  "activation_advancement": "minecraft:end/root"
+}

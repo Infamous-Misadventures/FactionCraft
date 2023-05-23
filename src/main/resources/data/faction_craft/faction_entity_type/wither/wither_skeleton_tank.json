@@ -1,7 +1,7 @@
 {
   "entity_type": "minecraft:wither_skeleton",
-  "weight": 100,
-  "strength": 8,
+  "weight": 50,
+  "strength": 10,
   "ranks": ["soldier","captain", "general", "leader"],
   "wave_range": {
     "min": 2
@@ -12,10 +12,6 @@
       {
         "boost": "minecraft:mount/skeleton_horse",
         "rarity": "common"
-      },
-      {
-        "boost": "faction_craft:mount/faction_spider",
-        "rarity": "rare"
       }
     ]
   }

@@ -1,13 +1,13 @@
 {
   "entity_type": "minecraft:ravager",
   "weight": 15,
-  "strength": 15,
+  "strength": 20,
   "ranks": ["support"],
   "wave_range":{
-    "min": 3,
-    "max": 3
+    "min": 4
   },
   "spawned_range": {
-    "max": 1
-  }
+  "max": 1
+  },
+  "max_spawned_per_x": 10
 }

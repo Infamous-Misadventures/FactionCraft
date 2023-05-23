@@ -7,6 +7,6 @@
     },
   "strength_adjustment": 3,
   "boost_type":"mainhand",
-  "rarity": "very_rare",
+  "rarity": "none",
   "allowed_entities": ["#faction_craft:can_use_trident"]
 }

@@ -1,8 +1,16 @@
 {
   "name": "faction_craft:piglin",
-  "replace": false,
-  "banner": {"id":"minecraft:white_banner","Count":1,"tag":{"HideFlags":32,"BlockEntityTag":{"Patterns":[{"Color":0,"Pattern":"cr"},{"Color":12,"Pattern":"hhb"},{"Color":12,"Pattern":"mr"},{"Color":12,"Pattern":"bo"},{"Color":4,"Pattern":"pig"},{"Color":4,"Pattern":"bts"}]},"display":{"Name":{"color":"gold","translate":"block.faction_raid.piglin_banner"}}}},
+  "replace": true,
+  "banner": {"id":"minecraft:white_banner","Count":1,"tag":{"HideFlags":32,"BlockEntityTag":{"Patterns":[{"Color":12,"Pattern":"cs"},{"Color":12,"Pattern":"bo"},{"Color":12,"Pattern":"hhb"},{"Color":12,"Pattern":"tt"},{"Color":12,"Pattern":"ms"},{"Color":4,"Pattern":"pig"},{"Color":4,"Pattern":"bts"}]},"display":{"Name":{"color":"gold","translate":"block.faction_raid.piglin_banner"}}}},
   "relations": {
-    "enemies": ["faction_craft:undead", "minecraft:illager"]
-  }
+    "enemies": ["faction_craft:undead", "minecraft:illager", "faction_craft:wither", "minecraft:village", "faction_craft:end"]
+  },
+  "raid_config": {
+    "enabled": true
+  },
+  "default_entities": [
+    "minecraft:piglin",
+    "minecraft:piglin_brute"
+  ],
+  "activation_advancement": "minecraft:nether/root"
 }

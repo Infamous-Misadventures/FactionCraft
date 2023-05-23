@@ -5,9 +5,6 @@
   "relations": {
     "enemies": ["faction_craft:undead", "faction_craft:piglin", "minecraft:illager"]
   },
-  "raid_config": {
-    "enabled": false
-  },
   "default_entities": [
     "minecraft:villager",
     "minecraft:iron_golem"

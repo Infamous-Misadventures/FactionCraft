@@ -2,10 +2,14 @@
   "entity_type": "minecraft:witch",
   "weight": 40,
   "strength": 9,
-  "ranks": ["captain", "general", "leader"],
+  "ranks": ["soldier", "captain", "general", "leader"],
   "wave_range": {
     "min": 4
   },
+  "spawned_range": {
+  "max": 2
+  },
+  "max_spawned_per_x": 10,
   "boosts": {
     "mandatory": ["faction_craft:role/bottle_healer"]
   }

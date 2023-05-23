@@ -3,18 +3,9 @@
       "weight": 30,
       "strength": 14,
       "ranks": ["soldier","captain"],
-	  "tag": {
-        "IsBaby": 0
-	  },
-      "wave_range": {"min": 4},
-      "boosts": {
-        "mandatory": ["minecraft:hand/golden_axe"],
-
-        "rarity_overrides": [
-          {
-            "boost": "minecraft:armor/golden",
-            "rarity": "common"
-          }
-        ]
-      }
+      "wave_range": {"min": 3},
+	  "spawned_range": {
+        "max": 1
+		},
+      "max_spawned_per_x": 5
     }

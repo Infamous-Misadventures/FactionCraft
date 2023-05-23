@@ -1,7 +1,12 @@
 # Changelog
 ## [1.19.2-1.3.3] - 2023-05-XX
+### Major Features
+#### New Faction: End
+The End faction has been added. This faction will spawn as soon as you breach the end. The enderma's teleporting behaviour will pose a unique challenge for anyone aggrevating this faction.
 ### Minor Features
 - Implemented a rudimentary Reputation system in factions. Currently without any way to influence it.
+- Complete rewrite of all existing factions to include many of the recently added features.
+- Added a lot of base code for upcoming changes, preparing worlds for new content coming soon.
 ### Bugfixes / Tweaks
 - Made ReconstructBlocks only collidable when creative and crouching.
 - Made Armor and hand boosts support a ResourceSet of applicable entities

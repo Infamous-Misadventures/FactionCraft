@@ -7,7 +7,7 @@
     "rarity_overrides": [
       {
         "boost": "faction_craft:mount/faction_ravager",
-        "rarity": "common"
+        "rarity": "rare"
       }
     ]
   }

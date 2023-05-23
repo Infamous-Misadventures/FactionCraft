@@ -1,0 +1,16 @@
+{
+  "entity_type": "minecraft:shulker",
+  "weight": 10,
+  "strength": 15,
+  "ranks": ["soldier","captain"],
+  "wave_range":{
+    "min": 4
+  },
+  "spawned_range": {
+    "max": 1
+    },
+  "max_spawned_per_x": 10,
+  "boosts": {
+    "mandatory": ["faction_craft:mount/faction_enderman"]
+  }
+}

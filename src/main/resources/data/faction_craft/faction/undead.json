@@ -6,7 +6,8 @@
     "enabled": true
   },
   "relations": {
-    "enemies": ["minecraft:illager", "minecraft:village"]
+    "enemies": ["minecraft:illager", "minecraft:village", "faction_craft:piglin", "faction_craft:end"],
+	"allies": ["faction_craft:wither"]
   },
   "default_entities": [
     "minecraft:zombie",

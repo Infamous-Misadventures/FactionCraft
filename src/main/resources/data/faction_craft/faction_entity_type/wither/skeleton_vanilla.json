@@ -9,10 +9,6 @@
       {
         "boost": "minecraft:mount/skeleton_horse",
         "rarity": "common"
-      },
-      {
-        "boost": "faction_craft:mount/faction_spider",
-        "rarity": "rare"
       }
     ]
   }

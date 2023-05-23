@@ -4,6 +4,8 @@
   "tag": {
     "IsBaby": 1,
     "Passengers":[{"id":"minecraft:zombie","IsBaby":1, "Passengers":[{"id":"minecraft:zombie","IsBaby":1, "Passengers":[{"id":"minecraft:zombie","IsBaby":1, "Passengers":[{"id":"minecraft:zombie","IsBaby":1, "Passengers":[{"id":"minecraft:zombie","IsBaby":1}]}]}]}]}]},
+  "tag_first": true,
+  "shouldFinalizeSpawn": false,
   "strength": 10,
   "ranks": ["soldier","captain", "general", "leader"],
   "boosts": {
