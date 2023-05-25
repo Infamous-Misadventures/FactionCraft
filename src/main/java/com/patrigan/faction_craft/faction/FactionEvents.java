@@ -11,6 +11,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.event.entity.living.LivingChangeTargetEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -22,6 +23,18 @@ import static net.minecraft.world.level.Level.OVERWORLD;
 
 @Mod.EventBusSubscriber(modid = MODID)
 public class FactionEvents {
+
+    @SubscribeEvent
+    public static void onLivingChangeTargetEvent(LivingChangeTargetEvent event){
+        LivingEntity livingEntity = event.getEntity();
+        if(!livingEntity.level.isClientSide()) {
+            FactionEntity sourceCap = FactionEntityHelper.getFactionEntityCapability(event.getEntity());
+            FactionEntity targetCap = FactionEntityHelper.getFactionEntityCapability(event.getOriginalTarget());
+            if (targetCap.getFaction() == sourceCap.getFaction() || sourceCap.getFaction().isAllyOf(targetCap.getFaction())) {
+                event.setCanceled(true);
+            }
+        }
+    }
 
     @SubscribeEvent
     public static void onLivingHurtEvent(LivingAttackEvent event){
