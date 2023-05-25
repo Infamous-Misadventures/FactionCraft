@@ -27,9 +27,9 @@ public class FactionEvents {
     @SubscribeEvent
     public static void onLivingChangeTargetEvent(LivingChangeTargetEvent event){
         LivingEntity livingEntity = event.getEntity();
-        if(!livingEntity.level.isClientSide()) {
+        if(!livingEntity.level.isClientSide() && event.getNewTarget() != null) {
             FactionEntity sourceCap = FactionEntityHelper.getFactionEntityCapability(event.getEntity());
-            FactionEntity targetCap = FactionEntityHelper.getFactionEntityCapability(event.getOriginalTarget());
+            FactionEntity targetCap = FactionEntityHelper.getFactionEntityCapability(event.getNewTarget());
             if (targetCap.getFaction() == sourceCap.getFaction() || sourceCap.getFaction().isAllyOf(targetCap.getFaction())) {
                 event.setCanceled(true);
             }
