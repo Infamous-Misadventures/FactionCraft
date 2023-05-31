@@ -18,6 +18,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 import static com.patrigan.faction_craft.FactionCraft.MODID;
+import static com.patrigan.faction_craft.faction.Faction.GAIA;
 import static com.patrigan.faction_craft.registry.Factions.reloadPlayerFactions;
 import static net.minecraft.world.level.Level.OVERWORLD;
 
@@ -30,7 +31,7 @@ public class FactionEvents {
         if(!livingEntity.level.isClientSide() && event.getNewTarget() != null) {
             FactionEntity sourceCap = FactionEntityHelper.getFactionEntityCapability(event.getEntity());
             FactionEntity targetCap = FactionEntityHelper.getFactionEntityCapability(event.getNewTarget());
-            if (targetCap.getFaction() == sourceCap.getFaction() || sourceCap.getFaction().isAllyOf(targetCap.getFaction())) {
+            if (sameFaction(targetCap, sourceCap) || sourceCap.getFaction().isAllyOf(targetCap.getFaction())) {
                 event.setCanceled(true);
             }
         }
@@ -42,10 +43,14 @@ public class FactionEvents {
         if(!livingEntity.level.isClientSide() && event.getEntity() instanceof Mob && event.getSource().getEntity() instanceof Mob) {
             FactionEntity targetCap = FactionEntityHelper.getFactionEntityCapability((Mob) event.getEntity());
             FactionEntity sourceCap = FactionEntityHelper.getFactionEntityCapability((Mob) event.getSource().getEntity());
-            if (targetCap.getFaction() == sourceCap.getFaction() || sourceCap.getFaction().isAllyOf(targetCap.getFaction())) {
+            if (sameFaction(targetCap, sourceCap) || sourceCap.getFaction().isAllyOf(targetCap.getFaction())) {
                 event.setCanceled(true);
             }
         }
+    }
+
+    private static boolean sameFaction(FactionEntity targetCap, FactionEntity sourceCap) {
+        return !GAIA.equals(targetCap.getFaction()) && targetCap.getFaction() == sourceCap.getFaction();
     }
 
     // On player join event, check if Player Factions already has the correct player faction, if not, create it and add it to both the Player Factions and Factions
