@@ -50,7 +50,7 @@ public class EntityAIEvents {
             if(!hasBrain(mob)){
                 mob.targetSelector.addGoal(2, new NearestFactionEnemyTargetGoal(mob, 10, true, false));
                 mob.targetSelector.addGoal(2, new FactionAllyHurtTargetGoal(mob, 10, true, false));
-            }else {
+            }else if(brainValid(mob)){
                 // Add Brain faction targets
                 BrainHelper.addMemory(mob.getBrain(), ModMemoryModuleTypes.NEAREST_VISIBLE_FACTION_ENEMY.get());
                 BrainHelper.addMemory(mob.getBrain(), ModMemoryModuleTypes.NEAREST_VISIBLE_FACTION_ALLY.get());
@@ -66,6 +66,10 @@ public class EntityAIEvents {
                 addRaiderTasks(mob);
             }
         }
+    }
+
+    private static boolean brainValid(Mob mob) {
+        return mob.getBrain().getMemory(MemoryModuleType.NEAREST_VISIBLE_LIVING_ENTITIES).isPresent();
     }
 
     public static <E extends Mob> void addRaiderTasks(E mob) {
