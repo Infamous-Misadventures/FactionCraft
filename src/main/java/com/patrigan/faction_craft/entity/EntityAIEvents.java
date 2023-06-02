@@ -69,7 +69,7 @@ public class EntityAIEvents {
     }
 
     private static boolean brainValid(Mob mob) {
-        return mob.getBrain().getMemory(MemoryModuleType.NEAREST_VISIBLE_LIVING_ENTITIES).isPresent();
+        return mob.getBrain().getMemories().containsKey(MemoryModuleType.NEAREST_VISIBLE_LIVING_ENTITIES);
     }
 
     public static <E extends Mob> void addRaiderTasks(E mob) {
