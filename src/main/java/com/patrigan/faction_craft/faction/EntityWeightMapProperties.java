@@ -2,13 +2,14 @@ package com.patrigan.faction_craft.faction;
 
 import com.patrigan.faction_craft.faction.entity.FactionEntityType;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class EntityWeightMapProperties {
     int wave = 0;
     int omen = 0;
-    List<FactionEntityType.FactionRank> allowedRanks = Arrays.asList(FactionEntityType.FactionRank.values());
+    List<FactionEntityType.FactionRank> allowedRanks = new ArrayList<>(Arrays.asList(FactionEntityType.FactionRank.values()));
 
     public int getWave() {
         return wave;
@@ -29,11 +30,11 @@ public class EntityWeightMapProperties {
     }
 
     public List<FactionEntityType.FactionRank> getAllowedRanks() {
-        return allowedRanks;
+        return new ArrayList<>(allowedRanks);
     }
 
     public EntityWeightMapProperties setAllowedRanks(List<FactionEntityType.FactionRank> allowedRanks) {
-        this.allowedRanks = allowedRanks;
+        this.allowedRanks = new ArrayList<>(allowedRanks);
         return this;
     }
 
