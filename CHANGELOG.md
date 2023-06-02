@@ -4,6 +4,7 @@
 - Prevent Glare Crash due to AI incompatible with the mod.
 - Fix mobs not hitting eachother.
 - Added proper LivingChangeTargetEvent, for improved performance.
+- Fix #37: Crash due to empty Damage source.
 - Fix #38: Horses should no longer do weird stuff. Might also create a minor performance boost.
 
 ## [1.19.2-1.3.3] - 2023-05-XX
