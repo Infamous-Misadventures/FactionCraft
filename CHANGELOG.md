@@ -1,5 +1,22 @@
 # Changelog
-## [1.19.2-1.3.4] - 2023-06-XX
+## [1.19.2-1.3] OVERVIEW
+### New Factions
+#### End
+The End faction has been added. This faction will spawn as soon as you breach the end. The enderman's teleporting behaviour will pose a unique challenge for anyone aggrevating this faction.
+#### Piglin
+With brain AI available, FactionCraft now supports the Piglin Faction. They will start spawning as soon as you breach the nether. Compatibility planned with Infamous Legends to support the Piglin hordes.
+#### Villager
+To properly support piglins finding villagers a bad entity to fight, villagers have moved into their own faction. This plays into the faction targetting system and should fix issues with mobs not targetting villagers.
+#### Player
+Players have now been given their own factions. This change right now only supports some other base code, but it lays the basics for Player controlled factions! 
+### Brain AI
+There is now facion AI for mobs with a brain, like piglins. This means you can add many more mobs to factions!
+### Relationships
+A basic relationship system has been implemented. Currently can not be influenced, but the basics are there.
+### Minor updates and Bugfixes
+A long list of updates and bugfixes has been made. Look below for the full list.
+
+## [1.19.2-1.3.4] - 2023-06-02
 ### Bugfixes / Tweaks
 - Prevent Glare Crash due to AI incompatible with the mod.
 - Fix mobs not hitting eachother.
