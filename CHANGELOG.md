@@ -1,4 +1,11 @@
 # Changelog
+## [1.19.2-1.3.4] - 2023-06-XX
+### Bugfixes / Tweaks
+- Prevent Glare Crash due to AI incompatible with the mod.
+- Fix mobs not hitting eachother.
+- Added proper LivingChangeTargetEvent, for improved performance.
+- Fix #38: Horses should no longer do weird stuff. Might also create a minor performance boost.
+
 ## [1.19.2-1.3.3] - 2023-05-XX
 ### Major Features
 #### New Faction: End
