@@ -98,7 +98,7 @@ public class FactionBoostConfig {
 
         public static FactionBoostConfig.BoostDistributionType byName(String name, FactionBoostConfig.BoostDistributionType defaultType) {
             for(FactionBoostConfig.BoostDistributionType distributionType : values()) {
-                if (distributionType.name.equals(name)) {
+                if (distributionType.name.equalsIgnoreCase(name)) {
                     return distributionType;
                 }
             }

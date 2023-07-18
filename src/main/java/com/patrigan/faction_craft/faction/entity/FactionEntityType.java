@@ -358,7 +358,7 @@ public class FactionEntityType {
 
         public static FactionRank byName(String name, FactionRank defaultRank) {
             for (FactionRank factionRank : values()) {
-                if (factionRank.name.equals(name)) {
+                if (factionRank.name.equalsIgnoreCase(name)) {
                     return factionRank;
                 }
             }

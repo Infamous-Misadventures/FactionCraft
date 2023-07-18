@@ -48,7 +48,7 @@ public interface RaidTarget {
 
         public static RaidTarget.Type byName(String key, RaidTarget.Type fallBack) {
             for(RaidTarget.Type raidTargetType : values()) {
-                if (raidTargetType.name.equals(key)) {
+                if (raidTargetType.name.equalsIgnoreCase(key)) {
                     return raidTargetType;
                 }
             }

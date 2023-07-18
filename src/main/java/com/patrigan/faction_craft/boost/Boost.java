@@ -72,7 +72,7 @@ public abstract class Boost {
 
         public static BoostType byName(String key, BoostType fallBack) {
             for(BoostType boostType : values()) {
-                if (boostType.name.equals(key)) {
+                if (boostType.name.equalsIgnoreCase(key)) {
                     return boostType;
                 }
             }
@@ -116,7 +116,7 @@ public abstract class Boost {
 
         public static Rarity byName(String key, Rarity fallBack) {
             for(Rarity rarity : values()) {
-                if (rarity.name.equals(key)) {
+                if (rarity.name.equalsIgnoreCase(key)) {
                     return rarity;
                 }
             }

@@ -18,7 +18,7 @@ public enum FactionType {
 
     public static FactionType byName(String key, FactionType fallBack) {
         for (FactionType factionType : values()) {
-            if (factionType.name.equals(key)) {
+            if (factionType.name.equalsIgnoreCase(key)) {
                 return factionType;
             }
         }
