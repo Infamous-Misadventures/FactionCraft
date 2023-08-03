@@ -42,10 +42,6 @@ public class ReconstructBlockEntity extends BlockEntity {
             return;
         }
         loadRaid(level);
-        if(raid == null){
-            revertBlock(level);
-            return;
-        }
         if(timer == -1000){
             timer = FactionCraftConfig.RECONSTRUCT_TICK_DELAY.get() + level.getRandom().nextInt(FactionCraftConfig.RECONSTRUCT_VARIABLE_TICK_DELAY.get());
         }
@@ -61,7 +57,7 @@ public class ReconstructBlockEntity extends BlockEntity {
                 }
             }
         }else if(entity != null){
-            if(entity.isDeadOrDying()){
+            if(entity.isDeadOrDying() || entity.isRemoved()){
                 timer--;
             }
         }else{

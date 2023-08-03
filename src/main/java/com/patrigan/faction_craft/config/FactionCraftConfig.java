@@ -57,6 +57,9 @@ public class FactionCraftConfig {
     public static ForgeConfigSpec.ConfigValue<Integer> BATTLE_STARTING_WAVE_MAX;
 
     public static ForgeConfigSpec.ConfigValue<Boolean> ENABLE_RECONSTRUCT_BLOCKS;
+    public static ForgeConfigSpec.ConfigValue<Boolean> ENABLE_RECONSTRUCT_BLOCKS_OUTSIDE_RAIDS;
+    public static ForgeConfigSpec.ConfigValue<Boolean> ENABLE_RECONSTRUCT_BLOCKS_FROM_GAIA;
+    public static ForgeConfigSpec.ConfigValue<Boolean> ENABLE_RECONSTRUCT_BLOCKS_FROM_PLAYERS;
     public static ForgeConfigSpec.ConfigValue<Boolean> RECONSTRUCT_ON_LOSS;
     public static ForgeConfigSpec.ConfigValue<Integer> RECONSTRUCT_TICK_DELAY;
     public static ForgeConfigSpec.ConfigValue<Integer> RECONSTRUCT_VARIABLE_TICK_DELAY;
@@ -275,18 +278,30 @@ public class FactionCraftConfig {
                     .comment("Enables Reconstruct Blocks \n" +
                             "Default True")
                     .define("enableReconstructBlocks", true);
+            ENABLE_RECONSTRUCT_BLOCKS_OUTSIDE_RAIDS = builder
+                    .comment("Enables Reconstruct Blocks outside raids \n" +
+                            "Default True")
+                    .define("enableReconstructBlocksOutsideRaids", true);
+            ENABLE_RECONSTRUCT_BLOCKS_FROM_GAIA = builder
+                    .comment("Enables Reconstruct Blocks from the Gaia factions \n" +
+                            "Default False")
+                    .define("enableReconstructBlocksFromGaia", false);
+            ENABLE_RECONSTRUCT_BLOCKS_FROM_PLAYERS = builder
+                    .comment("Enables Reconstruct Blocks from players \n" +
+                            "Default False")
+                    .define("enableReconstructBlocksFromPlayers", false);
             RECONSTRUCT_ON_LOSS = builder
                     .comment("Reconstructs on loss \n" +
                             "Default false")
                     .define("reconstructOnLoss", false);
             RECONSTRUCT_TICK_DELAY = builder
                     .comment("This value plus the variable version together make up the time required before reconstructing. \n" +
-                            "Default 100")
-                    .defineInRange("reconstructTickDelay", 100, 0, 999999999);
+                            "Default 200")
+                    .defineInRange("reconstructTickDelay", 200, 0, 999999999);
             RECONSTRUCT_VARIABLE_TICK_DELAY = builder
                     .comment("A random value between 0 and this value is added to the static delay to determine total delay. \n" +
                             "Default 200")
-                    .defineInRange("reconstructVariableTickDelay", 60, 0, 999999999);
+                    .defineInRange("reconstructVariableTickDelay", 200, 0, 999999999);
             builder.pop();
         }
 
