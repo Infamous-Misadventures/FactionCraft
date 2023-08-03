@@ -13,6 +13,7 @@ import com.patrigan.faction_craft.faction.EntityWeightMapProperties;
 import com.patrigan.faction_craft.faction.Faction;
 import com.patrigan.faction_craft.faction.FactionBoostHelper;
 import com.patrigan.faction_craft.faction.entity.FactionEntityType;
+import com.patrigan.faction_craft.faction.entity.FactionEntityRank;
 import com.patrigan.faction_craft.raid.target.RaidTarget;
 import com.patrigan.faction_craft.raid.target.RaidTargetHelper;
 import com.patrigan.faction_craft.registry.Factions;
@@ -745,14 +746,14 @@ public class Raid {
     }
 
     public void spawnDigger(Faction faction, BlockPos spawnBlockPos, Mob mob) {
-        if(FactionEntityHelper.getFactionEntityCapability(mob).getFactionEntityType().hasRank(FactionEntityType.FactionRank.DIGGER)) return;
+        if(FactionEntityHelper.getFactionEntityCapability(mob).getFactionEntityType().hasRank(FactionEntityRank.DIGGER)) return;
         this.spawnDigger(faction, spawnBlockPos);
     }
 
     public void spawnDigger(Faction faction, BlockPos spawnBlockPos) {
         // check how many diggers are already spawned
-        if(this.getRaidersInWave(this.getGroupsSpawned()).stream().filter(entity -> FactionEntityHelper.getFactionEntityCapability(entity).getFactionEntityType().hasRank(FactionEntityType.FactionRank.DIGGER)).count() > Mth.ceil(this.getRaidersInWave(this.getGroupsSpawned()).size() * 0.25)) return;
-        EntityWeightMapProperties entityWeightMapProperties = new EntityWeightMapProperties().setAllowedRanks(List.of(FactionEntityType.FactionRank.DIGGER)).setBlockPos(spawnBlockPos);
+        if(getDiggersInWave() > Mth.ceil(this.getRaidersInWave(this.getGroupsSpawned()).size() * 0.25)) return;
+        EntityWeightMapProperties entityWeightMapProperties = new EntityWeightMapProperties().setAllowedRanks(List.of(FactionEntityRank.DIGGER)).setBlockPos(spawnBlockPos);
         List<Pair<FactionEntityType, Integer>> weightMap = faction.getWeightMap(entityWeightMapProperties);
         if (weightMap.isEmpty()) return;
         FactionEntityType randomEntry = getRandomEntry(weightMap, level.random);
@@ -760,6 +761,11 @@ public class Raid {
         if(entity instanceof Mob mob) {
             this.joinRaid(this.getGroupsSpawned(), mob);
         }
+    }
+
+    private long getDiggersInWave() {
+        return this.getRaidersInWave(this.getGroupsSpawned()).stream()
+                .filter(entity -> FactionEntityHelper.getFactionEntityCapability(entity).hasRank(FactionEntityRank.DIGGER)).count();
     }
 
     public CompoundTag save(CompoundTag pNbt) {

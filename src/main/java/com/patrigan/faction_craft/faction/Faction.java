@@ -6,6 +6,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.patrigan.faction_craft.capabilities.savedfactiondata.FactionData;
 import com.patrigan.faction_craft.data.ResourceSet;
 import com.patrigan.faction_craft.faction.entity.FactionEntityType;
+import com.patrigan.faction_craft.faction.entity.FactionEntityRank;
 import com.patrigan.faction_craft.faction.relations.FactionRelations;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
@@ -113,7 +114,7 @@ public class Faction {
         return entityTypes.stream().map(factionEntityType -> new Pair<>(factionEntityType, factionEntityType.getWeight())).toList();
     }
 
-    public List<Pair<FactionEntityType, Integer>> getWeightMapForRank(FactionEntityType.FactionRank rank){
+    public List<Pair<FactionEntityType, Integer>> getWeightMapForRank(FactionEntityRank rank){
         return entityTypes.stream().filter(factionEntityType -> factionEntityType.hasRank(rank)).map(factionEntityType -> new Pair<>(factionEntityType, factionEntityType.getWeight())).toList();
     }
 

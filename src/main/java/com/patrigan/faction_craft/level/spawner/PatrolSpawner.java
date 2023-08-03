@@ -7,6 +7,7 @@ import com.patrigan.faction_craft.config.FactionCraftConfig;
 import com.patrigan.faction_craft.faction.EntityWeightMapProperties;
 import com.patrigan.faction_craft.faction.Faction;
 import com.patrigan.faction_craft.faction.entity.FactionEntityType;
+import com.patrigan.faction_craft.faction.entity.FactionEntityRank;
 import com.patrigan.faction_craft.registry.Factions;
 import com.patrigan.faction_craft.util.GeneralUtils;
 import net.minecraft.core.BlockPos;
@@ -112,9 +113,9 @@ public class PatrolSpawner implements CustomSpawner {
       Holder<Biome> biome = pLevel.getBiome(pPos);
       EntityWeightMapProperties entityWeightMapProperties = new EntityWeightMapProperties().setBlockPos(pPos).setBiome(biome.get()).setWave(2);
       if(pLeader) {
-         entityWeightMapProperties.setAllowedRanks(List.of(FactionEntityType.FactionRank.CAPTAIN));
+         entityWeightMapProperties.setAllowedRanks(List.of(FactionEntityRank.CAPTAIN));
       } else {
-         entityWeightMapProperties.setAllowedRanks(List.of(FactionEntityType.FactionRank.SOLDIER));
+         entityWeightMapProperties.setAllowedRanks(List.of(FactionEntityRank.SOLDIER));
       }
       List<Pair<FactionEntityType, Integer>> weightMap = faction.getWeightMap(entityWeightMapProperties);
       if(weightMap.isEmpty()) {

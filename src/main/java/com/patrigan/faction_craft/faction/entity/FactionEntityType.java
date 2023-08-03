@@ -1,7 +1,6 @@
 package com.patrigan.faction_craft.faction.entity;
 
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.patrigan.faction_craft.capabilities.factionentity.FactionEntity;
 import com.patrigan.faction_craft.capabilities.factionentity.FactionEntityHelper;
@@ -30,7 +29,7 @@ import static net.minecraftforge.registries.ForgeRegistries.ENTITY_TYPES;
 
 
 public class FactionEntityType {
-    public static final FactionEntityType DEFAULT = new FactionEntityType(new ResourceLocation("minecraft:pig"), new CompoundTag(), false, true, 1, 1, List.of(FactionRank.SOLDIER), EntityBoostConfig.DEFAULT, new IntRange(0, 10000), new IntRange(0, 10000), Integer.MAX_VALUE, new IntRange(0, 10000), new IntRange(-64, 320), ResourceSet.getEmpty(Registry.BIOME_REGISTRY), ResourceSet.getEmpty(Registry.BIOME_REGISTRY));
+    public static final FactionEntityType DEFAULT = new FactionEntityType(new ResourceLocation("minecraft:pig"), new CompoundTag(), false, true, 1, 1, List.of(FactionEntityRank.SOLDIER), EntityBoostConfig.DEFAULT, new IntRange(0, 10000), new IntRange(0, 10000), Integer.MAX_VALUE, new IntRange(0, 10000), new IntRange(-64, 320), ResourceSet.getEmpty(Registry.BIOME_REGISTRY), ResourceSet.getEmpty(Registry.BIOME_REGISTRY));
     public static final Codec<FactionEntityType> CODEC = RecordCodecBuilder.create(builder ->
             builder.group(
                     ResourceLocation.CODEC.fieldOf("entity_type").forGetter(data -> data.entityType),
@@ -39,7 +38,7 @@ public class FactionEntityType {
                     Codec.BOOL.optionalFieldOf("should_finalize_spawn", true).forGetter(data -> data.shouldFinalizeSpawn),
                     Codec.INT.fieldOf("weight").forGetter(data -> data.weight),
                     Codec.INT.fieldOf("strength").forGetter(data -> data.strength),
-                    FactionRank.CODEC.listOf().fieldOf("ranks").forGetter(data -> data.ranks),
+                    FactionEntityRank.CODEC.listOf().fieldOf("ranks").forGetter(data -> data.ranks),
                     EntityBoostConfig.CODEC.optionalFieldOf("boosts", EntityBoostConfig.DEFAULT).forGetter(data -> data.entityBoostConfig),
                     IntRange.getCodec(0, 10000).optionalFieldOf("wave_range", new IntRange(1, 10000)).forGetter(data -> data.waveRange),
                     IntRange.getCodec(0, 10000).optionalFieldOf("spawned_range", new IntRange(0, 10000)).forGetter(data -> data.spawnedRange),
@@ -56,8 +55,8 @@ public class FactionEntityType {
                     CompoundTag.CODEC.optionalFieldOf("tag", new CompoundTag()).forGetter(data -> data.tag),
                     Codec.INT.fieldOf("weight").forGetter(data -> data.weight),
                     Codec.INT.fieldOf("strength").forGetter(data -> data.strength),
-                    FactionRank.CODEC.fieldOf("rank").forGetter(data -> data.ranks.get(0)),
-                    FactionRank.CODEC.fieldOf("maximum_rank").forGetter(data -> data.ranks.get(data.ranks.size()-1)),
+                    FactionEntityRank.CODEC.fieldOf("rank").forGetter(data -> data.ranks.get(0)),
+                    FactionEntityRank.CODEC.fieldOf("maximum_rank").forGetter(data -> data.ranks.get(data.ranks.size()-1)),
                     EntityBoostConfig.CODEC.optionalFieldOf("boosts", EntityBoostConfig.DEFAULT).forGetter(data -> data.entityBoostConfig),
                     Codec.INT.fieldOf("minimum_wave").forGetter(data -> data.waveRange.getMin()),
                     Codec.INT.optionalFieldOf("maximum_wave", 10000).forGetter(data -> data.waveRange.getMax()),
@@ -73,7 +72,7 @@ public class FactionEntityType {
     private final boolean shouldFinalizeSpawn;
     private final int weight;
     private final int strength;
-    private final List<FactionRank> ranks;
+    private final List<FactionEntityRank> ranks;
     private final EntityBoostConfig entityBoostConfig;
     private final IntRange waveRange;
     private final IntRange spawnedRange;
@@ -83,7 +82,7 @@ public class FactionEntityType {
     private final ResourceSet<Biome> biomeWhitelist;
     private final ResourceSet<Biome> biomeBlacklist;
 
-    public FactionEntityType(ResourceLocation entityType, CompoundTag tag, boolean tagFirst, boolean shouldFinalizeSpawn, int weight, int strength, List<FactionRank> ranks, EntityBoostConfig entityBoostConfig, IntRange waveRange, IntRange spawnedRange, int maxSpawnedPerX, IntRange omenRange, IntRange yRange, ResourceSet<Biome> biomeWhitelist, ResourceSet<Biome> biomeBlacklist) {
+    public FactionEntityType(ResourceLocation entityType, CompoundTag tag, boolean tagFirst, boolean shouldFinalizeSpawn, int weight, int strength, List<FactionEntityRank> ranks, EntityBoostConfig entityBoostConfig, IntRange waveRange, IntRange spawnedRange, int maxSpawnedPerX, IntRange omenRange, IntRange yRange, ResourceSet<Biome> biomeWhitelist, ResourceSet<Biome> biomeBlacklist) {
         this.entityType = entityType;
         this.tag = tag;
         this.tagFirst = tagFirst;
@@ -101,7 +100,7 @@ public class FactionEntityType {
         this.biomeBlacklist = biomeBlacklist;
     }
 
-    public FactionEntityType(ResourceLocation entityType, CompoundTag tag, int weight, int strength, FactionRank rank, FactionRank maximumRank, EntityBoostConfig entityBoostConfig, int minimumWave, int maximumWave, int minimumSpawned, int maximumSpawned, int minimumOmen, int maximumOmen) {
+    public FactionEntityType(ResourceLocation entityType, CompoundTag tag, int weight, int strength, FactionEntityRank rank, FactionEntityRank maximumRank, EntityBoostConfig entityBoostConfig, int minimumWave, int maximumWave, int minimumSpawned, int maximumSpawned, int minimumOmen, int maximumOmen) {
         this.entityType = entityType;
         this.tag = tag;
         this.tagFirst = false;
@@ -109,7 +108,7 @@ public class FactionEntityType {
         this.weight = weight;
         this.strength = strength;
         this.ranks = new ArrayList<>();
-        FactionRank currentRank = rank;
+        FactionEntityRank currentRank = rank;
         while (currentRank != null) {
             ranks.add(currentRank);
             if (currentRank.equals(maximumRank)) {
@@ -137,10 +136,10 @@ public class FactionEntityType {
             }
         } else {
 
-            FactionRank rank = FactionRank.byName(compoundNbt.getString("rank"), FactionRank.SOLDIER);
-            FactionRank maximumRank = FactionRank.byName(compoundNbt.getString("maximumRank"), null);
-            List<FactionRank> ranks = new ArrayList<>();
-            FactionRank currentRank = rank;
+            FactionEntityRank rank = FactionEntityRank.byName(compoundNbt.getString("rank"), FactionEntityRank.SOLDIER);
+            FactionEntityRank maximumRank = FactionEntityRank.byName(compoundNbt.getString("maximumRank"), null);
+            List<FactionEntityRank> ranks = new ArrayList<>();
+            FactionEntityRank currentRank = rank;
             while (currentRank != null) {
                 ranks.add(currentRank);
                 if (currentRank.equals(maximumRank)) {
@@ -243,13 +242,13 @@ public class FactionEntityType {
         }
     }
 
-    public List<FactionRank> getRanks() {
+    public List<FactionEntityRank> getRanks() {
         return ranks;
     }
 
     public boolean canBeBannerHolder() {
-        List<FactionRank> possibleCaptains = Arrays.asList(FactionRank.CAPTAIN, FactionRank.GENERAL, FactionRank.LEADER);
-        for (FactionRank possibleCaptain : possibleCaptains) {
+        List<FactionEntityRank> possibleCaptains = Arrays.asList(FactionEntityRank.CAPTAIN, FactionEntityRank.GENERAL, FactionEntityRank.LEADER);
+        for (FactionEntityRank possibleCaptain : possibleCaptains) {
             if(ranks.contains(possibleCaptain)) {
                 return true;
             }
@@ -257,12 +256,12 @@ public class FactionEntityType {
         return false;
     }
 
-    public boolean hasRank(FactionRank requiredRank) {
+    public boolean hasRank(FactionEntityRank requiredRank) {
         return getRanks().contains(requiredRank);
     }
 
-    public boolean hasRanks(List<FactionRank> requiredRanks) {
-        List<FactionRank> possibleRanks = getRanks();
+    public boolean hasRanks(List<FactionEntityRank> requiredRanks) {
+        List<FactionEntityRank> possibleRanks = getRanks();
         return requiredRanks.stream().anyMatch(possibleRanks::contains);
     }
     public int getMaxSpawned(int totalSpawned) {
@@ -337,41 +336,4 @@ public class FactionEntityType {
         return compoundNbt;
     }
 
-    public enum FactionRank {
-        LEADER("leader", null),
-        SUPPORT("support", null),
-        MOUNT("mount", null),
-        DIGGER("digger", null),
-        GENERAL("general", LEADER),
-        CAPTAIN("captain", GENERAL),
-        SOLDIER("soldier", CAPTAIN);
-
-        public static final Codec<FactionRank> CODEC = Codec.STRING.flatComapMap(s -> FactionRank.byName(s, null), d -> DataResult.success(d.getName()));
-
-        private final String name;
-        private final FactionRank promotion;
-
-        FactionRank(String name, FactionRank promotion) {
-            this.name = name;
-            this.promotion = promotion;
-        }
-
-        public static FactionRank byName(String name, FactionRank defaultRank) {
-            for (FactionRank factionRank : values()) {
-                if (factionRank.name.equalsIgnoreCase(name)) {
-                    return factionRank;
-                }
-            }
-
-            return defaultRank;
-        }
-
-        public FactionRank promote() {
-            return promotion;
-        }
-
-        public String getName() {
-            return name;
-        }
-    }
 }

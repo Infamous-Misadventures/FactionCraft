@@ -8,6 +8,7 @@ import com.patrigan.faction_craft.capabilities.factionentity.FactionEntity;
 import com.patrigan.faction_craft.capabilities.raider.Raider;
 import com.patrigan.faction_craft.capabilities.raider.RaiderHelper;
 import com.patrigan.faction_craft.faction.entity.FactionEntityType;
+import com.patrigan.faction_craft.faction.entity.FactionEntityRank;
 import com.patrigan.faction_craft.util.GeneralUtils;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -19,8 +20,6 @@ import net.minecraft.world.entity.animal.horse.AbstractHorse;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static com.patrigan.faction_craft.boost.BoostProviders.FACTION_MOUNT;
 
 public class FactionMountBoost extends Boost {
     public static final Codec<FactionMountBoost> CODEC = RecordCodecBuilder.create(instance -> instance.group(
@@ -66,7 +65,7 @@ public class FactionMountBoost extends Boost {
             if (cap.getFaction() == null) {
                 return 0;
             } else {
-                List<Pair<FactionEntityType, Integer>> weightMap = cap.getFaction().getWeightMapForRank(FactionEntityType.FactionRank.MOUNT).stream().filter(pair -> pair.getFirst().getEntityType().equals(entityTypeLocation)).collect(Collectors.toList());
+                List<Pair<FactionEntityType, Integer>> weightMap = cap.getFaction().getWeightMapForRank(FactionEntityRank.MOUNT).stream().filter(pair -> pair.getFirst().getEntityType().equals(entityTypeLocation)).collect(Collectors.toList());
                 Raider raiderCap = RaiderHelper.getRaiderCapability(mob);
                 if (raiderCap.hasActiveRaid()) {
                     weightMap = weightMap.stream()
@@ -107,7 +106,7 @@ public class FactionMountBoost extends Boost {
             if(cap.getFaction() == null){
                 return false;
             }
-            List<Pair<FactionEntityType, Integer>> weightMap = cap.getFaction().getWeightMapForRank(FactionEntityType.FactionRank.MOUNT).stream().filter(pair -> pair.getFirst().getEntityType().equals(entityTypeLocation)).collect(Collectors.toList());
+            List<Pair<FactionEntityType, Integer>> weightMap = cap.getFaction().getWeightMapForRank(FactionEntityRank.MOUNT).stream().filter(pair -> pair.getFirst().getEntityType().equals(entityTypeLocation)).collect(Collectors.toList());
             Raider raiderCap = RaiderHelper.getRaiderCapability(mob);
             if (raiderCap.hasActiveRaid()) {
                 weightMap = weightMap.stream()

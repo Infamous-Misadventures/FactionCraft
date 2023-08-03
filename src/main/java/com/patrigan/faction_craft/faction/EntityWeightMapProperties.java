@@ -1,6 +1,6 @@
 package com.patrigan.faction_craft.faction;
 
-import com.patrigan.faction_craft.faction.entity.FactionEntityType;
+import com.patrigan.faction_craft.faction.entity.FactionEntityRank;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.biome.Biome;
 
@@ -11,7 +11,7 @@ import java.util.List;
 public class EntityWeightMapProperties {
     private int wave = 1;
     private int omen = 0;
-    private List<FactionEntityType.FactionRank> allowedRanks = new ArrayList<>(Arrays.asList(FactionEntityType.FactionRank.values()));
+    private List<FactionEntityRank> allowedRanks = new ArrayList<>(Arrays.asList(FactionEntityRank.values()));
     private BlockPos blockPos = null;
     private Biome biome = null;
 
@@ -33,21 +33,21 @@ public class EntityWeightMapProperties {
         return this;
     }
 
-    public List<FactionEntityType.FactionRank> getAllowedRanks() {
+    public List<FactionEntityRank> getAllowedRanks() {
         return allowedRanks;
     }
 
-    public EntityWeightMapProperties setAllowedRanks(List<FactionEntityType.FactionRank> allowedRanks) {
+    public EntityWeightMapProperties setAllowedRanks(List<FactionEntityRank> allowedRanks) {
         this.allowedRanks = new ArrayList<>(allowedRanks);
         return this;
     }
 
-    public EntityWeightMapProperties addAllowedRank(FactionEntityType.FactionRank rank) {
+    public EntityWeightMapProperties addAllowedRank(FactionEntityRank rank) {
         this.allowedRanks.add(rank);
         return this;
     }
 
-    public EntityWeightMapProperties removeAllowedRank(FactionEntityType.FactionRank rank) {
+    public EntityWeightMapProperties removeAllowedRank(FactionEntityRank rank) {
         this.allowedRanks.remove(rank);
         return this;
     }
