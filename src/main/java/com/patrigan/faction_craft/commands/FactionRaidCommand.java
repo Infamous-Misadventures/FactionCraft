@@ -1,6 +1,7 @@
 package com.patrigan.faction_craft.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
@@ -23,21 +24,22 @@ import net.minecraft.server.level.ServerPlayer;
 
 public class FactionRaidCommand {
     private static final SimpleCommandExceptionType ERROR_START_FAILED = new SimpleCommandExceptionType(Component.translatable("commands.raid.failed"));
+    private static final SimpleCommandExceptionType ERROR_INCREASE_FAILED = new SimpleCommandExceptionType(Component.translatable("commands.raid.increase.failed"));
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         LiteralArgumentBuilder<CommandSourceStack> factionRaidCommand
                 = Commands.literal("factionraid")
                 .requires(commandSource -> commandSource.hasPermission(2))
                 .then(Commands.literal("start").then(Commands.argument("faction", FactionArgument.factions()).then(Commands.literal("village").executes(sourceCommandContext ->
-                    startVillageRaid(sourceCommandContext.getSource(), FactionArgument.getFaction(sourceCommandContext, "faction"))
+                        startVillageRaid(sourceCommandContext.getSource(), FactionArgument.getFaction(sourceCommandContext, "faction"))
                 ).then(Commands.argument("location", BlockPosArgument.blockPos()).executes(sourceCommandContext ->
-                    startVillageRaid(sourceCommandContext.getSource(), FactionArgument.getFaction(sourceCommandContext, "faction"), BlockPosArgument.getLoadedBlockPos(sourceCommandContext, "location"))
+                        startVillageRaid(sourceCommandContext.getSource(), FactionArgument.getFaction(sourceCommandContext, "faction"), BlockPosArgument.getLoadedBlockPos(sourceCommandContext, "location"))
                 )).then(Commands.argument("player", EntityArgument.player()).executes(sourceCommandContext ->
-                    startVillageRaid(sourceCommandContext.getSource(), FactionArgument.getFaction(sourceCommandContext, "faction"), EntityArgument.getPlayer(sourceCommandContext, "player"))
+                        startVillageRaid(sourceCommandContext.getSource(), FactionArgument.getFaction(sourceCommandContext, "faction"), EntityArgument.getPlayer(sourceCommandContext, "player"))
                 ))).then(Commands.literal("player").executes(sourceCommandContext ->
-                    startPlayerRaid(sourceCommandContext.getSource(), FactionArgument.getFaction(sourceCommandContext, "faction"))
+                        startPlayerRaid(sourceCommandContext.getSource(), FactionArgument.getFaction(sourceCommandContext, "faction"))
                 ).then(Commands.argument("player", EntityArgument.player()).executes(sourceCommandContext ->
-                    startPlayerRaid(sourceCommandContext.getSource(), FactionArgument.getFaction(sourceCommandContext, "faction"), EntityArgument.getPlayer(sourceCommandContext, "player"))
+                        startPlayerRaid(sourceCommandContext.getSource(), FactionArgument.getFaction(sourceCommandContext, "faction"), EntityArgument.getPlayer(sourceCommandContext, "player"))
                 )))))
                 .then(Commands.literal("endwave").executes(sourceCommandContext ->
                         endRaidWave(sourceCommandContext.getSource())
@@ -52,7 +54,16 @@ public class FactionRaidCommand {
                         endRaid(sourceCommandContext.getSource(), BlockPosArgument.getLoadedBlockPos(sourceCommandContext, "location"))
                 )).then(Commands.argument("player", EntityArgument.player()).executes(sourceCommandContext ->
                         endRaid(sourceCommandContext.getSource(), EntityArgument.getPlayer(sourceCommandContext, "player"))
-                )));
+                )))
+                .then(Commands.literal("increase").then(
+                        Commands.argument("amount", IntegerArgumentType.integer()
+                        ).executes(sourceCommandContext ->
+                                increaseRaid(sourceCommandContext.getSource(), IntegerArgumentType.getInteger(sourceCommandContext, "amount"))
+                        ).then(Commands.argument("location", BlockPosArgument.blockPos()).executes(sourceCommandContext ->
+                                increaseRaid(sourceCommandContext.getSource(), IntegerArgumentType.getInteger(sourceCommandContext, "amount"), BlockPosArgument.getLoadedBlockPos(sourceCommandContext, "location"))
+                        )).then(Commands.argument("player", EntityArgument.player()).executes(sourceCommandContext ->
+                                increaseRaid(sourceCommandContext.getSource(), IntegerArgumentType.getInteger(sourceCommandContext, "amount"), EntityArgument.getPlayer(sourceCommandContext, "player"))
+                        ))));
         dispatcher.register(factionRaidCommand);
     }
 
@@ -82,6 +93,32 @@ public class FactionRaidCommand {
     private static int endRaidWave(CommandSourceStack source, BlockPos blockPos) throws CommandSyntaxException {
         ServerLevel level = source.getLevel();
         return endRaidWave(source, level, blockPos);
+    }
+
+    private static int increaseRaid(CommandSourceStack source, int amount) throws CommandSyntaxException {
+        ServerPlayer player = source.getPlayerOrException();
+        return increaseRaid(source, amount, player.blockPosition());
+    }
+
+    private static int increaseRaid(CommandSourceStack source, int amount, ServerPlayer playerEntity) throws CommandSyntaxException {
+        return increaseRaid(source, amount, playerEntity.blockPosition());
+    }
+
+    private static int increaseRaid(CommandSourceStack source, int amount, BlockPos blockPos) throws CommandSyntaxException {
+        ServerLevel level = source.getLevel();
+        return increaseRaidTargetStrength(source, amount, level, blockPos);
+    }
+
+    private static int increaseRaidTargetStrength(CommandSourceStack source, int amount, ServerLevel level, BlockPos blockPos) throws CommandSyntaxException {
+        RaidManager raidManagerCapability = RaidManagerHelper.getRaidManagerCapability(level);
+        Raid raid = raidManagerCapability.getRaidAt(blockPos);
+        if (raid == null) {
+            throw ERROR_INCREASE_FAILED.create();
+        }else{
+            raid.getRaidTarget().increaseTargetStrength(amount);
+            source.sendSuccess(Component.translatable("commands.raid.increase.success", blockPos.toString()), true);
+        }
+        return 1;
     }
 
 
@@ -117,7 +154,7 @@ public class FactionRaidCommand {
         if (raid == null) {
             throw ERROR_START_FAILED.create();
         } else {
-            source.sendSuccess(Component.translatable ("commands.raid.success", targetArgument), true);
+            source.sendSuccess(Component.translatable("commands.raid.success", targetArgument), true);
         }
         return 1;
     }
@@ -125,11 +162,11 @@ public class FactionRaidCommand {
     private static int endRaidWave(CommandSourceStack source, ServerLevel level, BlockPos blockPos) throws CommandSyntaxException {
         RaidManager raidManagerCapability = RaidManagerHelper.getRaidManagerCapability(level);
         Raid raid = raidManagerCapability.getRaidAt(blockPos);
-        raid.endWave();
         if (raid == null) {
             throw ERROR_START_FAILED.create();
         } else {
-            source.sendSuccess(Component.translatable ("commands.raid.success", blockPos.toString()), true);
+            raid.endWave();
+            source.sendSuccess(Component.translatable("commands.raid.success", blockPos.toString()), true);
         }
         return 1;
     }
@@ -137,11 +174,11 @@ public class FactionRaidCommand {
     private static int endRaid(CommandSourceStack source, ServerLevel level, BlockPos blockPos) throws CommandSyntaxException {
         RaidManager raidManagerCapability = RaidManagerHelper.getRaidManagerCapability(level);
         Raid raid = raidManagerCapability.getRaidAt(blockPos);
-        raid.stop();
         if (raid == null) {
             throw ERROR_START_FAILED.create();
         } else {
-            source.sendSuccess(Component.translatable ("commands.raid.success", blockPos.toString()), true);
+            raid.stop();
+            source.sendSuccess(Component.translatable("commands.raid.success", blockPos.toString()), true);
         }
         return 1;
     }

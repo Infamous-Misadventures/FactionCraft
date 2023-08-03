@@ -20,7 +20,7 @@ public class PlayerRaidTarget implements RaidTarget {
 
     private final Type raidType = VILLAGE;
     private final ServerPlayer player;
-    private final int targetStrength;
+    private int targetStrength;
 
     public PlayerRaidTarget(ServerPlayer player, ServerLevel level) {
         this.player = player;
@@ -53,6 +53,11 @@ public class PlayerRaidTarget implements RaidTarget {
     @Override
     public int getTargetStrength() {
         return targetStrength;
+    }
+
+    @Override
+    public void increaseTargetStrength(int amount) {
+        targetStrength += amount;
     }
 
     @Override

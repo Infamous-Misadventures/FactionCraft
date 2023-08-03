@@ -28,7 +28,7 @@ import static com.patrigan.faction_craft.raid.target.RaidTarget.Type.BATTLE;
 public class FactionBattleRaidTarget implements RaidTarget {
 
     private final Type raidType = BATTLE;
-    private final int targetStrength;
+    private int targetStrength;
     private final BlockPos targetBlockPos;
     private final Faction faction1;
     private final Faction faction2;
@@ -72,6 +72,11 @@ public class FactionBattleRaidTarget implements RaidTarget {
     @Override
     public int getTargetStrength() {
         return targetStrength;
+    }
+
+    @Override
+    public void increaseTargetStrength(int amount) {
+        targetStrength += amount;
     }
 
     @Override

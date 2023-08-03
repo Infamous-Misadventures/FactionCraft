@@ -16,6 +16,8 @@ public interface RaidTarget {
 
     int getTargetStrength();
 
+    void increaseTargetStrength(int amount);
+
     int getAdditionalWaves();
 
     boolean isDefeat(Raid raid, ServerLevel level);

@@ -25,7 +25,7 @@ public class VillageRaidTarget implements RaidTarget {
 
     private final RaidTarget.Type raidType = VILLAGE;
     private BlockPos blockPos;
-    private final int targetStrength;
+    private int targetStrength;
 
     public VillageRaidTarget(BlockPos blockPos, ServerLevel level) {
         this.blockPos = blockPos;
@@ -70,6 +70,11 @@ public class VillageRaidTarget implements RaidTarget {
     @Override
     public int getTargetStrength() {
         return targetStrength;
+    }
+
+    @Override
+    public void increaseTargetStrength(int amount) {
+        this.targetStrength += amount;
     }
 
     @Override
