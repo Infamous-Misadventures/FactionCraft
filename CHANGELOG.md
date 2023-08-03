@@ -1,5 +1,5 @@
 # Changelog
-## [1.19.2-1.3.5] 2023-07-18
+## [1.19.2-1.3.5] 2023-08-03
 ### Minor Features
 - Explosions now also create Reconstruct Blocks outside of raids. The block will reconstruct after killing the mob.
 - Added various configurations for the Reconstruct block to reconstruct.
