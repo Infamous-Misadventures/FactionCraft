@@ -101,7 +101,7 @@ jobs:
         if: ${{ vars.MODREPO == 'modrinth' || vars.MODREPO == 'both' }}
         uses: Kir-Antipov/mc-publish@v3.2
         with:
-          modrinth-id: KFQYC1Uy
+          modrinth-id: waWCA9wV
           modrinth-token: ${{ secrets.modrinth_api }}
 
           files-primary: ${{ needs.setup.outputs.file_path }}
