@@ -11,6 +11,11 @@
   "commands.argument.factionNotFound": "Faction is not known.",
   "effect.faction_craft.faction_bad_omen": "Bad Omen",
   "event.faction_craft.battle": "Faction Battle",
-  "event.faction_craft.battle.over": "Faction Battle ended"
+  "event.faction_craft.battle.over": "Faction Battle ended",
+  "block.faction_raid.villager_banner": "Villager Banner",
+  "block.faction_raid.undead_banner": "Rotten Banner",
+  "block.faction_raid.end_banner": "Void Banner",
+  "block.faction_raid.piglin_banner": "Snout Banner",
+  "block.faction_raid.wither_banner": "Wither Banner"
 
 }

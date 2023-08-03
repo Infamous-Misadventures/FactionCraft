@@ -1,7 +1,7 @@
 {
   "name": "faction_craft:wither",
   "replace": false,
-  "banner": {"id":"minecraft:black_banner","Count":1,"tag":{"HideFlags":32,"BlockEntityTag":{"Patterns":[{"Color":0,"Pattern":"sc"},{"Color":0,"Pattern":"cr"},{"Color":0,"Pattern":"tts"},{"Color":0,"Pattern":"gru"},{"Color":8,"Pattern":"sku"}]},"display":{"Name":{"color":"gold","translate":"block.faction_raid.undead_banner"}}}},
+  "banner": {"id":"minecraft:black_banner","Count":1,"tag":{"BlockEntityTag":{"Patterns":[{"Color":0,"Pattern":"sc"},{"Color":0,"Pattern":"cr"},{"Color":0,"Pattern":"tts"},{"Color":0,"Pattern":"gru"},{"Color":8,"Pattern":"sku"}]},"display":{"Name":"{\"color\":\"gold\",\"translate\":\"block.faction_raid.wither_banner\"}"}}},
   "relations": {
     "enemies": ["minecraft:illager", "minecraft:village", "faction_craft:piglin", "faction_craft:end"],
 	"allies": ["faction_craft:undead"]
