@@ -52,7 +52,7 @@ public class EntityEvents {
         if (entity instanceof Mob mob) {
             FactionEntity factionEntity = FactionEntityHelper.getFactionEntityCapability(mob);
             if(FactionCraftConfig.ENABLE_DEFAULT_FACTION.get()) {
-                if (factionEntity.getFaction() == null) {
+                if (factionEntity.getFaction() == null || factionEntity.getFaction() == Faction.GAIA) {
                     List<Faction> factions = Factions.getFactionData().values().stream().filter(faction -> faction.getDefaultEntities().contains(entity.getType())).toList();
                     if (!factions.isEmpty()) {
                         RandomSource randomSource = RandomSource.create(new ChunkPos(mob.blockPosition()).toLong());

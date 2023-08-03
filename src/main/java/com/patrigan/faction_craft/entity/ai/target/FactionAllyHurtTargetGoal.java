@@ -2,6 +2,7 @@ package com.patrigan.faction_craft.entity.ai.target;
 
 import com.patrigan.faction_craft.capabilities.factionentity.FactionEntity;
 import com.patrigan.faction_craft.capabilities.factionentity.FactionEntityHelper;
+import com.patrigan.faction_craft.faction.Faction;
 import net.minecraft.advancements.critereon.EntityPredicate;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -31,7 +32,7 @@ public class FactionAllyHurtTargetGoal extends TargetGoal {
             return false;
         } else {
             FactionEntity sourceCap = FactionEntityHelper.getFactionEntityCapability(this.mob);
-            if (sourceCap.getFaction() == null) {
+            if (sourceCap.getFaction() == null || sourceCap.getFaction().equals(Faction.GAIA)) {
                 return false;
             }
             List<Mob> allies = findHurtAllies();

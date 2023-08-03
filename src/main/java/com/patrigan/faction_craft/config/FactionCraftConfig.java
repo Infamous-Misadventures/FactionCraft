@@ -13,6 +13,7 @@ public class FactionCraftConfig {
 
     public static ForgeConfigSpec.ConfigValue<List<? extends String>> DISABLED_FACTIONS;
     public static ForgeConfigSpec.ConfigValue<Boolean> ENABLE_DEFAULT_FACTION;
+    public static ForgeConfigSpec.ConfigValue<Boolean> ENABLE_GAIA_FACTION;
 
     public static ForgeConfigSpec.ConfigValue<Boolean> DISABLE_FACTION_RAIDS;
     public static ForgeConfigSpec.ConfigValue<Integer> RAID_MAX_FACTIONS;
@@ -95,6 +96,10 @@ public class FactionCraftConfig {
                     .comment("Enables default faction for entities. Turning this off might cause some mobs to no longer attack villagers. \n" +
                             "Default true")
                     .define("enableDefaultFaction", true);
+            ENABLE_GAIA_FACTION = builder
+                    .comment("Enables Gaia faction for entities. Turning this off might cause some weirdness with factions, but can fix unforeseen bugs. \n" +
+                            "Default true")
+                    .define("enableGaiaFaction", true);
             builder.pop();
         }
 

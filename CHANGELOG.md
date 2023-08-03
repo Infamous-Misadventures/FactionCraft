@@ -2,6 +2,8 @@
 ## [1.19.2-1.3.5] 2023-07-18
 ### Bugfixes / Tweaks
 - Fixed case sensitivity issues with various enumeration fields
+- Small fixes to GAIA faction + make it a config option.
+
 ## [1.19.2-1.3] OVERVIEW
 ### New Factions
 #### End

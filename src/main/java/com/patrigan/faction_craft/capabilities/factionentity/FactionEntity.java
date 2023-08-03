@@ -1,6 +1,7 @@
 package com.patrigan.faction_craft.capabilities.factionentity;
 
 
+import com.patrigan.faction_craft.config.FactionCraftConfig;
 import com.patrigan.faction_craft.faction.Faction;
 import com.patrigan.faction_craft.registry.Factions;
 import com.patrigan.faction_craft.faction.entity.FactionEntityType;
@@ -18,18 +19,21 @@ import static com.patrigan.faction_craft.capabilities.ModCapabilities.FACTION_EN
 public class FactionEntity implements INBTSerializable<CompoundTag> {
 
     private LivingEntity entity;
-    private Faction faction = Faction.GAIA;
+    private Faction faction;
     private FactionEntityType factionEntityType;
     private BlockPos targetPosition = null;
     private LivingEntity nearestDamagedFactionAlly;
     private boolean isStuck = false;
 
     public FactionEntity() {
-        this.entity = null;
+        this(null);
     }
 
     public FactionEntity(LivingEntity entity) {
         this.entity = entity;
+        if(FactionCraftConfig.ENABLE_GAIA_FACTION.get().equals(true)) {
+            this.faction = Faction.GAIA;
+        }
     }
 
     public LivingEntity getEntity() {
