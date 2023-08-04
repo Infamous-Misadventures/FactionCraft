@@ -21,10 +21,19 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+
+import java.util.Set;
 
 public class FactionRaidCommand {
     private static final SimpleCommandExceptionType ERROR_START_FAILED = new SimpleCommandExceptionType(Component.translatable("commands.raid.failed"));
+    private static final SimpleCommandExceptionType ERROR_ENDWAVE_FAILED = new SimpleCommandExceptionType(Component.translatable("commands.raid.endwave.failed"));
+    private static final SimpleCommandExceptionType ERROR_END_FAILED = new SimpleCommandExceptionType(Component.translatable("commands.raid.end.failed"));
     private static final SimpleCommandExceptionType ERROR_INCREASE_FAILED = new SimpleCommandExceptionType(Component.translatable("commands.raid.increase.failed"));
+    private static final SimpleCommandExceptionType ERROR_GLOW_FAILED = new SimpleCommandExceptionType(Component.translatable("commands.raid.glow.failed"));
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         LiteralArgumentBuilder<CommandSourceStack> factionRaidCommand
@@ -63,7 +72,14 @@ public class FactionRaidCommand {
                                 increaseRaid(sourceCommandContext.getSource(), IntegerArgumentType.getInteger(sourceCommandContext, "amount"), BlockPosArgument.getLoadedBlockPos(sourceCommandContext, "location"))
                         )).then(Commands.argument("player", EntityArgument.player()).executes(sourceCommandContext ->
                                 increaseRaid(sourceCommandContext.getSource(), IntegerArgumentType.getInteger(sourceCommandContext, "amount"), EntityArgument.getPlayer(sourceCommandContext, "player"))
-                        ))));
+                        ))))
+                .then(Commands.literal("glow").executes(sourceCommandContext ->
+                        glowRaiders(sourceCommandContext.getSource())
+                ).then(Commands.argument("location", BlockPosArgument.blockPos()).executes(sourceCommandContext ->
+                        glowRaiders(sourceCommandContext.getSource(), BlockPosArgument.getLoadedBlockPos(sourceCommandContext, "location"))
+                )).then(Commands.argument("player", EntityArgument.player()).executes(sourceCommandContext ->
+                        glowRaiders(sourceCommandContext.getSource(), EntityArgument.getPlayer(sourceCommandContext, "player"))
+                )));
         dispatcher.register(factionRaidCommand);
     }
 
@@ -109,14 +125,45 @@ public class FactionRaidCommand {
         return increaseRaidTargetStrength(source, amount, level, blockPos);
     }
 
+    private static int glowRaiders(CommandSourceStack source) throws CommandSyntaxException {
+        ServerPlayer player = source.getPlayerOrException();
+        return glowRaiders(source, player.blockPosition());
+    }
+
+    private static int glowRaiders(CommandSourceStack source, ServerPlayer playerEntity) throws CommandSyntaxException {
+        return glowRaiders(source, playerEntity.blockPosition());
+    }
+
+    private static int glowRaiders(CommandSourceStack source, BlockPos blockPos) throws CommandSyntaxException {
+        ServerLevel level = source.getLevel();
+        return glowRaiders(source, level, blockPos);
+    }
+
+    private static int glowRaiders(CommandSourceStack source, ServerLevel level, BlockPos blockPos) throws CommandSyntaxException {
+        RaidManager raidManagerCapability = RaidManagerHelper.getRaidManagerCapability(level);
+        Raid raid = raidManagerCapability.getRaidAt(blockPos);
+        if (raid == null) {
+            throw ERROR_GLOW_FAILED.create();
+        } else {
+            Set<Mob> raidersInWave = raid.getRaidersInWave(raid.getGroupsSpawned());
+            raidersInWave.forEach(FactionRaidCommand::factioncraft_glow);
+            source.sendSuccess(Component.translatable("commands.raid.glow.success", blockPos.toString(), raidersInWave.size()), true);
+        }
+        return 1;
+    }
+
+    private static void factioncraft_glow(LivingEntity p_222827_1_) {
+        p_222827_1_.addEffect(new MobEffectInstance(MobEffects.GLOWING, 60));
+    }
+
     private static int increaseRaidTargetStrength(CommandSourceStack source, int amount, ServerLevel level, BlockPos blockPos) throws CommandSyntaxException {
         RaidManager raidManagerCapability = RaidManagerHelper.getRaidManagerCapability(level);
         Raid raid = raidManagerCapability.getRaidAt(blockPos);
         if (raid == null) {
             throw ERROR_INCREASE_FAILED.create();
-        }else{
+        } else {
             raid.getRaidTarget().increaseTargetStrength(amount);
-            source.sendSuccess(Component.translatable("commands.raid.increase.success", blockPos.toString()), true);
+            source.sendSuccess(Component.translatable("commands.raid.increase.success", blockPos.toString(), amount), true);
         }
         return 1;
     }
@@ -163,10 +210,10 @@ public class FactionRaidCommand {
         RaidManager raidManagerCapability = RaidManagerHelper.getRaidManagerCapability(level);
         Raid raid = raidManagerCapability.getRaidAt(blockPos);
         if (raid == null) {
-            throw ERROR_START_FAILED.create();
+            throw ERROR_ENDWAVE_FAILED.create();
         } else {
             raid.endWave();
-            source.sendSuccess(Component.translatable("commands.raid.success", blockPos.toString()), true);
+            source.sendSuccess(Component.translatable("commands.raid.endwave.success", blockPos.toString()), true);
         }
         return 1;
     }
@@ -175,10 +222,10 @@ public class FactionRaidCommand {
         RaidManager raidManagerCapability = RaidManagerHelper.getRaidManagerCapability(level);
         Raid raid = raidManagerCapability.getRaidAt(blockPos);
         if (raid == null) {
-            throw ERROR_START_FAILED.create();
+            throw ERROR_END_FAILED.create();
         } else {
             raid.stop();
-            source.sendSuccess(Component.translatable("commands.raid.success", blockPos.toString()), true);
+            source.sendSuccess(Component.translatable("commands.raid.end.success", blockPos.toString()), true);
         }
         return 1;
     }

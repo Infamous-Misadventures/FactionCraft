@@ -1,5 +1,7 @@
 # Changelog
 ## [1.19.2-1.3.6] 2023-08-03
+### Minor Features
+- New factionraid command, where you can give all the raiders a glow. Great for when you have a battle or raid and can not find all the raiders
 ### Bugfixes / Tweaks
 - Fix a crash introduced in 1.3.5
 ## [1.19.2-1.3.5] 2023-08-03
