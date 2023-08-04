@@ -15,6 +15,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.animal.horse.AbstractHorse;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -77,6 +78,10 @@ public class FactionMountBoost extends Boost {
                 Entity entity = randomEntry.createEntity(level, cap.getFaction(), livingEntity.blockPosition(), false, MobSpawnType.JOCKEY);
                 if(raiderCap != null && raiderCap.hasActiveRaid() && entity instanceof Mob mountMob){
                     raiderCap.getRaid().addWaveMob(raiderCap.getWave(), mountMob, true);
+                }
+                if(entity instanceof AbstractHorse horse) {
+                    horse.setTamed(true);
+                    horse.setOwnerUUID(livingEntity.getUUID());
                 }
                 mob.startRiding(entity);
                 return randomEntry.getStrength();
