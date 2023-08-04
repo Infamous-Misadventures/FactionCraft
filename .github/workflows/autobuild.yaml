@@ -3,10 +3,12 @@ on:
   push:
     branches:
       - '1.19'
+      - '1.18.1'
   release:
     types: [ published ]
     branches:
       - '1.19'
+      - '1.18.1'
 
 jobs:
   setup:
