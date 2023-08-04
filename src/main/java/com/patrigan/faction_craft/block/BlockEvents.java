@@ -40,8 +40,8 @@ public class BlockEvents {
         if(!FactionCraftConfig.ENABLE_RECONSTRUCT_BLOCKS.get()) {
             return false;
         }
-        return (raid != null && !raid.isOver()) || (FactionCraftConfig.ENABLE_RECONSTRUCT_BLOCKS_OUTSIDE_RAIDS.get()) &&
-                checkGaiaFaction(livingEntity) && isPlayer(livingEntity);
+        return (raid != null && !raid.isOver()) || ((FactionCraftConfig.ENABLE_RECONSTRUCT_BLOCKS_OUTSIDE_RAIDS.get()) &&
+                checkGaiaFaction(livingEntity) && isPlayer(livingEntity));
     }
 
     private static boolean isPlayer(LivingEntity livingEntity) {
@@ -49,6 +49,7 @@ public class BlockEvents {
     }
 
     private static boolean checkGaiaFaction(LivingEntity livingEntity) {
+        if(livingEntity == null) return FactionCraftConfig.ENABLE_RECONSTRUCT_BLOCKS_FROM_GAIA.get();
         Faction faction = FactionEntityHelper.getFactionEntityCapability(livingEntity).getFaction();
         return FactionCraftConfig.ENABLE_RECONSTRUCT_BLOCKS_FROM_GAIA.get() || (faction != null && faction != Faction.GAIA);
     }
